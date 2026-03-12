@@ -130,7 +130,9 @@
     "intro": "Hier findest du alle Donation-Trigger und Preise. Klicke auf einen Trigger für Details!",
     "donateButton": "Jetzt spenden",
     "close": "Schließen",
-    "donateSpecific": "Spenden ({{amount}} €)"
+    "donateSpecific": "Spenden ({{amount}} €)",
+    "copyAmount": "Betrag kopieren ({{amount}} €)",
+    "copied": "Kopiert ✓"
   },
   "donations": {
     "taschengeld": { "desc": "Taschengeld", "text": "Donation Sounds wird abgespielt (Danke von den Kids) 🎉" },

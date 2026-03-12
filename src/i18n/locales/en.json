@@ -130,7 +130,9 @@
     "intro": "Here you can find all donation triggers and prices. Click on a trigger for details!",
     "donateButton": "Donate now",
     "close": "Close",
-    "donateSpecific": "Donate ({{amount}} €)"
+    "donateSpecific": "Donate ({{amount}} €)",
+    "copyAmount": "Copy amount ({{amount}} €)",
+    "copied": "Copied ✓"
   },
   "donations": {
     "taschengeld": { "desc": "Pocket Money", "text": "Donation sound plays (Thanks from the kids) 🎉" },

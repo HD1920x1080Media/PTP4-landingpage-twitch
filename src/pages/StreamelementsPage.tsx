@@ -8,10 +8,12 @@ export default function StreamelementsPage() {
   const { t, i18n } = useTranslation()
   const { triggers, donationUrl } = siteConfig.streamelements
   const [activeTrigger, setActiveTrigger] = useState<DonationTrigger | null>(null)
+  const [copied, setCopied] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const openModal = (trigger: DonationTrigger) => {
     setActiveTrigger(trigger)
+    setCopied(false)
   }
 
   const closeModal = () => {
@@ -20,6 +22,15 @@ export default function StreamelementsPage() {
       audioRef.current.currentTime = 0
     }
     setActiveTrigger(null)
+    setCopied(false)
+  }
+
+  const copyAmount = (amount: number) => {
+    navigator.clipboard.writeText(amount.toString()).then(() => {
+      setCopied(true)
+    }).catch(() => {
+      // clipboard access denied – do nothing
+    })
   }
 
   return (
@@ -66,18 +77,26 @@ export default function StreamelementsPage() {
             )}
             <div className="donation-modal-buttons">
               {activeTrigger.amountValue != null && (
-                <a
-                  className="btn btn-primary"
-                  href={`${donationUrl}?amount=${activeTrigger.amountValue}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={closeModal}
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => copyAmount(activeTrigger.amountValue!)}
                 >
-                  {t('streamelementsPage.donateSpecific', {
-                    amount: activeTrigger.amountValue.toLocaleString(i18n.language),
-                  })}
-                </a>
+                  {copied
+                    ? t('streamelementsPage.copied')
+                    : t('streamelementsPage.copyAmount', {
+                        amount: activeTrigger.amountValue.toLocaleString(i18n.language),
+                      })}
+                </button>
               )}
+              <a
+                className="btn btn-primary"
+                href={donationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={closeModal}
+              >
+                {t('streamelementsPage.donateButton')}
+              </a>
               <button className="btn btn-secondary" onClick={closeModal}>
                 {t('streamelementsPage.close')}
               </button>
