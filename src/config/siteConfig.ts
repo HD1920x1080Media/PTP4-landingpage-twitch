@@ -220,7 +220,7 @@ const siteConfig: SiteConfig = {
       id: 'bartclicker',
       titleKey: 'games.bartclicker.title',
       descKey: 'games.bartclicker.desc',
-      url: '#',
+      url: '/bartclicker',
       icon: '/img/logos/bartclicker.svg',
       target: '_self',
     },

@@ -1,0 +1,112 @@
+.not-found {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 24px 20px;
+}
+
+.not-found-card {
+  text-align: center;
+  max-width: 560px;
+  width: 100%;
+  background: var(--box-gradient);
+  border: 1px solid var(--box-border);
+  border-radius: 14px;
+  padding: 48px 32px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ── 4 🧔 4 ── */
+.not-found-hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.not-found-four {
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 0 4px 20px rgba(124, 77, 255, 0.3);
+}
+
+.not-found-avatar {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  animation: float 3s ease-in-out infinite;
+}
+
+.not-found-avatar:hover {
+  transform: scale(1.1);
+}
+
+.not-found-avatar.spin {
+  animation: beard-spin 0.6s ease;
+}
+
+.beard-svg {
+  width: 120px;
+  height: 120px;
+}
+
+/* ── Messages ── */
+.not-found-message {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.not-found-message:hover {
+  color: var(--accent);
+}
+
+.not-found-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 32px;
+}
+
+.not-found-btn {
+  color: #fff;
+  font-size: 1rem;
+  padding: 12px 24px;
+}
+
+/* ── Animations ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes beard-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-15deg) scale(1.15); }
+  50% { transform: rotate(15deg) scale(1.15); }
+  75% { transform: rotate(-5deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@media (max-width: 520px) {
+  .not-found-four {
+    font-size: 5rem;
+  }
+  .beard-svg {
+    width: 80px;
+    height: 80px;
+  }
+  .not-found-message {
+    font-size: 1.1rem;
+  }
+  .not-found-card {
+    padding: 32px 20px;
+  }
+}
+

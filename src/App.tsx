@@ -6,6 +6,7 @@ import ImpressumPage from './pages/ImpressumPage'
 import DatenschutzPage from './pages/DatenschutzPage'
 import StreamplanPage from './pages/StreamplanPage'
 import StreamelementsPage from './pages/StreamelementsPage'
+import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
         <Route path="/datenschutz" element={<DatenschutzPage />} />
         <Route path="/streamplan" element={<StreamplanPage />} />
         <Route path="/streamelements" element={<StreamelementsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <CookieBanner />
     </BrowserRouter>
