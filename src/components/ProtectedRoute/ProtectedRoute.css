@@ -1,0 +1,66 @@
+.auth-loading {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.auth-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 16px;
+  border: 3px solid rgba(124, 77, 255, 0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: auth-spin 0.7s linear infinite;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-gate {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.auth-gate-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.auth-gate h1 {
+  font-size: 1.5rem;
+  color: var(--accent);
+  margin: 0 0 8px;
+}
+
+.auth-gate p {
+  color: var(--muted);
+  margin: 0 0 24px;
+}
+
+/* ── Twitch login button ── */
+.btn-twitch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  background: #9146FF;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 6px 20px rgba(145, 70, 255, 0.3);
+}
+
+.btn-twitch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(145, 70, 255, 0.4);
+}
+
+.btn-twitch svg {
+  flex-shrink: 0;
+}
+

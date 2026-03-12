@@ -127,5 +127,29 @@
     "konfetti": { "desc": "Confetti cannon (if available)", "text": "Stefan fires a confetti cannon 🎉" },
     "hotnuts": { "desc": "8 Hot Nuts + FIRE!!! (if available)", "text": "Stefan eats 8 Hot Nuts & sound plays 🔥" },
     "sandwich": { "desc": "Satanic Sandwich (if available)", "text": "Stefan eats a satanic sandwich (Oreo + Hotnuts + Centershock) & sound plays 🔥" }
+  },
+  "auth": {
+    "loading": "Loading…",
+    "loginRequired": "Login required",
+    "loginHint": "Sign in with Twitch to access this page.",
+    "loginWithTwitch": "Sign in with Twitch",
+    "loggedInAs": "Logged in as {{name}}",
+    "logout": "Sign out"
+  },
+  "bartclickerPage": {
+    "title": "Bartclicker",
+    "comingSoon": "The Bartclicker migration is being prepared… 🧔"
+  },
+  "actuatorPage": {
+    "title": "Actuator Data",
+    "comingSoon": "The dashboard migration is being prepared… 📊"
+  },
+  "clipVotingPage": {
+    "title": "Clip of the Month – Voting",
+    "intro": "Vote for your favourite clip of the month!",
+    "comingSoon": "Clips are loading… 🎬 Migration in progress",
+    "loginToVote": "Sign in with Twitch to cast your vote.",
+    "loginButton": "Sign in & Vote",
+    "loggedInAs": "Logged in as {{name}}"
   }
 }
