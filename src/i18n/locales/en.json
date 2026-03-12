@@ -1,0 +1,131 @@
+{
+  "settings": {
+    "theme": "Theme",
+    "language": "Language",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "hero": {
+    "subtitle": "FullHD – Gaming, Streams & Clips"
+  },
+  "mobileToggle": {
+    "live": "Live",
+    "links": "Links",
+    "games": "Games"
+  },
+  "sections": {
+    "games": "Game-Related Links",
+    "clips": "Clips & Shorts",
+    "partners": "Partners"
+  },
+  "live": {
+    "title": "Live",
+    "chatFallback": "Open chat in new tab"
+  },
+  "links": {
+    "streamplan": { "title": "Stream Schedule", "desc": "Live dates" },
+    "streamelements": { "title": "StreamElements", "desc": "Donations + List" },
+    "clipdesmonats": { "title": "Clip of the Month", "desc": "Vote for the top 10 clips of last month" },
+    "youtube": { "title": "YouTube", "desc": "Main channel" },
+    "tiktok": { "title": "TikTok", "desc": "Main channel" },
+    "instagram": { "title": "Instagram", "desc": "Main channel" },
+    "discord": { "title": "Discord", "desc": "Join server" },
+    "email": { "title": "Contact", "desc": "Contact via email" }
+  },
+  "games": {
+    "tanggle": { "title": "Tanggle.io", "desc": "Puzzle along live" },
+    "resourcepack": { "title": "Minecraft ResourcePack", "desc": "Download" },
+    "bartclicker": { "title": "Bartclicker", "desc": "Play Bartclicker" }
+  },
+  "clips": {
+    "ytShorts": { "title": "YT Shorts", "desc": "Shorts & Clips" },
+    "tiktokClips": { "title": "TikTok Clips", "desc": "Shorts & Clips" },
+    "instaClips": { "title": "Insta Clips", "desc": "Shorts & Clips" }
+  },
+  "partners": {
+    "yvolve": { "title": "Yvolve", "desc": "10% off your entire order" },
+    "nclip": { "title": "NClip" },
+    "frugends": { "title": "Frugends" }
+  },
+  "footer": {
+    "impressum": "Imprint",
+    "datenschutz": "Privacy Policy"
+  },
+  "downloadModal": {
+    "title": "Confirm download",
+    "message": "Do you want to download the file:",
+    "cancel": "Cancel",
+    "confirm": "Download"
+  },
+  "cookieBanner": {
+    "text": "We use cookies to collect anonymized page views and improve our website. For more information, see our",
+    "privacyLink": "Privacy Policy",
+    "accept": "Accept",
+    "reject": "Decline"
+  },
+  "toast": {
+    "codeCopied": "Discount code copied: {{code}}",
+    "downloadStarted": "Download started"
+  },
+  "discountCode": "Code: {{code}}",
+  "back": "← Back",
+  "impressumPage": {
+    "title": "Imprint",
+    "contact": "Contact"
+  },
+  "datenschutzPage": {
+    "title": "Privacy Policy",
+    "responsible": "Responsible Party",
+    "contact": "Contact",
+    "votingTitle": "Participation in Polls (Twitch Voting)",
+    "votingIntro": "When you participate in a poll on our website (\"voting\"), we process data to ensure the integrity of the vote.",
+    "processingTitle": "Processing upon Interaction",
+    "processingText": "Only when clicking the vote button, your IP address is collected, immediately combined with a \"salt\" (a secret additional key) and stored as a cryptographic hash.",
+    "purposeTitle": "Purpose",
+    "purposeText": "Prevention of multiple votes (spam/manipulation protection).",
+    "retentionTitle": "Retention Period",
+    "retentionText": "The hash is automatically deleted from our database after the voting round ends (by default after a maximum of 10 days).",
+    "legalBasisTitle": "Legal Basis",
+    "legalBasisText": "Art. 6(1)(f) GDPR (Legitimate interest in a manipulation-free vote).",
+    "analyticsTitle": "Page Views and Analytics",
+    "analyticsIntro": "If you give your consent through the cookie banner, we collect anonymized page views to understand and improve the use of our website.",
+    "analyticsProcessingTitle": "Processing",
+    "analyticsProcessingText": "With each page view, the page path, timestamp and any referral information is stored. No personal data such as IP addresses is stored.",
+    "analyticsPurposeTitle": "Purpose",
+    "analyticsPurposeText": "Analysis of page usage to improve the offering.",
+    "analyticsLegalTitle": "Legal Basis",
+    "analyticsLegalText": "Art. 6(1)(a) GDPR (Consent).",
+    "revokeTitle": "Revocation",
+    "revokeText": "You can revoke your consent at any time by deleting the cookies in your browser or by revisiting our website and declining in the cookie banner.",
+    "rightsTitle": "Your Rights",
+    "rightsText": "You have the right to access, rectification, erasure, restriction of processing, data portability and objection. Please contact us at the address given above."
+  },
+  "streamplanPage": {
+    "title": "Stream Schedule",
+    "intro": "Here you can find the current stream schedule of HD1920x1080. Stay up to date on upcoming live streams and events!",
+    "calendarTitle": "Stream Calendar"
+  },
+  "streamelementsPage": {
+    "title": "Donations",
+    "intro": "Here you can find all donation triggers and prices. Click on a trigger for details!",
+    "donateButton": "Donate now",
+    "close": "Close"
+  },
+  "donations": {
+    "taschengeld": { "desc": "Pocket Money", "text": "Donation sound plays (Thanks from the kids) 🎉" },
+    "tts": { "desc": "TTS", "text": "Text to Speech plays 🔊" },
+    "knock": { "desc": "KnockKnock", "text": "Knock Knock plays 🚪" },
+    "majortom": { "desc": "Major Tom", "text": "Major Tom plays 🧑🏼‍🚀" },
+    "scream": { "desc": "Scream", "text": "Scream plays 😱" },
+    "fliege1": { "desc": "Annoying fly (60 seconds)", "text": "Annoying fly plays 🪰" },
+    "centershock": { "desc": "Sour makes funny – CenterShock", "text": "Stefan eats a CenterShock & sound plays 🍋" },
+    "ytSound": { "desc": "YouTube Members Sound", "text": "YouTube Members Sound plays 🪩" },
+    "fliege2": { "desc": "Fly XXL — 2 minutes", "text": "Very annoying fly plays 🪰" },
+    "1920": { "desc": "1920", "text": "1920 plays ⁉️" },
+    "fliege3": { "desc": "Ultra long fly", "text": "Ultra annoying fly plays 🪰" },
+    "konfetti": { "desc": "Confetti cannon (if available)", "text": "Stefan fires a confetti cannon 🎉" },
+    "hotnuts": { "desc": "8 Hot Nuts + FIRE!!! (if available)", "text": "Stefan eats 8 Hot Nuts & sound plays 🔥" },
+    "sandwich": { "desc": "Satanic Sandwich (if available)", "text": "Stefan eats a satanic sandwich (Oreo + Hotnuts + Centershock) & sound plays 🔥" }
+  }
+}

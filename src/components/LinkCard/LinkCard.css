@@ -1,0 +1,49 @@
+.link-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(124, 77, 255, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.link-card:focus,
+.link-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(124, 77, 255, 0.12);
+  outline: 2px solid rgba(124, 77, 255, 0.08);
+}
+
+.link-card-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.link-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.link-card-text strong {
+  display: block;
+  color: var(--color-text);
+}
+
+.link-card-text span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.link-card-text .discount-code {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 12px;
+}
+

@@ -1,0 +1,25 @@
+.site-footer {
+  color: var(--muted);
+  text-align: center;
+  padding: 8px 0;
+  margin-top: 12px;
+}
+
+.site-footer .footer-links {
+  margin-bottom: 4px;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+

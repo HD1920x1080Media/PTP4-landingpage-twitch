@@ -1,0 +1,131 @@
+{
+  "settings": {
+    "theme": "Design",
+    "language": "Sprache",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
+  "hero": {
+    "subtitle": "FullHD – Gaming, Streams & Clips"
+  },
+  "mobileToggle": {
+    "live": "Live",
+    "links": "Links",
+    "games": "Games"
+  },
+  "sections": {
+    "games": "Game-Related Links",
+    "clips": "Clips & Shorts",
+    "partners": "Partner"
+  },
+  "live": {
+    "title": "Live",
+    "chatFallback": "Chat im neuen Tab öffnen"
+  },
+  "links": {
+    "streamplan": { "title": "Streamplan", "desc": "Live-Termine" },
+    "streamelements": { "title": "StreamElements", "desc": "Donation + Liste" },
+    "clipdesmonats": { "title": "Clip des Monats", "desc": "Votet für die Top 10 Clips des letzten Monats" },
+    "youtube": { "title": "YouTube", "desc": "Hauptkanal" },
+    "tiktok": { "title": "TikTok", "desc": "Hauptkanal" },
+    "instagram": { "title": "Instagram", "desc": "Hauptkanal" },
+    "discord": { "title": "Discord", "desc": "Server beitreten" },
+    "email": { "title": "Kontakt", "desc": "Kontakt per E‑Mail" }
+  },
+  "games": {
+    "tanggle": { "title": "Tanggle.io", "desc": "Live mitpuzzeln" },
+    "resourcepack": { "title": "Minecraft ResourcePack", "desc": "Download" },
+    "bartclicker": { "title": "Bartclicker", "desc": "Bartclicker spielen" }
+  },
+  "clips": {
+    "ytShorts": { "title": "YT Shorts", "desc": "Shorts & Clips" },
+    "tiktokClips": { "title": "TikTok Clips", "desc": "Shorts & Clips" },
+    "instaClips": { "title": "Insta Clips", "desc": "Shorts & Clips" }
+  },
+  "partners": {
+    "yvolve": { "title": "Yvolve", "desc": "10% Rabatt auf die gesamte Bestellung" },
+    "nclip": { "title": "NClip" },
+    "frugends": { "title": "Frugends" }
+  },
+  "footer": {
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz"
+  },
+  "downloadModal": {
+    "title": "Download bestätigen",
+    "message": "Möchtest du die Datei herunterladen:",
+    "cancel": "Abbrechen",
+    "confirm": "Herunterladen"
+  },
+  "cookieBanner": {
+    "text": "Wir verwenden Cookies, um anonymisierte Seitenaufrufe zu erfassen und unsere Website zu verbessern. Weitere Informationen finden Sie in unserer",
+    "privacyLink": "Datenschutzerklärung",
+    "accept": "Akzeptieren",
+    "reject": "Ablehnen"
+  },
+  "toast": {
+    "codeCopied": "Rabattcode kopiert: {{code}}",
+    "downloadStarted": "Download gestartet"
+  },
+  "discountCode": "Code: {{code}}",
+  "back": "← Zurück",
+  "impressumPage": {
+    "title": "Impressum",
+    "contact": "Kontakt"
+  },
+  "datenschutzPage": {
+    "title": "Datenschutzerklärung",
+    "responsible": "Verantwortlicher",
+    "contact": "Kontakt",
+    "votingTitle": "Teilnahme an Abstimmungen (Twitch-Voting)",
+    "votingIntro": "Wenn Sie an einer Abstimmung auf unserer Website teilnehmen (\"Voten\"), verarbeiten wir Daten, um die Integrität der Abstimmung sicherzustellen.",
+    "processingTitle": "Verarbeitung bei Interaktion",
+    "processingText": "Erst beim Klick auf den Abstimmungs-Button wird Ihre IP-Adresse erhoben, umgehend mit einem \"Salt\" (einem geheimen Zusatzschlüssel) versehen und als kryptografischer Hash gespeichert.",
+    "purposeTitle": "Zweck",
+    "purposeText": "Verhinderung von Mehrfachabstimmungen (Spam-/Manipulationsschutz).",
+    "retentionTitle": "Speicherdauer",
+    "retentionText": "Der Hash wird nach Abschluss der Abstimmungsrunde (standardmäßig nach maximal 10 Tagen) automatisch aus unserer Datenbank gelöscht.",
+    "legalBasisTitle": "Rechtsgrundlage",
+    "legalBasisText": "Art. 6 Abs. 1 lit. f DSGVO (Berechtigtes Interesse an einer manipulationsfreien Abstimmung).",
+    "analyticsTitle": "Seitenaufrufe und Analyse",
+    "analyticsIntro": "Wenn Sie Ihre Einwilligung durch den Cookie-Banner erteilen, erfassen wir anonymisierte Seitenaufrufe, um die Nutzung unserer Website zu verstehen und zu verbessern.",
+    "analyticsProcessingTitle": "Verarbeitung",
+    "analyticsProcessingText": "Bei jedem Seitenaufruf wird der Seitenpfad, Zeitstempel und ggf. Weiterleitungsinformationen gespeichert. Es werden keine personenbezogenen Daten wie IP-Adressen gespeichert.",
+    "analyticsPurposeTitle": "Zweck",
+    "analyticsPurposeText": "Analyse der Seitennutzung zur Verbesserung des Angebots.",
+    "analyticsLegalTitle": "Rechtsgrundlage",
+    "analyticsLegalText": "Art. 6 Abs. 1 lit. a DSGVO (Einwilligung).",
+    "revokeTitle": "Widerruf",
+    "revokeText": "Sie können Ihre Einwilligung jederzeit widerrufen, indem Sie die Cookies in Ihrem Browser löschen oder unsere Website erneut besuchen und im Cookie-Banner ablehnen.",
+    "rightsTitle": "Ihre Rechte",
+    "rightsText": "Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Wenden Sie sich dazu bitte an die oben angegebene Kontaktadresse."
+  },
+  "streamplanPage": {
+    "title": "Streamplan",
+    "intro": "Hier findest du den aktuellen Streamplan von HD1920x1080. Bleib auf dem Laufenden über kommende Live-Streams und Events!",
+    "calendarTitle": "Stream-Kalender"
+  },
+  "streamelementsPage": {
+    "title": "Donations",
+    "intro": "Hier findest du alle Donation-Trigger und Preise. Klicke auf einen Trigger für Details!",
+    "donateButton": "Jetzt spenden",
+    "close": "Schließen"
+  },
+  "donations": {
+    "taschengeld": { "desc": "Taschengeld", "text": "Donation Sounds wird abgespielt (Danke von den Kids) 🎉" },
+    "tts": { "desc": "TTS", "text": "Text to Speech wird abgespielt 🔊" },
+    "knock": { "desc": "KnockKnock", "text": "Knock Knock wird abgespielt 🚪" },
+    "majortom": { "desc": "Major Tom", "text": "Major Tom wird abgespielt 🧑🏼‍🚀" },
+    "scream": { "desc": "Scream", "text": "Scream wird abgespielt 😱" },
+    "fliege1": { "desc": "nervige Fliege (60 Sekunden)", "text": "nervige Fliege wird abgespielt 🪰" },
+    "centershock": { "desc": "Sauer macht Lustig – CenterShock", "text": "Stefan isst einen CenterShock & Sound wird abgespielt 🍋" },
+    "ytSound": { "desc": "Youtube Mitglieder Sound", "text": "Youtube Mitglieder Sound wird abgespielt 🪩" },
+    "fliege2": { "desc": "Fliege XXL — 2 Minuten", "text": "sehr nervige Fliege wird abgespielt 🪰" },
+    "1920": { "desc": "1920", "text": "1920 wird abgespielt ⁉️" },
+    "fliege3": { "desc": "Fliege ultra lang", "text": "ultra nervige Fliege wird abgespielt 🪰" },
+    "konfetti": { "desc": "Konfettikanone (nur wenn verfügbar)", "text": "Stefan zündet eine Konfettikanone 🎉" },
+    "hotnuts": { "desc": "8 Hot Nuts + FIRE!!! (nur wenn verfügbar)", "text": "Stefan isst 8 Hot Nuts & Sound wird abgespielt 🔥" },
+    "sandwich": { "desc": "Satanisches Sandwich (nur wenn verfügbar)", "text": "Stefan isst ein satanisches Sandwich (Oreo + Hotnuts + Centershock) & Sound wird abgespielt 🔥" }
+  }
+}
