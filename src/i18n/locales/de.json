@@ -43,7 +43,7 @@
   "links": {
     "streamplan": { "title": "Streamplan", "desc": "Live-Termine" },
     "streamelements": { "title": "StreamElements", "desc": "Donation + Liste" },
-    "clipdesmonats": { "title": "Clip des Monats", "desc": "Votet für die Top 10 Clips des letzten Monats" },
+    "clipdesmonats": { "title": "Clip des Monats", "desc": "Votet für die Top Clips" },
     "youtube": { "title": "YouTube", "desc": "Hauptkanal" },
     "tiktok": { "title": "TikTok", "desc": "Hauptkanal" },
     "instagram": { "title": "Instagram", "desc": "Hauptkanal" },
