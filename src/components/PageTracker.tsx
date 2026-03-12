@@ -5,11 +5,24 @@ import { supabase } from '../lib/supabase'
 const STORAGE_KEY = 'cookie-consent'
 const SESSION_KEY = 'pv-session-id'
 
+/** UUID v4 Fallback für Browser ohne crypto.randomUUID-Support. */
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  // Fallback: manuelles UUID v4
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
 /** Erzeugt (oder holt) eine anonyme Session-ID für diesen Browser-Tab. */
 function getSessionId(): string {
   let id = sessionStorage.getItem(SESSION_KEY)
   if (!id) {
-    id = crypto.randomUUID()
+    id = generateUUID()
     sessionStorage.setItem(SESSION_KEY, id)
   }
   return id
