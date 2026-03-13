@@ -47,12 +47,7 @@ export default function ModerateStatisticsPage() {
 
   return (
     <SubPage>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20}}>
-        <h1>{t('moderate.statisticsTitle')}</h1>
-        <button className="btn btn-secondary" onClick={() => navigate('/moderate')} title="Go back to Moderation">
-          ← {t('back')}
-        </button>
-      </div>
+      <h1>{t('moderate.statisticsTitle')}</h1>
       <p className="moderate-stats-intro">{t('moderate.statisticsDescription')}</p>
 
       <div className="moderate-stats-toolbar">
@@ -294,6 +289,13 @@ export default function ModerateStatisticsPage() {
           </section>
         </>
       ) : null}
+
+      {/* ── Zurück Button ── */}
+      <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+        <button className="btn btn-secondary" onClick={() => navigate('/moderate')}>
+          ← {t('back')}
+        </button>
+      </div>
     </SubPage>
   )
 }

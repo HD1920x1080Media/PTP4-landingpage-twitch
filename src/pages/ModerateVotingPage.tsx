@@ -59,12 +59,7 @@ export default function ModerateVotingPage() {
 
     return (
         <SubPage>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20}}>
-                <h1>🛡️ {t('moderate.votingTitle')}</h1>
-                <button className="btn btn-secondary" onClick={() => navigate('/moderate')} title="Go back to Moderation">
-                    ← {t('back')}
-                </button>
-            </div>
+            <h1>🛡️ {t('moderate.votingTitle')}</h1>
             <p style={{color: 'var(--muted)', marginBottom: 4}}>
                 {t('moderate.loggedInAs', {name: userName})}
             </p>
@@ -122,6 +117,13 @@ export default function ModerateVotingPage() {
                     </table>
                 </div>
             )}
+
+            {/* ── Zurück Button ── */}
+            <div style={{display: 'flex', gap: 10, marginTop: 20}}>
+                <button className="btn btn-secondary" onClick={() => navigate('/moderate')}>
+                    ← {t('back')}
+                </button>
+            </div>
         </SubPage>
     )
 }
