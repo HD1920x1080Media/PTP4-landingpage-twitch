@@ -176,9 +176,53 @@ export function useBartclickerGame() {
         .eq('user_id', user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         // PGRST116 = no rows found (expected for new users)
-        console.error('Error loading game state:', error);
+        if (error.code === 'PGRST116') {
+          console.log('New user detected, initializing game state');
+          const initialState: BartclickerGameState = {
+            user_id: user.id,
+            energy: 0,
+            total_ever: 0,
+            rebirth_count: 0,
+            rebirth_multiplier: 1,
+            shop_items: INITIAL_SHOP_ITEMS,
+            active_buffs: [],
+            active_debuffs: [],
+            relics: [],
+            offline_earning_upgrades: 0,
+            auto_click_buyer_enabled: false,
+            click_upgrade_buyer_enabled: false,
+            auto_click_buyer_items: [],
+            click_upgrade_buyer_items: [],
+          };
+          setGameState(initialState);
+
+          // Speichere neue Spieler mit UPSERT statt INSERT um Conflicts zu vermeiden
+          try {
+            await supabase.from('bartclicker_scores').upsert({
+              user_id: user.id,
+              energy: 0,
+              total_ever: 0,
+              rebirth_count: 0,
+              rebirth_multiplier: 1,
+              shop_items: INITIAL_SHOP_ITEMS,
+              active_buffs: [],
+              active_debuffs: [],
+              relics: [],
+              offline_earning_upgrades: 0,
+              auto_click_buyer_enabled: false,
+              click_upgrade_buyer_enabled: false,
+              auto_click_buyer_items: [],
+              click_upgrade_buyer_items: [],
+            }, { onConflict: 'user_id' });
+          } catch (upsertErr) {
+            console.error('Failed to create initial game state:', upsertErr);
+          }
+        } else {
+          // Andere Fehler (z.B. RLS, Netzwerk) - nicht als neuer Spieler behandeln
+          console.error('Error loading game state:', error);
+        }
       } else if (data) {
         // Existing data found
         setGameState({
@@ -203,47 +247,6 @@ export function useBartclickerGame() {
           last_updated: data.last_updated,
           created_at: data.created_at,
         });
-      } else {
-        // New user - create initial entry
-        const initialState: BartclickerGameState = {
-          user_id: user.id,
-          energy: 0,
-          total_ever: 0,
-          rebirth_count: 0,
-          rebirth_multiplier: 1,
-          shop_items: INITIAL_SHOP_ITEMS,
-          active_buffs: [],
-          active_debuffs: [],
-          relics: [],
-          offline_earning_upgrades: 0,
-          auto_click_buyer_enabled: false,
-          click_upgrade_buyer_enabled: false,
-          auto_click_buyer_items: [],
-          click_upgrade_buyer_items: [],
-        };
-        setGameState(initialState);
-
-        // Speichere neue Spieler sofort in DB
-        try {
-          await supabase.from('bartclicker_scores').insert({
-            user_id: user.id,
-            energy: 0,
-            total_ever: 0,
-            rebirth_count: 0,
-            rebirth_multiplier: 1,
-            shop_items: INITIAL_SHOP_ITEMS,
-            active_buffs: [],
-            active_debuffs: [],
-            relics: [],
-            offline_earning_upgrades: 0,
-            auto_click_buyer_enabled: false,
-            click_upgrade_buyer_enabled: false,
-            auto_click_buyer_items: [],
-            click_upgrade_buyer_items: [],
-          });
-        } catch (insertErr) {
-          console.error('Failed to insert new game state:', insertErr);
-        }
       }
     } catch (err) {
       console.error('Failed to load game state:', err);
