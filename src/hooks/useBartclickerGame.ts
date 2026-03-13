@@ -338,6 +338,53 @@ export function useBartclickerGame() {
     [gameState.energy, gameState.shop_items, gameState.rebirth_count]
   );
 
+  // Buy max items
+  const buyMaxItems = useCallback(
+    (itemId: number) => {
+      const item = gameState.shop_items.find((i) => i.id === itemId);
+      if (!item) return false;
+
+      const costMultiplier = Math.pow(1.1, gameState.rebirth_count);
+      let baseCost = Math.floor(item.cost * costMultiplier);
+      let currentEnergy = gameState.energy;
+      let count = 0;
+
+      // Berechne wie viele Items man sich leisten kann
+      while (currentEnergy >= baseCost) {
+        currentEnergy -= baseCost;
+        count++;
+        baseCost = Math.floor(baseCost * 1.15);
+      }
+
+      if (count === 0) return false;
+
+      // Kaufe alle Items
+      let energyUsed = 0;
+      let newCost = Math.floor(item.cost * costMultiplier);
+      for (let i = 0; i < count; i++) {
+        energyUsed += newCost;
+        newCost = Math.floor(newCost * 1.15);
+      }
+
+      setGameState((prev) => ({
+        ...prev,
+        energy: prev.energy - energyUsed,
+        shop_items: prev.shop_items.map((i) =>
+          i.id === itemId 
+            ? { 
+                ...i, 
+                count: i.count + count, 
+                cost: Math.floor(item.cost * costMultiplier * Math.pow(1.15, count))
+              } 
+            : i
+        ),
+      }));
+
+      return true;
+    },
+    [gameState.energy, gameState.shop_items, gameState.rebirth_count]
+  );
+
   // Activate buff
   const activateBuff = useCallback(
     (buffId: number) => {
@@ -467,6 +514,7 @@ export function useBartclickerGame() {
     cps,
     handleClick,
     buyItem,
+    buyMaxItems,
     activateBuff,
     performRebirth,
     buyAutobuyer,

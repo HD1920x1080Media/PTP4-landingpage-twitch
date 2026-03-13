@@ -10,7 +10,7 @@ interface BartclickerGameProps {
 
 export default function BartclickerGame({ compact = false }: BartclickerGameProps) {
   const { t } = useTranslation();
-  const { gameState, isLoading, cps, handleClick, buyItem, activateBuff, performRebirth, buyAutobuyer, unlockRelic } =
+  const { gameState, isLoading, cps, handleClick, buyItem, buyMaxItems, activateBuff, performRebirth, buyAutobuyer, unlockRelic } =
     useBartclickerGame();
   const { entries: leaderboardEntries, isLoading: leaderboardLoading } = useBartclickerLeaderboard();
 
@@ -205,14 +205,24 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                       </div>
                       <span className="item-count">×{item.count}</span>
                     </div>
-                    <button
-                      className="buy-button"
-                      onClick={() => buyItem(item.id)}
-                      disabled={gameState.energy < scaledCost}
-                      title={`Kosten: ${formatNumber(scaledCost)}`}
-                    >
-                      {formatNumber(scaledCost)}
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="buy-button"
+                        onClick={() => buyItem(item.id)}
+                        disabled={gameState.energy < scaledCost}
+                        title={`Kosten: ${formatNumber(scaledCost)}`}
+                      >
+                        {formatNumber(scaledCost)}
+                      </button>
+                      <button
+                        className="max-button"
+                        onClick={() => buyMaxItems(item.id)}
+                        disabled={gameState.energy < scaledCost}
+                        title="Max kaufen"
+                      >
+                        Max
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -233,14 +243,24 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                       </div>
                       <span className="item-count">×{item.count}</span>
                     </div>
-                    <button
-                      className="buy-button"
-                      onClick={() => buyItem(item.id)}
-                      disabled={gameState.energy < scaledCost}
-                      title={`Kosten: ${formatNumber(scaledCost)}`}
-                    >
-                      {formatNumber(scaledCost)}
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="buy-button"
+                        onClick={() => buyItem(item.id)}
+                        disabled={gameState.energy < scaledCost}
+                        title={`Kosten: ${formatNumber(scaledCost)}`}
+                      >
+                        {formatNumber(scaledCost)}
+                      </button>
+                      <button
+                        className="max-button"
+                        onClick={() => buyMaxItems(item.id)}
+                        disabled={gameState.energy < scaledCost}
+                        title="Max kaufen"
+                      >
+                        Max
+                      </button>
+                    </div>
                   </div>
                 );
               })}

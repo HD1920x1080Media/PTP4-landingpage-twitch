@@ -291,6 +291,12 @@
   min-width: 30px;
 }
 
+.button-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
 .buy-button {
   padding: 6px 12px;
   background: #7c4dff;
@@ -302,7 +308,21 @@
   font-size: 0.8rem;
   transition: all 0.2s;
   white-space: nowrap;
-  min-width: 70px;
+  flex: 1;
+  min-width: 30px;
+}
+
+.max-button {
+  padding: 6px 10px;
+  background: #5c4dcc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: all 0.2s;
+  min-width: 45px;
 }
 
 .buy-button:hover:not(:disabled) {
@@ -311,6 +331,18 @@
 }
 
 .buy-button:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.max-button:hover:not(:disabled) {
+  background: #7c4dff;
+  box-shadow: 0 0 10px rgba(124, 77, 255, 0.5);
+}
+
+.max-button:disabled {
   background: #333;
   color: #666;
   cursor: not-allowed;
@@ -572,13 +604,13 @@
 
 .leaderboard-item-header {
   display: grid;
-  grid-template-columns: 50px 1fr 120px 100px;
-  gap: 10px;
-  padding: 10px;
+  grid-template-columns: 40px 1fr 70px 60px;
+  gap: 8px;
+  padding: 8px;
   background: rgba(124, 77, 255, 0.15);
   border-radius: 6px 6px 0 0;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #7c4dff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -587,9 +619,9 @@
 
 .leaderboard-item {
   display: grid;
-  grid-template-columns: 50px 1fr 120px 100px;
-  gap: 10px;
-  padding: 12px 10px;
+  grid-template-columns: 40px 1fr 70px 60px;
+  gap: 8px;
+  padding: 10px 8px;
   background: rgba(50, 50, 70, 0.5);
   border: 1px solid #333;
   border-radius: 6px;
