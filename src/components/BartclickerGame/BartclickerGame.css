@@ -63,7 +63,7 @@
   display: flex;
   justify-content: center;
   padding: 5px 0;
-  min-height: 40px;
+  min-height: 20px;
   align-items: center;
 }
 
@@ -833,7 +833,7 @@
   }
 
   .click-area {
-    min-height: 150px;
+    min-height: 60px;
   }
 
   .click-button:hover:not(:disabled) .beard-svg {
