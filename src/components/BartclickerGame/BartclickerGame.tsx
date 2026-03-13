@@ -17,7 +17,6 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
   const [activeTab, setActiveTab] = useState<'shop' | 'leaderboard' | 'stats'>('shop');
   const [shopTab, setShopTab] = useState<'passive' | 'click' | 'booster' | 'relics' | 'autobuyer'>('passive');
   const [clickPulse, setClickPulse] = useState(false);
-  const [bartScale, setBartScale] = useState(1);
 
   if (isLoading) {
     return (
@@ -37,9 +36,7 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
   const handleBartClick = () => {
     handleClick();
     setClickPulse(true);
-    setBartScale(1.1);
     setTimeout(() => setClickPulse(false), 300);
-    setTimeout(() => setBartScale(1), 200);
   };
 
   // Berechne Bart-Länge basierend auf Rebirth-Count
@@ -95,7 +92,6 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
           className={`click-button ${clickPulse ? 'pulse' : ''}`}
           onClick={handleBartClick}
           disabled={isLoading}
-          style={{ transform: `scale(${bartScale})` }}
           title={`+Barthaare`}
         >
           <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" className="beard-svg">

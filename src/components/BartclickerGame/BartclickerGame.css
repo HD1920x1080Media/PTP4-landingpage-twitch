@@ -64,13 +64,13 @@
 }
 
 .click-button {
-  width: 200px;
-  height: 240px;
+  width: auto;
+  height: auto;
   border-radius: 0;
   background: transparent;
   border: none;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
@@ -80,8 +80,13 @@
   position: relative;
 }
 
-.click-button:hover:not(:disabled) {
-  transform: scale(1.08);
+.beard-svg {
+  width: 200px;
+  height: 240px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.click-button:hover:not(:disabled) .beard-svg {
   filter: drop-shadow(0 0 20px rgba(124, 77, 255, 0.6));
 }
 
@@ -713,13 +718,15 @@
   }
 
   .click-button {
-    width: 180px;
-    height: 220px;
     margin: 15px 0;
   }
 
-  .click-button:hover:not(:disabled) {
-    transform: scale(1.06);
+  .beard-svg {
+    width: 180px;
+    height: 220px;
+  }
+
+  .click-button:hover:not(:disabled) .beard-svg {
     filter: drop-shadow(0 0 20px rgba(124, 77, 255, 0.6));
   }
 
@@ -767,13 +774,15 @@
   }
 
   .click-button {
-    width: 200px;
-    height: 240px;
     margin: 10px 0;
   }
 
-  .click-button:hover:not(:disabled) {
-    transform: scale(1.05);
+  .beard-svg {
+    width: 200px;
+    height: 240px;
+  }
+
+  .click-button:hover:not(:disabled) .beard-svg {
     filter: drop-shadow(0 0 15px rgba(124, 77, 255, 0.6));
   }
 

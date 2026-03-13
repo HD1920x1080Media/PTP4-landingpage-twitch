@@ -30,22 +30,34 @@ export function useBartclickerLeaderboard() {
           // Get user profiles for display names
           const leaderboardEntries: BartclickerLeaderboardEntry[] = await Promise.all(
             data.map(async (entry, index) => {
-              const { data: profile } = await supabase
-                .from('profiles')
-                .select('username, display_name')
-                .eq('id', entry.user_id)
-                .single();
+              try {
+                const { data: profile } = await supabase
+                  .from('profiles')
+                  .select('username, display_name')
+                  .eq('id', entry.user_id)
+                  .single();
 
-              const displayName = profile?.display_name || profile?.username || `Player ${index + 1}`;
+                const displayName = profile?.display_name || profile?.username || `Player ${index + 1}`;
 
-              return {
-                rank: index + 1,
-                user_id: entry.user_id,
-                total_ever: parseFloat(entry.total_ever.toString()) || 0,
-                rebirth_count: entry.rebirth_count || 0,
-                last_updated: entry.last_updated || new Date().toISOString(),
-                display_name: displayName,
-              };
+                return {
+                  rank: index + 1,
+                  user_id: entry.user_id,
+                  total_ever: parseFloat(entry.total_ever.toString()) || 0,
+                  rebirth_count: entry.rebirth_count || 0,
+                  last_updated: entry.last_updated || new Date().toISOString(),
+                  display_name: displayName,
+                };
+              } catch (profileErr) {
+                console.log('Profile not found for user, using default name');
+                return {
+                  rank: index + 1,
+                  user_id: entry.user_id,
+                  total_ever: parseFloat(entry.total_ever.toString()) || 0,
+                  rebirth_count: entry.rebirth_count || 0,
+                  last_updated: entry.last_updated || new Date().toISOString(),
+                  display_name: `Player ${index + 1}`,
+                };
+              }
             })
           );
 
