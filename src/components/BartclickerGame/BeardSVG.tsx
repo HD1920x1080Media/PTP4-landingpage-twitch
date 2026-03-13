@@ -36,36 +36,36 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         transition: 'all 0.2s ease'
       }}
     >
-      {/* Kopf - VERGRÖSSERT */}
-      <rect x="20" y="20" width="60" height="50" rx="8" fill="#d4a373"/>
+      {/* Kopf - mit Offset nach unten */}
+      <rect x="20" y="32" width="60" height="50" rx="8" fill="#d4a373"/>
 
-      {/* CAP (SNAPBACK) - VERGRÖSSERT */}
+      {/* CAP (SNAPBACK) - mit Offset nach unten */}
       <g id="cap">
         {/* Schirm */}
-        <rect x="15" y="22" width="70" height="7" rx="3" fill="#7C4DFF"/>
+        <rect x="15" y="34" width="70" height="7" rx="3" fill="#7C4DFF"/>
         {/* Amulett */}
-        <path d="M20 22 L80 22 L80 12 Q 50 0 20 12 Z" fill="#7C4DFF"/>
-        {/* Kleiner Knopf oben */}
-        <circle cx="50" cy="2" r="3" fill="#5c38cc"/>
+        <path d="M20 34 L80 34 L80 24 Q 50 12 20 24 Z" fill="#7C4DFF"/>
+        {/* Kleiner Knopf oben - höchster Punkt sitzt jetzt auf y=12 */}
+        <circle cx="50" cy="12" r="3" fill="#5c38cc"/>
         {/* Rebirth Badge (hidden by default) */}
         <g id="rebirth-badge" style={{ display: 'none' }}>
-          <circle cx="75" cy="12" r="8" fill="#FFD700" stroke="#FFA500" strokeWidth="1.5"/>
-          <text x="75" y="16" fontSize="10" fontWeight="bold" fill="#000" textAnchor="middle" fontFamily="Arial">
+          <circle cx="75" cy="24" r="8" fill="#FFD700" stroke="#FFA500" strokeWidth="1.5"/>
+          <text x="75" y="28" fontSize="10" fontWeight="bold" fill="#000" textAnchor="middle" fontFamily="Arial">
             ♻
           </text>
         </g>
       </g>
 
-      {/* Brille - noch höher */}
+      {/* Brille - mit Offset nach unten */}
       <g stroke="#111" strokeWidth="1.5" fill="none">
-        <rect x="28" y="38" width="15" height="10" rx="2"/>
-        <rect x="57" y="38" width="15" height="10" rx="2"/>
-        <path d="M43 43 h14"/>
+        <rect x="28" y="50" width="15" height="10" rx="2"/>
+        <rect x="57" y="50" width="15" height="10" rx="2"/>
+        <path d="M43 55 h14"/>
       </g>
 
-      {/* Augen - noch höher */}
-      <circle cx="35" cy="43" r="1.5" fill="#000"/>
-      <circle cx="65" cy="43" r="1.5" fill="#000"/>
+      {/* Augen - mit Offset nach unten */}
+      <circle cx="35" cy="55" r="1.5" fill="#000"/>
+      <circle cx="65" cy="55" r="1.5" fill="#000"/>
 
       {/* DYNAMISCHER BART - WÄCHST NUR IN TIEFE */}
       <g 
@@ -75,14 +75,14 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         }}
       >
         {/* Basis-Beard: 
-            - Oben: M20 65 L80 65 (gerade Linie, gleich breit wie Gesicht)
+            - Oben: M20 82 L80 82 (gerade Linie, gleich breit wie Gesicht)
             - Seiten: L80 dann L20 (gerade Linien nach unten)
             - Unten: gerundete Kurve (nur unten)
-            - Überlagert Gesicht oben (y=65 ist über y=70)
+            - Überlagert Gesicht oben (y=82 ist über y=87)
         */}
         <path 
           id="beard-path" 
-          d={`M20 65 L80 65 L80 ${65 + beardHeight} Q 50 ${65 + beardHeight + 5} 20 ${65 + beardHeight} Z`}
+          d={`M20 82 L80 82 L80 ${82 + beardHeight} Q 50 ${82 + beardHeight + 5} 20 ${82 + beardHeight} Z`}
           fill="#3d2b1f"
           fillRule="evenodd"
           style={{ transition: 'all 0.2s ease' }}
@@ -91,7 +91,7 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         {/* Haarstruktur: stroke-only Kopie des Pfades */}
         <path 
           id="beard-hair" 
-          d={`M20 65 L80 65 L80 ${65 + beardHeight} Q 50 ${65 + beardHeight + 5} 20 ${65 + beardHeight} Z`}
+          d={`M20 82 L80 82 L80 ${82 + beardHeight} Q 50 ${82 + beardHeight + 5} 20 ${82 + beardHeight} Z`}
           fill="none" 
           stroke="#22160f"
           strokeWidth="0.9" 
@@ -106,7 +106,7 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         {/* Subtiler Outline für Tiefe */}
         <path 
           id="beard-outline" 
-          d={`M20 65 L80 65 L80 ${65 + beardHeight} Q 50 ${65 + beardHeight + 5} 20 ${65 + beardHeight} Z`}
+          d={`M20 82 L80 82 L80 ${82 + beardHeight} Q 50 ${82 + beardHeight + 5} 20 ${82 + beardHeight} Z`}
           fill="none" 
           stroke="#000"
           strokeWidth="0.6" 
