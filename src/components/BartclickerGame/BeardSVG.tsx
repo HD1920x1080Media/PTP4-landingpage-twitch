@@ -23,7 +23,7 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
   return (
     <svg 
       id="avatar-svg" 
-      viewBox={`0 0 100 ${viewBoxHeight}`}
+      viewBox={`0 0 200 ${viewBoxHeight * 2}`}
       xmlns="http://www.w3.org/2000/svg"
       className="beard-svg"
       style={{ 
@@ -31,35 +31,35 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
       }}
     >
       {/* Kopf - mit Offset nach unten */}
-      <rect x="20" y="32" width="60" height="50" rx="8" fill="#d4a373"/>
+      <rect x="40" y="64" width="120" height="100" rx="16" fill="#d4a373"/>
 
       {/* CAP (SNAPBACK) - mit Offset nach unten */}
       <g id="cap">
         {/* Schirm */}
-        <rect x="15" y="34" width="70" height="7" rx="3" fill="#7C4DFF"/>
+        <rect x="30" y="68" width="140" height="14" rx="6" fill="#7C4DFF"/>
         {/* Amulett */}
-        <path d="M20 34 L80 34 L80 24 Q 50 12 20 24 Z" fill="#7C4DFF"/>
-        {/* Kleiner Knopf oben - höchster Punkt sitzt jetzt auf y=12 */}
-        <circle cx="50" cy="12" r="3" fill="#5c38cc"/>
+        <path d="M40 68 L160 68 L160 48 Q 100 24 40 48 Z" fill="#7C4DFF"/>
+        {/* Kleiner Knopf oben - höchster Punkt sitzt jetzt auf y=24 */}
+        <circle cx="100" cy="24" r="6" fill="#5c38cc"/>
         {/* Rebirth Badge (hidden by default) */}
         <g id="rebirth-badge" style={{ display: 'none' }}>
-          <circle cx="75" cy="24" r="8" fill="#FFD700" stroke="#FFA500" strokeWidth="1.5"/>
-          <text x="75" y="28" fontSize="10" fontWeight="bold" fill="#000" textAnchor="middle" fontFamily="Arial">
+          <circle cx="150" cy="48" r="16" fill="#FFD700" stroke="#FFA500" strokeWidth="3"/>
+          <text x="150" y="56" fontSize="20" fontWeight="bold" fill="#000" textAnchor="middle" fontFamily="Arial">
             ♻
           </text>
         </g>
       </g>
 
       {/* Brille - mit Offset nach unten */}
-      <g stroke="#111" strokeWidth="1.5" fill="none">
-        <rect x="28" y="50" width="15" height="10" rx="2"/>
-        <rect x="57" y="50" width="15" height="10" rx="2"/>
-        <path d="M43 55 h14"/>
+      <g stroke="#111" strokeWidth="3" fill="none">
+        <rect x="56" y="100" width="30" height="20" rx="4"/>
+        <rect x="114" y="100" width="30" height="20" rx="4"/>
+        <path d="M86 110 h28"/>
       </g>
 
       {/* Augen - mit Offset nach unten */}
-      <circle cx="35" cy="55" r="1.5" fill="#000"/>
-      <circle cx="65" cy="55" r="1.5" fill="#000"/>
+      <circle cx="70" cy="110" r="3" fill="#000"/>
+      <circle cx="130" cy="110" r="3" fill="#000"/>
 
       {/* DYNAMISCHER BART - WÄCHST NUR IN TIEFE */}
       <g 
@@ -69,14 +69,14 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         }}
       >
         {/* Basis-Beard: 
-            - Oben: M20 82 L80 82 (gerade Linie, gleich breit wie Gesicht)
-            - Seiten: L80 dann L20 (gerade Linien nach unten)
+            - Oben: M40 164 L160 164 (gerade Linie, gleich breit wie Gesicht)
+            - Seiten: L160 dann L40 (gerade Linien nach unten)
             - Unten: gerundete Kurve (nur unten)
-            - Überlagert Gesicht oben (y=82 ist über y=87)
+            - Überlagert Gesicht oben
         */}
         <path 
           id="beard-path" 
-          d={`M20 82 L80 82 L80 ${82 + beardHeight} Q 50 ${82 + beardHeight + 5} 20 ${82 + beardHeight} Z`}
+          d={`M40 164 L160 164 L160 ${164 + beardHeight * 2} Q 100 ${164 + beardHeight * 2 + 10} 40 ${164 + beardHeight * 2} Z`}
           fill="#3d2b1f"
           fillRule="evenodd"
           style={{ transition: 'all 0.2s ease' }}
@@ -85,13 +85,13 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         {/* Haarstruktur: stroke-only Kopie des Pfades */}
         <path 
           id="beard-hair" 
-          d={`M20 82 L80 82 L80 ${82 + beardHeight} Q 50 ${82 + beardHeight + 5} 20 ${82 + beardHeight} Z`}
+          d={`M40 164 L160 164 L160 ${164 + beardHeight * 2} Q 100 ${164 + beardHeight * 2 + 10} 40 ${164 + beardHeight * 2} Z`}
           fill="none" 
           stroke="#22160f"
-          strokeWidth="0.9" 
+          strokeWidth="1.8" 
           strokeLinecap="round" 
           strokeLinejoin="round" 
-          strokeDasharray="2 4"
+          strokeDasharray="4 8"
           opacity="0.85" 
           pointerEvents="none"
           style={{ transition: 'all 0.2s ease' }}
@@ -100,10 +100,10 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         {/* Subtiler Outline für Tiefe */}
         <path 
           id="beard-outline" 
-          d={`M20 82 L80 82 L80 ${82 + beardHeight} Q 50 ${82 + beardHeight + 5} 20 ${82 + beardHeight} Z`}
+          d={`M40 164 L160 164 L160 ${164 + beardHeight * 2} Q 100 ${164 + beardHeight * 2 + 10} 40 ${164 + beardHeight * 2} Z`}
           fill="none" 
           stroke="#000"
-          strokeWidth="0.6" 
+          strokeWidth="1.2" 
           opacity="0.12" 
           pointerEvents="none"
           style={{ transition: 'all 0.2s ease' }}
@@ -112,7 +112,7 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
 
       {/* Event decorations (hidden by default) */}
       <g id="beard-clover" style={{ display: 'none' }}>
-        <text x="50" y="70" fontSize="12" fill="#00FF00" textAnchor="middle" fontFamily="Arial">🍀</text>
+        <text x="100" y="140" fontSize="24" fill="#00FF00" textAnchor="middle" fontFamily="Arial">🍀</text>
       </g>
     </svg>
   );
