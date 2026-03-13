@@ -16,7 +16,7 @@ export default function SubPage({ children }: SubPageProps) {
       <div className="subpage-card">
         {children}
         <p className="subpage-back">
-          <Link to="/" className="btn btn-primary">{t('back')}</Link>
+          <Link to="/" className="btn btn-primary">{t('home')}</Link>
         </p>
       </div>
       <Footer />

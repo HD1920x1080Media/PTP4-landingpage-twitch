@@ -87,7 +87,8 @@
     "downloadStarted": "Download gestartet"
   },
   "discountCode": "Code: {{code}}",
-  "back": "← Startseite",
+  "back": "← Zurück",
+  "home": "← Startseite",
   "impressumPage": {
     "title": "Impressum",
     "contact": "Kontakt"

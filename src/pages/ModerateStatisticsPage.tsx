@@ -292,8 +292,8 @@ export default function ModerateStatisticsPage() {
 
       {/* ── Zurück Button ── */}
       <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-        <button className="btn btn-secondary" onClick={() => navigate('/moderate')}>
-          ← {t('back')}
+        <button className="btn btn-primary" onClick={() => navigate('/moderate')}>
+          {t('back')}
         </button>
       </div>
     </SubPage>
