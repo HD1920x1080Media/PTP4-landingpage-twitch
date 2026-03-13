@@ -65,39 +65,39 @@
 
 .click-button {
   width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #9c27b0, #7c4dff);
-  border: 3px solid #ffd700;
+  height: 240px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 0 30px rgba(124, 77, 255, 0.5);
+  box-shadow: none;
   padding: 0;
   overflow: visible;
   position: relative;
 }
 
 .click-button:hover:not(:disabled) {
-  transform: scale(1.05);
-  box-shadow: 0 0 50px rgba(255, 215, 0, 0.7), inset 0 0 20px rgba(255, 215, 0, 0.3);
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 20px rgba(124, 77, 255, 0.6));
 }
 
 .click-button.pulse {
-  animation: clickPulse 0.3s ease-out;
+  animation: bartPulse 0.3s ease-out;
 }
 
-@keyframes clickPulse {
+@keyframes bartPulse {
   0% {
-    box-shadow: 0 0 30px rgba(124, 77, 255, 0.5);
+    filter: drop-shadow(0 0 0px transparent);
   }
   50% {
-    box-shadow: 0 0 60px rgba(255, 215, 0, 0.8), inset 0 0 30px rgba(255, 215, 0, 0.4);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
   }
   100% {
-    box-shadow: 0 0 30px rgba(124, 77, 255, 0.5);
+    filter: drop-shadow(0 0 0px transparent);
   }
 }
 
@@ -150,6 +150,9 @@
   margin-bottom: 15px;
   border-bottom: 1px solid #444;
   padding-bottom: 10px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 .shop-subtab {
@@ -159,9 +162,12 @@
   border: 1px solid #333;
   border-radius: 6px;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  min-width: fit-content;
+  touch-action: manipulation;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: all 0.2s;
 }
 
 .shop-subtab:hover {
@@ -679,34 +685,126 @@
   }
 }
 
+@media (max-width: 768px) {
+  .bartclicker-game {
+    padding: 12px;
+  }
+
+  .bartclicker-header {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-box {
+    padding: 10px;
+  }
+
+  .stat-value {
+    font-size: 1.3rem;
+  }
+
+  .stat-cps,
+  .stat-rebirth {
+    font-size: 0.9rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .click-button {
+    width: 180px;
+    height: 220px;
+    margin: 15px 0;
+  }
+
+  .click-button:hover:not(:disabled) {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 20px rgba(124, 77, 255, 0.6));
+  }
+
+  .shop-subtabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .shop-subtab {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
 @media (max-width: 480px) {
   .bartclicker-game {
-    padding: 10px;
-    gap: 12px;
+    padding: 8px;
+    gap: 10px;
   }
 
   .bartclicker-header {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
-  .click-button {
-    width: 140px;
-    height: 140px;
+  .stat-box {
+    padding: 8px;
   }
 
-  .tabs {
-    gap: 5px;
+  .stat-value {
+    font-size: 1.2rem;
   }
 
-  .tab-button {
-    padding: 8px 12px;
+  .stat-cps,
+  .stat-rebirth {
     font-size: 0.85rem;
   }
 
-  .shop-item {
-    flex-direction: column;
-    align-items: flex-start;
+  .stat-label {
+    font-size: 0.65rem;
+  }
+
+  .click-button {
+    width: 200px;
+    height: 240px;
+    margin: 10px 0;
+  }
+
+  .click-button:hover:not(:disabled) {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(124, 77, 255, 0.6));
+  }
+
+  .tabs {
+    gap: 4px;
+  }
+
+  .tab-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .shop-subtabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 0 8px 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .shop-subtab {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border: 1px solid rgba(124, 77, 255, 0.3);
+  }
+
+  .shop-subtab.active {
+    border-color: #7c4dff;
   }
 
   .item-header {
@@ -716,11 +814,22 @@
   .buy-button {
     width: 100%;
     min-width: unset;
+    padding: 8px 12px;
   }
 
   .booster-grid,
   .relics-grid {
     grid-template-columns: 1fr;
+  }
+
+  .leaderboard-item {
+    grid-template-columns: 40px 1fr 80px 60px;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+
+  .item-list {
+    max-height: 500px;
   }
 }
 

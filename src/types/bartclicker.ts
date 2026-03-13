@@ -85,6 +85,7 @@ export interface BartclickerLeaderboardEntry {
   total_ever: number;
   rebirth_count: number;
   last_updated: string;
+  display_name?: string;
 }
 
 // Offline progress calculation

@@ -48,6 +48,24 @@ const AVAILABLE_BUFFS: Buff[] = [
     baseCost: 1500,
     description: '3x Klick-Power für 45s',
   },
+  {
+    id: 2,
+    name: 'Glücksbonus',
+    icon: '🍀',
+    effect: 'both',
+    cpsValue: 1.5,
+    clickValue: 1.5,
+    duration: 30000,
+    baseCost: 2000,
+    description: '+50% CPS und Klicks für 30s',
+  },
+];
+
+const AVAILABLE_RELICS = [
+  { id: 0, name: 'Antiker Kamm', icon: '🏺', effect: 'cpsBonus' as const, cpsValue: 0.1, unlockCost: 25000000, description: '+10% CPS dauerhaft' },
+  { id: 1, name: 'Magisches Bartöl', icon: '🧪', effect: 'clickBonus' as const, clickValue: 0.15, unlockCost: 50000000, description: '+15% Klick-Power dauerhaft' },
+  { id: 2, name: 'Goldener Bart', icon: '✨', effect: 'allBonus' as const, value: 0.25, unlockCost: 100000000, description: '+25% auf alles dauerhaft' },
+  { id: 3, name: 'Zeitreisendes Bartöl', icon: '⏳', effect: 'offlineBonus' as const, value: 0.5, unlockCost: 200000000, description: '+50% Offline-Verdienst' },
 ];
 
 export function useBartclickerGame() {
@@ -170,12 +188,12 @@ export function useBartclickerGame() {
           total_ever: parseFloat(data.total_ever) || 0,
           rebirth_count: data.rebirth_count || 0,
           rebirth_multiplier: parseFloat(data.rebirth_multiplier) || 1,
-          shop_items: (data.shop_items || []).map((item: any) => ({
+          shop_items: (data.shop_items || []).map((item: ShopItem) => ({
             ...item,
             cost: item.cost || INITIAL_SHOP_ITEMS.find(i => i.id === item.id)?.cost || 0,
           })),
-          active_buffs: (data.active_buffs || []).filter((buff: any) => buff.endTime && buff.endTime > Date.now()),
-          active_debuffs: (data.active_debuffs || []).filter((debuff: any) => debuff.endTime && debuff.endTime > Date.now()),
+          active_buffs: (data.active_buffs || []).filter((buff: Buff) => buff.endTime && buff.endTime > Date.now()),
+          active_debuffs: (data.active_debuffs || []).filter((debuff: { endTime: number }) => debuff.endTime && debuff.endTime > Date.now()),
           relics: data.relics || [],
           offline_earning_upgrades: data.offline_earning_upgrades || 0,
           auto_click_buyer_enabled: data.auto_click_buyer_enabled || false,
@@ -204,6 +222,28 @@ export function useBartclickerGame() {
           click_upgrade_buyer_items: [],
         };
         setGameState(initialState);
+
+        // Speichere neue Spieler sofort in DB
+        try {
+          await supabase.from('bartclicker_scores').insert({
+            user_id: user.id,
+            energy: 0,
+            total_ever: 0,
+            rebirth_count: 0,
+            rebirth_multiplier: 1,
+            shop_items: INITIAL_SHOP_ITEMS,
+            active_buffs: [],
+            active_debuffs: [],
+            relics: [],
+            offline_earning_upgrades: 0,
+            auto_click_buyer_enabled: false,
+            click_upgrade_buyer_enabled: false,
+            auto_click_buyer_items: [],
+            click_upgrade_buyer_items: [],
+          });
+        } catch (insertErr) {
+          console.error('Failed to insert new game state:', insertErr);
+        }
       }
     } catch (err) {
       console.error('Failed to load game state:', err);
@@ -214,34 +254,43 @@ export function useBartclickerGame() {
 
   // Save game state to database
   const saveGameState = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.log('No user ID, skipping save');
+      return;
+    }
 
     try {
+      const { data: existing } = await supabase
+        .from('bartclicker_scores')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
       const { error } = await supabase
         .from('bartclicker_scores')
-        .upsert(
-          {
-            user_id: user.id,
-            energy: gameState.energy.toString(),
-            total_ever: gameState.total_ever.toString(),
-            rebirth_count: gameState.rebirth_count,
-            rebirth_multiplier: gameState.rebirth_multiplier.toString(),
-            shop_items: gameState.shop_items,
-            active_buffs: gameState.active_buffs,
-            active_debuffs: gameState.active_debuffs,
-            relics: gameState.relics,
-            offline_earning_upgrades: gameState.offline_earning_upgrades,
-            auto_click_buyer_enabled: gameState.auto_click_buyer_enabled,
-            click_upgrade_buyer_enabled: gameState.click_upgrade_buyer_enabled,
-            auto_click_buyer_items: gameState.auto_click_buyer_items,
-            click_upgrade_buyer_items: gameState.click_upgrade_buyer_items,
-            last_updated: new Date().toISOString(),
-          },
-          { onConflict: 'user_id' }
-        );
+        .upsert({
+          id: existing?.id,
+          user_id: user.id,
+          energy: gameState.energy,
+          total_ever: gameState.total_ever,
+          rebirth_count: gameState.rebirth_count,
+          rebirth_multiplier: gameState.rebirth_multiplier,
+          shop_items: gameState.shop_items,
+          active_buffs: gameState.active_buffs,
+          active_debuffs: gameState.active_debuffs,
+          relics: gameState.relics,
+          offline_earning_upgrades: gameState.offline_earning_upgrades,
+          auto_click_buyer_enabled: gameState.auto_click_buyer_enabled,
+          click_upgrade_buyer_enabled: gameState.click_upgrade_buyer_enabled,
+          auto_click_buyer_items: gameState.auto_click_buyer_items,
+          click_upgrade_buyer_items: gameState.click_upgrade_buyer_items,
+          last_updated: new Date().toISOString(),
+        });
 
       if (error) {
         console.error('Error saving game state:', error);
+      } else {
+        console.log('Game state saved successfully');
       }
     } catch (err) {
       console.error('Failed to save game state:', err);
@@ -259,23 +308,34 @@ export function useBartclickerGame() {
     }));
   }, [calculateClickPower]);
 
-  // Buy shop item
+  // Buy shop item - Kosten skalieren mit Rebirths
   const buyItem = useCallback(
     (itemId: number) => {
       const item = gameState.shop_items.find((i) => i.id === itemId);
       if (!item || gameState.energy < item.cost) return false;
 
+      const costMultiplier = Math.pow(1.1, gameState.rebirth_count);
+      const actualCost = Math.floor(item.cost * costMultiplier);
+      
+      if (gameState.energy < actualCost) return false;
+
       setGameState((prev) => ({
         ...prev,
-        energy: prev.energy - item.cost,
+        energy: prev.energy - actualCost,
         shop_items: prev.shop_items.map((i) =>
-          i.id === itemId ? { ...i, count: i.count + 1, cost: Math.floor(i.cost * 1.15) } : i
+          i.id === itemId 
+            ? { 
+                ...i, 
+                count: i.count + 1, 
+                cost: Math.floor(Math.floor(i.cost * costMultiplier) * 1.15)
+              } 
+            : i
         ),
       }));
 
       return true;
     },
-    [gameState.energy, gameState.shop_items]
+    [gameState.energy, gameState.shop_items, gameState.rebirth_count]
   );
 
   // Activate buff
@@ -306,20 +366,21 @@ export function useBartclickerGame() {
     [gameState.energy, gameState.rebirth_count]
   );
 
-  // Rebirth
+  // Rebirth - erhöht Multiplikator, setzt Items zurück, behält aber Relikte, Autobuyer & aktive Boosts
   const performRebirth = useCallback(() => {
     setGameState((prev) => ({
       ...prev,
       rebirth_count: prev.rebirth_count + 1,
-      rebirth_multiplier: Math.pow(2, prev.rebirth_count + 1),
+      rebirth_multiplier: prev.rebirth_multiplier * 2,
       energy: 0,
       shop_items: prev.shop_items.map((item) => ({
         ...item,
         count: 0,
-        cost: INITIAL_SHOP_ITEMS.find((i) => i.id === item.id)?.cost || item.cost,
+        cost: Math.floor((INITIAL_SHOP_ITEMS.find((i) => i.id === item.id)?.cost || item.cost) * Math.pow(1.1, prev.rebirth_count)),
       })),
       active_buffs: [],
       active_debuffs: [],
+      // Behalte: relics, auto_click_buyer_enabled, click_upgrade_buyer_enabled, Autobuyer Items
     }));
   }, []);
 
@@ -368,6 +429,37 @@ export function useBartclickerGame() {
     }
   }, [gameState.rebirth_count, gameState.shop_items.length, saveGameState, lastSaveTime]);
 
+  // Buy Autobuyer (kostet 10 Rebirths)
+  const buyAutobuyer = useCallback(() => {
+    if (gameState.rebirth_count < 10) return false;
+
+    setGameState((prev) => ({
+      ...prev,
+      rebirth_count: prev.rebirth_count - 10,
+      auto_click_buyer_enabled: !prev.auto_click_buyer_enabled,
+    }));
+
+    return true;
+  }, [gameState.rebirth_count]);
+
+  // Unlock Relic
+  const unlockRelic = useCallback(
+    (relicId: number) => {
+      const relic = AVAILABLE_RELICS.find((r) => r.id === relicId);
+      if (!relic || gameState.energy < relic.unlockCost) return false;
+      if (gameState.relics.some((r) => r.id === relicId)) return false;
+
+      setGameState((prev) => ({
+        ...prev,
+        energy: prev.energy - relic.unlockCost,
+        relics: [...prev.relics, relic],
+      }));
+
+      return true;
+    },
+    [gameState.energy, gameState.relics]
+  );
+
   return {
     gameState,
     isLoading,
@@ -377,6 +469,8 @@ export function useBartclickerGame() {
     buyItem,
     activateBuff,
     performRebirth,
+    buyAutobuyer,
+    unlockRelic,
     saveGameState,
     loadGameState,
   };

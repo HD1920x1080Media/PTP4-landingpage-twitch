@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useBartclickerGame } from '../../hooks/useBartclickerGame';
+import { useBartclickerLeaderboard } from '../../hooks/useBartclickerLeaderboard';
 import './BartclickerGame.css';
 
 interface BartclickerGameProps {
@@ -9,8 +10,9 @@ interface BartclickerGameProps {
 
 export default function BartclickerGame({ compact = false }: BartclickerGameProps) {
   const { t } = useTranslation();
-  const { gameState, isLoading, cps, handleClick, buyItem, activateBuff, performRebirth } =
+  const { gameState, isLoading, cps, handleClick, buyItem, activateBuff, performRebirth, buyAutobuyer, unlockRelic } =
     useBartclickerGame();
+  const { entries: leaderboardEntries, isLoading: leaderboardLoading } = useBartclickerLeaderboard();
 
   const [activeTab, setActiveTab] = useState<'shop' | 'leaderboard' | 'stats'>('shop');
   const [shopTab, setShopTab] = useState<'passive' | 'click' | 'booster' | 'relics' | 'autobuyer'>('passive');
@@ -46,14 +48,25 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
   const passiveItems = gameState.shop_items.filter((item) => item.type === 'passive');
   const clickItems = gameState.shop_items.filter((item) => item.type === 'click');
 
+  // Berechne Cost-Multiplikator basierend auf Rebirths
+  const costMultiplier = Math.pow(1.1, gameState.rebirth_count);
+  
+  // Hilfsfunktion für skalierte Kosten
+  const getScaledCost = (baseCost: number) => Math.floor(baseCost * costMultiplier);
+
+  // Boosters (Temporary buffs)
   const BOOSTERS = [
-    { id: 0, name: 'Turbo-Boost', icon: '⚡', effect: '2x CPS für 1 Min', cost: 1000 },
-    { id: 1, name: 'Klick-Wahnsinn', icon: '💪', effect: '3x Klicks für 45s', cost: 1500 },
+    { id: 0, name: 'Turbo-Boost', icon: '⚡', effect: '2x CPS für 1 Min', baseCost: 1000 },
+    { id: 1, name: 'Klick-Wahnsinn', icon: '💪', effect: '3x Klicks für 45s', baseCost: 1500 },
+    { id: 2, name: 'Glücksbonus', icon: '🍀', effect: '+50% für 30s', baseCost: 2000 },
   ];
 
+  // Relics (Permanent bonuses)
   const RELICS = [
-    { id: 0, name: 'Antiker Kamm', icon: '🏺', effect: '+10% CPS', cost: 25000000 },
-    { id: 1, name: 'Magisches Bartöl', icon: '🧪', effect: '+15% Klicks', cost: 50000000 },
+    { id: 0, name: 'Antiker Kamm', icon: '🏺', effect: '+10% CPS', baseCost: 25000000 },
+    { id: 1, name: 'Magisches Bartöl', icon: '🧪', effect: '+15% Klicks', baseCost: 50000000 },
+    { id: 2, name: 'Goldener Bart', icon: '✨', effect: '+25% alles', baseCost: 100000000 },
+    { id: 3, name: 'Zeitreisendes Bartöl', icon: '⏳', effect: '+50% Offline', baseCost: 200000000 },
   ];
 
   return (
@@ -85,41 +98,41 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
           style={{ transform: `scale(${bartScale})` }}
           title={`+Barthaare`}
         >
-          <svg viewBox="25 15 75 75" xmlns="http://www.w3.org/2000/svg" className="beard-svg">
-            {/* Kopf */}
-            <rect x="30" y="30" width="40" height="40" rx="6" fill="#d4a373" />
+          <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" className="beard-svg">
+            {/* Hauptbart - wächst mit Rebirths */}
+            <defs>
+              <linearGradient id="beardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style={{ stopColor: '#2a1f15', stopOpacity: 1 }} />
+                <stop offset="50%" style={{ stopColor: '#3d2b1f', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: '#1a0f0a', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
             
-            {/* Stirnband/Linie */}
-            <rect x="25" y="32" width="50" height="5" rx="2" fill="#7C4DFF" />
-            
-            {/* Haare oben */}
-            <path d="M30 32 L70 32 L70 25 Q 50 15 30 25 Z" fill="#7C4DFF" />
-            <circle cx="50" cy="18" r="2" fill="#5c38cc" />
-            
-            {/* Augen */}
-            <g stroke="#111" strokeWidth="1.2" fill="none">
-              <rect x="34" y="42" width="10" height="7" rx="1" />
-              <rect x="56" y="42" width="10" height="7" rx="1" />
-            </g>
-            <text x="39" y="47" fontSize="5" textAnchor="middle" fill="#000">o</text>
-            <text x="61" y="47" fontSize="5" textAnchor="middle" fill="#000">o</text>
-            
-            {/* Mund */}
-            <path d="M44 50 h12" stroke="#111" strokeWidth="1.2" fill="none" />
-            
-            {/* Bart - wächst mit Rebirths */}
+            {/* Oberteil des Barts */}
             <path
-              d={`M 30 60 Q 50 63 70 60 L 70 ${76 + bartLength * 0.2} Q 50 ${90 + bartLength * 0.2} 30 ${76 + bartLength * 0.2} Z`}
-              fill="#3d2b1f"
+              d={`M 20 30 Q 50 35 80 30 Q 85 40 80 ${50 + bartLength * 0.15} Q 50 ${55 + bartLength * 0.15} 20 ${50 + bartLength * 0.15} Q 15 40 20 30 Z`}
+              fill="url(#beardGrad)"
               style={{ transition: 'all 0.2s ease' }}
             />
             
-            {/* Bart-Details */}
-            <g stroke="#2a1f15" strokeWidth="0.8" opacity="0.6">
-              <path d="M 40 68 Q 40 72 42 76" />
-              <path d="M 50 65 Q 50 70 50 76" />
-              <path d="M 60 68 Q 60 72 58 76" />
+            {/* Bart-Feinstruktur - einzelne Haare */}
+            <g stroke="#2a1f15" strokeWidth="1.2" opacity="0.5" strokeLinecap="round">
+              <path d={`M 30 35 Q 28 ${55 + bartLength * 0.1} 32 ${65 + bartLength * 0.12}`} />
+              <path d={`M 45 32 Q 44 ${60 + bartLength * 0.12} 46 ${72 + bartLength * 0.15}`} />
+              <path d={`M 50 30 Q 50 ${62 + bartLength * 0.15} 50 ${76 + bartLength * 0.18}`} />
+              <path d={`M 55 32 Q 56 ${60 + bartLength * 0.12} 54 ${72 + bartLength * 0.15}`} />
+              <path d={`M 70 35 Q 72 ${55 + bartLength * 0.1} 68 ${65 + bartLength * 0.12}`} />
             </g>
+            
+            {/* Ganz unten - wirkt lockig/buschig */}
+            <ellipse
+              cx="50"
+              cy={`${75 + bartLength * 0.18}`}
+              rx={`${25 + bartLength * 0.05}`}
+              ry={`${10 + bartLength * 0.08}`}
+              fill="#2a1f15"
+              opacity="0.7"
+            />
           </svg>
         </button>
       </div>
@@ -184,81 +197,90 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
           {shopTab === 'passive' && (
             <div className="item-list">
-              {passiveItems.map((item) => (
-                <div key={item.id} className="shop-item">
-                  <div className="item-header">
-                    <span className="item-icon">{item.icon}</span>
-                    <div className="item-info">
-                      <h4>{item.name}</h4>
-                      <p className="item-cps">{item.cps?.toFixed(1)}/s</p>
+              {passiveItems.map((item) => {
+                const scaledCost = getScaledCost(item.cost / costMultiplier);
+                return (
+                  <div key={item.id} className="shop-item">
+                    <div className="item-header">
+                      <span className="item-icon">{item.icon}</span>
+                      <div className="item-info">
+                        <h4>{item.name}</h4>
+                        <p className="item-cps">{item.cps?.toFixed(1)}/s</p>
+                      </div>
+                      <span className="item-count">×{item.count}</span>
                     </div>
-                    <span className="item-count">×{item.count}</span>
+                    <button
+                      className="buy-button"
+                      onClick={() => buyItem(item.id)}
+                      disabled={gameState.energy < scaledCost}
+                      title={`Kosten: ${formatNumber(scaledCost)}`}
+                    >
+                      {formatNumber(scaledCost)}
+                    </button>
                   </div>
-                  <button
-                    className="buy-button"
-                    onClick={() => buyItem(item.id)}
-                    disabled={gameState.energy < item.cost}
-                    title={`Kosten: ${formatNumber(item.cost)}`}
-                  >
-                    {formatNumber(item.cost)}
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
           {shopTab === 'click' && (
             <div className="item-list">
-              {clickItems.map((item) => (
-                <div key={item.id} className="shop-item">
-                  <div className="item-header">
-                    <span className="item-icon">{item.icon}</span>
-                    <div className="item-info">
-                      <h4>{item.name}</h4>
-                      <p className="item-power">+{item.clickPower}</p>
+              {clickItems.map((item) => {
+                const scaledCost = getScaledCost(item.cost / costMultiplier);
+                return (
+                  <div key={item.id} className="shop-item">
+                    <div className="item-header">
+                      <span className="item-icon">{item.icon}</span>
+                      <div className="item-info">
+                        <h4>{item.name}</h4>
+                        <p className="item-power">+{item.clickPower}</p>
+                      </div>
+                      <span className="item-count">×{item.count}</span>
                     </div>
-                    <span className="item-count">×{item.count}</span>
+                    <button
+                      className="buy-button"
+                      onClick={() => buyItem(item.id)}
+                      disabled={gameState.energy < scaledCost}
+                      title={`Kosten: ${formatNumber(scaledCost)}`}
+                    >
+                      {formatNumber(scaledCost)}
+                    </button>
                   </div>
-                  <button
-                    className="buy-button"
-                    onClick={() => buyItem(item.id)}
-                    disabled={gameState.energy < item.cost}
-                    title={`Kosten: ${formatNumber(item.cost)}`}
-                  >
-                    {formatNumber(item.cost)}
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
-          {gameState.rebirth_count === 0 && gameState.total_ever >= 1000000 && (
+          {gameState.total_ever >= 1000000 && (
             <div className="rebirth-section">
               <button className="rebirth-button" onClick={performRebirth}>
-                🔄 Rebirth
+                🔄 Rebirth ({gameState.rebirth_count})
               </button>
               <p className="rebirth-info">
-                Verdopple deine Multiplikatoren und starte von vorne! Dein Bart wird länger!
+                Verdopple deinen Multiplikator (×{(gameState.rebirth_multiplier * 2).toFixed(0)}) und starte von vorne! Dein Bart wird länger!
               </p>
             </div>
           )}
 
           {shopTab === 'booster' && (
             <div className="booster-grid">
-              {BOOSTERS.map((booster) => (
-                <div key={booster.id} className="booster-card">
-                  <div className="booster-icon">{booster.icon}</div>
-                  <h3>{booster.name}</h3>
-                  <p className="booster-effect">{booster.effect}</p>
-                  <button
-                    className="buy-button"
-                    onClick={() => activateBuff(booster.id)}
-                    disabled={gameState.energy < booster.cost}
-                  >
-                    {formatNumber(booster.cost)}
-                  </button>
-                </div>
-              ))}
+              {BOOSTERS.map((booster) => {
+                const scaledCost = getScaledCost(booster.baseCost);
+                return (
+                  <div key={booster.id} className="booster-card">
+                    <div className="booster-icon">{booster.icon}</div>
+                    <h3>{booster.name}</h3>
+                    <p className="booster-effect">{booster.effect}</p>
+                    <button
+                      className="buy-button"
+                      onClick={() => activateBuff(booster.id)}
+                      disabled={gameState.energy < scaledCost}
+                    >
+                      {formatNumber(scaledCost)}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -266,6 +288,7 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
             <div className="relics-grid">
               {RELICS.map((relic) => {
                 const isUnlocked = gameState.relics.some((r) => r.id === relic.id);
+                const scaledCost = getScaledCost(relic.baseCost);
                 return (
                   <div key={relic.id} className={`relic-card ${isUnlocked ? 'unlocked' : ''}`}>
                     <div className="relic-icon">{relic.icon}</div>
@@ -276,10 +299,11 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                     ) : (
                       <button
                         className="buy-button"
-                        disabled={gameState.energy < relic.cost}
-                        title={`Kosten: ${formatNumber(relic.cost)}`}
+                        onClick={() => unlockRelic(relic.id)}
+                        disabled={gameState.energy < scaledCost}
+                        title={`Kosten: ${formatNumber(scaledCost)}`}
                       >
-                        {formatNumber(relic.cost)}
+                        {formatNumber(scaledCost)}
                       </button>
                     )}
                   </div>
@@ -292,19 +316,28 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
             <div className="autobuyer-content">
               <div className="autobuyer-card">
                 <h3>🤖 Auto-Klicker</h3>
-                <p>Automatisches Klicken aktivieren (Coming Soon)</p>
-                <div className="toggle-switch">
-                  <input type="checkbox" disabled />
-                  <span className="toggle-slider"></span>
-                </div>
+                <p>Kostet: 10 Rebirths</p>
+                <p style={{ fontSize: '0.9rem', color: '#999' }}>Du hast: {gameState.rebirth_count} Rebirths</p>
+                <button
+                  className="buy-button"
+                  onClick={() => buyAutobuyer()}
+                  disabled={gameState.rebirth_count < 10}
+                  style={{ marginTop: '10px' }}
+                >
+                  {gameState.auto_click_buyer_enabled ? '❌ Deaktivieren' : '✅ Aktivieren'}
+                </button>
               </div>
               <div className="autobuyer-card">
-                <h3>📈 Auto-Upgrade Käufer</h3>
-                <p>Automatische Kauf von Upgrades (Coming Soon)</p>
-                <div className="toggle-switch">
-                  <input type="checkbox" disabled />
-                  <span className="toggle-slider"></span>
-                </div>
+                <h3>📈 Auto-Upgrade Käufer (Coming Soon)</h3>
+                <p>Kostet: 15 Rebirths</p>
+                <p style={{ fontSize: '0.9rem', color: '#999' }}>Automatische Kauf von Upgrades</p>
+                <button
+                  className="buy-button"
+                  disabled
+                  style={{ marginTop: '10px' }}
+                >
+                  Bald verfügbar
+                </button>
               </div>
             </div>
           )}
@@ -325,13 +358,26 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
               <span className="score-col">Total Ever</span>
               <span className="rebirth-col">Rebirths</span>
             </div>
-            {/* Leaderboard items will be loaded from Supabase */}
-            <div className="leaderboard-placeholder">
-              <p>📊 Loading leaderboard... (Coming Soon)</p>
-              <p style={{fontSize: '0.9rem', color: '#888', marginTop: '10px'}}>
-                Top players will appear here once data is available
-              </p>
-            </div>
+            {leaderboardLoading ? (
+              <div className="leaderboard-placeholder">
+                <p>📊 Leaderboard wird geladen...</p>
+              </div>
+            ) : leaderboardEntries.length === 0 ? (
+              <div className="leaderboard-placeholder">
+                <p>📊 Noch keine Spieler auf der Rangliste</p>
+              </div>
+            ) : (
+              leaderboardEntries.map((entry) => (
+                <div key={entry.user_id} className="leaderboard-item">
+                  <span className="rank-col">
+                    {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : entry.rank}
+                  </span>
+                  <span className="name-col">{entry.display_name}</span>
+                  <span className="score-col">{formatNumber(entry.total_ever)}</span>
+                  <span className="rebirth-col">×{entry.rebirth_count}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
