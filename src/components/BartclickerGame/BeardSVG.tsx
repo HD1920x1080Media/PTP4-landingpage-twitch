@@ -19,10 +19,6 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
   
   // viewBox Height - simplified für bessere Performance
   const viewBoxHeight = Math.min(450, 350 + beardHeight);
-  
-  // SVG width/height mit korrektem Verhältnis zur viewBox
-  const svgWidth = 180;
-  const svgHeight = Math.round(svgWidth * (viewBoxHeight / 100));
 
   return (
     <svg 
