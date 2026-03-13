@@ -1,0 +1,124 @@
+.profile-button {
+  position: relative;
+}
+
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4em 0.8em;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-btn-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.25s;
+  white-space: nowrap;
+}
+
+.profile-btn:hover:not(:disabled) {
+  border-color: #646cff;
+}
+
+.profile-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-btn.login-btn {
+  font-weight: 500;
+}
+
+.profile-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Dropdown Menu */
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 150px;
+  z-index: 1001;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-item {
+  width: 100%;
+  padding: 0.8em 1em;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: var(--color-highlight);
+}
+
+.menu-item:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.menu-item:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.menu-item.logout-btn {
+  color: #ff6b6b;
+}
+
+.menu-item.logout-btn:hover {
+  background-color: rgba(255, 107, 107, 0.1);
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .profile-btn {
+    padding: 0.4em 0.6em;
+  }
+
+  .profile-avatar {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+
+  .profile-name {
+    display: none;
+  }
+
+  .profile-menu {
+    right: 0;
+    left: auto;
+  }
+}
+

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../context/useTheme'
+import ProfileButton from './ProfileButton/ProfileButton'
 import './SettingsBar.css'
 
 const themeIcons: Record<string, string> = {
@@ -25,6 +26,8 @@ export default function SettingsBar() {
 
   return (
     <div className="settings-bar">
+      <ProfileButton />
+
       <button className="settings-btn" onClick={cycleTheme} title={t('settings.theme')}>
         {themeIcons[mode]} {t(`settings.${mode}`)}
       </button>
