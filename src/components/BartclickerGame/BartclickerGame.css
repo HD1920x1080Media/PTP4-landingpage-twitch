@@ -833,7 +833,7 @@
   }
 
   .click-area {
-    min-height: 300px;
+    min-height: 150px;
   }
 
   .click-button:hover:not(:disabled) .beard-svg {
