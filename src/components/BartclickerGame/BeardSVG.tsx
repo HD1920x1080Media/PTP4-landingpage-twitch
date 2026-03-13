@@ -49,16 +49,16 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         </g>
       </g>
 
-      {/* Brille - nach oben verschoben */}
+      {/* Brille - noch höher */}
       <g stroke="#111" strokeWidth="1.5" fill="none">
-        <rect x="28" y="42" width="15" height="10" rx="2"/>
-        <rect x="57" y="42" width="15" height="10" rx="2"/>
-        <path d="M43 47 h14"/>
+        <rect x="28" y="38" width="15" height="10" rx="2"/>
+        <rect x="57" y="38" width="15" height="10" rx="2"/>
+        <path d="M43 43 h14"/>
       </g>
 
-      {/* Augen - nach oben verschoben */}
-      <circle cx="35" cy="47" r="1.5" fill="#000"/>
-      <circle cx="65" cy="47" r="1.5" fill="#000"/>
+      {/* Augen - noch höher */}
+      <circle cx="35" cy="43" r="1.5" fill="#000"/>
+      <circle cx="65" cy="43" r="1.5" fill="#000"/>
 
       {/* DYNAMISCHER BART - WIRD MIT KLICKS SKALIERT */}
       <g 
@@ -70,10 +70,10 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
           transformBox: 'fill-box'
         }}
       >
-        {/* Basis-Beard (dynamisch wachsend) - schmäler und nur nach unten */}
+        {/* Basis-Beard (oben gerade, unten gerundet) */}
         <path 
           id="beard-path" 
-          d={`M30 70 Q 50 70 70 70 L 70 ${70 + beardHeight * 0.4} Q 50 ${70 + beardHeight * 0.5} 30 ${70 + beardHeight * 0.4} Z`}
+          d={`M30 70 L70 70 L70 ${70 + beardHeight * 0.3} Q 50 ${70 + beardHeight * 0.4} 30 ${70 + beardHeight * 0.3} Z`}
           fill="#3d2b1f"
           fillRule="evenodd"
           style={{ transition: 'all 0.2s ease' }}
@@ -82,7 +82,7 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         {/* Haarstruktur: stroke-only Kopie des Pfades */}
         <path 
           id="beard-hair" 
-          d={`M30 70 Q 50 70 70 70 L 70 ${70 + beardHeight * 0.4} Q 50 ${70 + beardHeight * 0.5} 30 ${70 + beardHeight * 0.4} Z`}
+          d={`M30 70 L70 70 L70 ${70 + beardHeight * 0.3} Q 50 ${70 + beardHeight * 0.4} 30 ${70 + beardHeight * 0.3} Z`}
           fill="none" 
           stroke="#22160f"
           strokeWidth="0.9" 
@@ -97,7 +97,7 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         {/* Subtiler Outline für Tiefe */}
         <path 
           id="beard-outline" 
-          d={`M30 70 Q 50 70 70 70 L 70 ${70 + beardHeight * 0.4} Q 50 ${70 + beardHeight * 0.5} 30 ${70 + beardHeight * 0.4} Z`}
+          d={`M30 70 L70 70 L70 ${70 + beardHeight * 0.3} Q 50 ${70 + beardHeight * 0.4} 30 ${70 + beardHeight * 0.3} Z`}
           fill="none" 
           stroke="#000"
           strokeWidth="0.6" 
