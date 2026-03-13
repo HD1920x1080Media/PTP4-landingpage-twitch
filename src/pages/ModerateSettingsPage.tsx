@@ -95,7 +95,14 @@ export default function ModerateVotingPage() {
       if (error || result?.error) showToast(`❌ ${error?.message ?? result?.error}`)
       else showToast(`✅ ${result?.count ?? 0} Mods synchronisiert`)
       setRefreshKey((k) => k + 1)
-    } catch (err) { showToast(`❌ ${err instanceof Error ? err.message : 'Sync fehlgeschlagen'}`) }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Sync fehlgeschlagen'
+      if (msg.includes('401') && msg.toLowerCase().includes('missing scope')) {
+        showToast(`❌ ${t('moderate.syncMissingScope')}`)
+      } else {
+        showToast(`❌ ${msg}`)
+      }
+    }
     setBusy(false)
   }
 
@@ -104,8 +111,8 @@ export default function ModerateVotingPage() {
     await supabase.auth.signInWithOAuth({
       provider: 'twitch',
       options: {
-        // Standard-Scopes von Supabase + moderation:read für Mod-Liste
-        scopes: 'user:read:email moderation:read',
+        // Standard-Scopes von Supabase + moderation:read + channel:manage:moderators für Mod-Liste
+        scopes: 'user:read:email moderation:read channel:manage:moderators',
         redirectTo: window.location.origin + '/moderate/voting',
       },
     })
