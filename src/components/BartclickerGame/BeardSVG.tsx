@@ -17,20 +17,21 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
   const clickHeight = Math.min(50, clickCount * 0.3);
   const beardHeight = 20 + rebirthHeight + clickHeight;
   
+  // ViewBox ist FESTE Größe - der Bart wächst nur im SVG selbst nach UNTEN
+  // Kopf = 170 einheiten, Bart startet bei y=140
+  // So bleibt der Kopf immer oben und der Bart wächst nur nach unten
 
   return (
       <svg
           id="avatar-svg"
-          // Die ViewBox berechnet sich nun dynamisch:
-          // Kopf-Höhe (ca. 170 inkl. Cap) + Bart-Länge
-          viewBox={`0 0 200 ${170 + beardHeight * 2}`}
+          viewBox="0 0 200 400"
           xmlns="http://www.w3.org/2000/svg"
           className="beard-svg"
           style={{
             transition: 'all 0.2s ease',
-            width: '100%', // Füllt die Container-Box aus
+            width: '100%',
             height: 'auto',
-            maxHeight: '400px' // Optional: Verhindert, dass er bei riesigem Bart den Screen sprengt
+            maxHeight: '400px'
           }}
       >
         {/* KOPF - Startet jetzt bei y=40 (Platz für Cap-Knopf) */}
@@ -57,9 +58,9 @@ export function BeardSVG({ bartLength, clickCount = 0 }: BeardProps) {
         <circle cx="70" cy="86" r="3" fill="#000"/>
         <circle cx="130" cy="86" r="3" fill="#000"/>
 
-        {/* DYNAMISCHER BART */}
+        {/* DYNAMISCHER BART - Wächst nur nach UNTEN */}
         <g id="beard-group" style={{ transition: 'all 0.2s ease' }}>
-          {/* Wir nutzen y=140 als Bart-Ansatz (Ende des Gesichts) */}
+          {/* Startet bei y=140 und wächst von dort nach UNTEN */}
           <path
               id="beard-path"
               d={`M40 140 L160 140 L160 ${140 + beardHeight * 2} Q 100 ${140 + beardHeight * 2 + 10} 40 ${140 + beardHeight * 2} Z`}

@@ -92,6 +92,7 @@ export function useBartclickerGame() {
   const [isLoading, setIsLoading] = useState(true);
   const [lastSaveTime, setLastSaveTime] = useState(0);
   const gameLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Calculate CPS based on shop items, relics, and multipliers
   const calculateCps = useCallback((): number => {
@@ -168,6 +169,13 @@ export function useBartclickerGame() {
       return;
     }
 
+    // Abbrechen von alten Requests bei schnellem Reload
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     try {
       setIsLoading(true);
       const { data, error } = await supabase
@@ -176,10 +184,17 @@ export function useBartclickerGame() {
         .eq('user_id', user.id)
         .single();
 
+      // Prüfe ob dieser Request abgebrochen wurde
+      if (signal.aborted) {
+        console.log('Load request was cancelled');
+        return;
+      }
+
       if (error) {
         // PGRST116 = no rows found (expected for new users)
         if (error.code === 'PGRST116') {
           console.log('New user detected, initializing game state');
+          
           const initialState: BartclickerGameState = {
             user_id: user.id,
             energy: 0,
@@ -196,9 +211,8 @@ export function useBartclickerGame() {
             auto_click_buyer_items: [],
             click_upgrade_buyer_items: [],
           };
-          setGameState(initialState);
 
-          // Speichere neue Spieler mit UPSERT statt INSERT um Conflicts zu vermeiden
+          // Versuche zu speichern, aber setze State IMMER
           try {
             await supabase.from('bartclicker_scores').upsert({
               user_id: user.id,
@@ -216,42 +230,59 @@ export function useBartclickerGame() {
               auto_click_buyer_items: [],
               click_upgrade_buyer_items: [],
             }, { onConflict: 'user_id' });
+            console.log('Initial game state saved successfully');
           } catch (upsertErr) {
             console.error('Failed to create initial game state:', upsertErr);
+            // State wird trotzdem gesetzt - Daten sind lokal vorhanden
+          }
+
+          // Setze State unabhängig vom Save-Erfolg
+          if (!signal.aborted) {
+            setGameState(initialState);
           }
         } else {
-          // Andere Fehler (z.B. RLS, Netzwerk) - nicht als neuer Spieler behandeln
+          // Andere Fehler (z.B. RLS, Netzwerk)
           console.error('Error loading game state:', error);
+          
+          // Bei Fehler: zeige Loading-Schirm aber setze State nicht
+          if (!signal.aborted) {
+            setIsLoading(false);
+          }
         }
       } else if (data) {
         // Existing data found
-        setGameState({
-          id: data.id,
-          user_id: data.user_id,
-          energy: parseFloat(data.energy) || 0,
-          total_ever: parseFloat(data.total_ever) || 0,
-          rebirth_count: data.rebirth_count || 0,
-          rebirth_multiplier: parseFloat(data.rebirth_multiplier) || 1,
-          shop_items: (data.shop_items || []).map((item: ShopItem) => ({
-            ...item,
-            cost: item.cost || INITIAL_SHOP_ITEMS.find(i => i.id === item.id)?.cost || 0,
-          })),
-          active_buffs: (data.active_buffs || []).filter((buff: Buff) => buff.endTime && buff.endTime > Date.now()),
-          active_debuffs: (data.active_debuffs || []).filter((debuff: { endTime: number }) => debuff.endTime && debuff.endTime > Date.now()),
-          relics: data.relics || [],
-          offline_earning_upgrades: data.offline_earning_upgrades || 0,
-          auto_click_buyer_enabled: data.auto_click_buyer_enabled || false,
-          click_upgrade_buyer_enabled: data.click_upgrade_buyer_enabled || false,
-          auto_click_buyer_items: data.auto_click_buyer_items || [],
-          click_upgrade_buyer_items: data.click_upgrade_buyer_items || [],
-          last_updated: data.last_updated,
-          created_at: data.created_at,
-        });
+        if (!signal.aborted) {
+          setGameState({
+            id: data.id,
+            user_id: data.user_id,
+            energy: parseFloat(data.energy) || 0,
+            total_ever: parseFloat(data.total_ever) || 0,
+            rebirth_count: data.rebirth_count || 0,
+            rebirth_multiplier: parseFloat(data.rebirth_multiplier) || 1,
+            shop_items: (data.shop_items || []).map((item: ShopItem) => ({
+              ...item,
+              cost: item.cost || INITIAL_SHOP_ITEMS.find(i => i.id === item.id)?.cost || 0,
+            })),
+            active_buffs: (data.active_buffs || []).filter((buff: Buff) => buff.endTime && buff.endTime > Date.now()),
+            active_debuffs: (data.active_debuffs || []).filter((debuff: { endTime: number }) => debuff.endTime && debuff.endTime > Date.now()),
+            relics: data.relics || [],
+            offline_earning_upgrades: data.offline_earning_upgrades || 0,
+            auto_click_buyer_enabled: data.auto_click_buyer_enabled || false,
+            click_upgrade_buyer_enabled: data.click_upgrade_buyer_enabled || false,
+            auto_click_buyer_items: data.auto_click_buyer_items || [],
+            click_upgrade_buyer_items: data.click_upgrade_buyer_items || [],
+            last_updated: data.last_updated,
+            created_at: data.created_at,
+          });
+        }
       }
     } catch (err) {
       console.error('Failed to load game state:', err);
+      // Bei Fehler: zeige Loading-Schirm aber verändere State nicht
     } finally {
-      setIsLoading(false);
+      if (!signal.aborted) {
+        setIsLoading(false);
+      }
     }
   }, [user?.id]);
 
@@ -263,16 +294,10 @@ export function useBartclickerGame() {
     }
 
     try {
-      const { data: existing } = await supabase
-        .from('bartclicker_scores')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
+      // Direkt UPSERT verwenden - RLS Policy sollte onConflict: 'user_id' verarbeiten
       const { error } = await supabase
         .from('bartclicker_scores')
         .upsert({
-          id: existing?.id,
           user_id: user.id,
           energy: gameState.energy,
           total_ever: gameState.total_ever,
@@ -288,10 +313,12 @@ export function useBartclickerGame() {
           auto_click_buyer_items: gameState.auto_click_buyer_items,
           click_upgrade_buyer_items: gameState.click_upgrade_buyer_items,
           last_updated: new Date().toISOString(),
-        });
+        }, { onConflict: 'user_id' });
 
       if (error) {
         console.error('Error saving game state:', error);
+      } else {
+        console.log('Game state saved successfully');
       }
     } catch (err) {
       console.error('Failed to save game state:', err);
