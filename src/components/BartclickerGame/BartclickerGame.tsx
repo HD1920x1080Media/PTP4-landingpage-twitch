@@ -51,10 +51,10 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
   // Calculate current offline earnings rate for display
   const offlineRate = Math.round(
-    (0.5 + gameState.offline_earning_upgrades * 0.1 +
+    (0.1 + gameState.offline_earning_upgrades * 0.1 +
       gameState.relics.reduce((sum, r) => (r.effect === 'offlineBonus' ? sum + (r.value || 0) : sum), 0)) * 100
   );
-  const nextOfflineUpgradeCost = Math.floor(5000 * Math.pow(3, gameState.offline_earning_upgrades));
+  const OFFLINE_UPGRADE_REBIRTH_COST = 5;
 
   const handleBartClick = () => {
     handleClick();
@@ -381,15 +381,16 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                 <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
                   {t('bartclicker.offline.upgradesOwned', { current: gameState.offline_earning_upgrades, max: MAX_OFFLINE_UPGRADES })}
                 </p>
+                <p style={{ fontSize: '0.9rem', color: '#999' }}>{t('bartclicker.offline.youHave', { count: gameState.rebirth_count })}</p>
                 {gameState.offline_earning_upgrades < MAX_OFFLINE_UPGRADES ? (
                   <button
                     className="buy-button"
                     onClick={() => buyOfflineUpgrade()}
-                    disabled={gameState.energy < nextOfflineUpgradeCost}
+                    disabled={gameState.rebirth_count < OFFLINE_UPGRADE_REBIRTH_COST}
                     style={{ marginTop: '10px' }}
                     title={`${t('bartclicker.offline.upgradeEffect')}`}
                   >
-                    {t('bartclicker.offline.buyUpgrade', { cost: formatNumber(nextOfflineUpgradeCost) })}
+                    {t('bartclicker.offline.buyUpgrade', { cost: OFFLINE_UPGRADE_REBIRTH_COST })}
                   </button>
                 ) : (
                   <div style={{ marginTop: '10px', color: '#ffd700', fontWeight: 'bold' }}>

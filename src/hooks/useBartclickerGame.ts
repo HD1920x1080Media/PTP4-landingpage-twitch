@@ -307,8 +307,8 @@ export function useBartclickerGame() {
                 (data.relics || []) as Relic[],
               );
 
-              // Base offline rate: 50% of online CPS
-              let offlineMultiplier = 0.5;
+              // Base offline rate: 10% of online CPS
+              let offlineMultiplier = 0.1;
               // Each upgrade adds +10%
               offlineMultiplier += (data.offline_earning_upgrades || 0) * 0.1;
               // Apply relic offlineBonus
@@ -639,21 +639,20 @@ export function useBartclickerGame() {
     [gameState.energy, gameState.relics]
   );
 
-  // Buy offline earning upgrade (each adds +10% to offline earnings rate)
+  // Buy offline earning upgrade (costs 5 rebirths, each adds +10% to offline earnings rate)
+  const OFFLINE_UPGRADE_REBIRTH_COST = 5;
   const buyOfflineUpgrade = useCallback(() => {
     if (gameState.offline_earning_upgrades >= MAX_OFFLINE_UPGRADES) return false;
-
-    const cost = Math.floor(5000 * Math.pow(3, gameState.offline_earning_upgrades));
-    if (gameState.energy < cost) return false;
+    if (gameState.rebirth_count < OFFLINE_UPGRADE_REBIRTH_COST) return false;
 
     setGameState((prev) => ({
       ...prev,
-      energy: prev.energy - cost,
+      rebirth_count: prev.rebirth_count - OFFLINE_UPGRADE_REBIRTH_COST,
       offline_earning_upgrades: prev.offline_earning_upgrades + 1,
     }));
 
     return true;
-  }, [gameState.energy, gameState.offline_earning_upgrades]);
+  }, [gameState.rebirth_count, gameState.offline_earning_upgrades]);
 
   // Dismiss the offline earnings notification
   const dismissOfflineEarnings = useCallback(() => {

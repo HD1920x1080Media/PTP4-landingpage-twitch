@@ -41,15 +41,42 @@
     }
   },
   "links": {
-    "streamplan": { "title": "Streamplan", "desc": "Live-Termine" },
-    "streamelements": { "title": "StreamElements", "desc": "Donation + Liste" },
-    "clipdesmonats": { "title": "Clip des Monats", "desc": "Votet für die Top Clips" },
-    "youtube": { "title": "YouTube", "desc": "Hauptkanal" },
-    "tiktok": { "title": "TikTok", "desc": "Hauptkanal" },
-    "instagram": { "title": "Instagram", "desc": "Hauptkanal" },
-    "onlybart": { "title": "OnlyBart", "desc": "Exklusive Inhalte" },
-    "discord": { "title": "Discord", "desc": "Server beitreten" },
-    "email": { "title": "Kontakt", "desc": "Kontakt per E‑Mail" }
+    "streamplan": {
+      "title": "Streamplan",
+      "desc": "Live-Termine"
+    },
+    "streamelements": {
+      "title": "StreamElements",
+      "desc": "Donation + Liste"
+    },
+    "clipdesmonats": {
+      "title": "Clip des Monats",
+      "desc": "Votet für die Top Clips"
+    },
+    "youtube": {
+      "title": "YouTube",
+      "desc": "Hauptkanal"
+    },
+    "tiktok": {
+      "title": "TikTok",
+      "desc": "Hauptkanal"
+    },
+    "instagram": {
+      "title": "Instagram",
+      "desc": "Hauptkanal"
+    },
+    "onlybart": {
+      "title": "OnlyBart",
+      "desc": "Exklusive Inhalte"
+    },
+    "discord": {
+      "title": "Discord",
+      "desc": "Server beitreten"
+    },
+    "email": {
+      "title": "Kontakt",
+      "desc": "Kontakt per E‑Mail"
+    }
   },
   "games": {
     "tanggle": {
@@ -420,17 +447,18 @@
     },
     "offline": {
       "shopTitle": "🌙 Offline-Verdienst Upgrades",
-      "shopDesc": "Verbessere deinen Verdienst während du offline bist. Basis: 50% deines CPS, max. 8 Stunden.",
+      "shopDesc": "Verbessere deinen Verdienst während du offline bist. Basis: 10% deines CPS, max. 8 Stunden.",
       "currentRate": "Aktuelle Offline-Rate: {{rate}}%",
       "maxTime": "Maximale Offline-Zeit: 8 Stunden",
       "upgradesOwned": "Upgrades: {{current}}/{{max}}",
       "upgradeEffect": "+10% Offline-Verdienst",
-      "buyUpgrade": "+10% Offline kaufen ({{cost}})",
+      "buyUpgrade": "+10% Offline kaufen ({{cost}} Rebirths)",
       "maxUpgrades": "Maximale Upgrades erreicht!",
       "welcomeBack": "Willkommen zurück!",
       "earned": "Du hast {{amount}} Barthaare verdient während du weg warst ({{time}}).",
       "timeHoursMinutes": "{{hours}}h {{minutes}}min",
-      "timeMinutes": "{{minutes}}min"
+      "timeMinutes": "{{minutes}}min",
+      "youHave": "Du hast: {{count}} Rebirths"
     }
   }
 }
