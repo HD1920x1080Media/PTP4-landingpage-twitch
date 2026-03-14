@@ -41,29 +41,79 @@
     }
   },
   "links": {
-    "streamplan": { "title": "Streamplan", "desc": "Live-Termine" },
-    "streamelements": { "title": "StreamElements", "desc": "Donation + Liste" },
-    "clipdesmonats": { "title": "Clip des Monats", "desc": "Votet für die Top Clips" },
-    "youtube": { "title": "YouTube", "desc": "Hauptkanal" },
-    "tiktok": { "title": "TikTok", "desc": "Hauptkanal" },
-    "instagram": { "title": "Instagram", "desc": "Hauptkanal" },
-    "discord": { "title": "Discord", "desc": "Server beitreten" },
-    "email": { "title": "Kontakt", "desc": "Kontakt per E‑Mail" }
+    "streamplan": {
+      "title": "Streamplan",
+      "desc": "Live-Termine"
+    },
+    "streamelements": {
+      "title": "StreamElements",
+      "desc": "Donation + Liste"
+    },
+    "clipdesmonats": {
+      "title": "Clip des Monats",
+      "desc": "Votet für die Top Clips"
+    },
+    "youtube": {
+      "title": "YouTube",
+      "desc": "Hauptkanal"
+    },
+    "tiktok": {
+      "title": "TikTok",
+      "desc": "Hauptkanal"
+    },
+    "instagram": {
+      "title": "Instagram",
+      "desc": "Hauptkanal"
+    },
+    "discord": {
+      "title": "Discord",
+      "desc": "Server beitreten"
+    },
+    "email": {
+      "title": "Kontakt",
+      "desc": "Kontakt per E‑Mail"
+    }
   },
   "games": {
-    "tanggle": { "title": "Tanggle.io", "desc": "Live mitpuzzeln" },
-    "resourcepack": { "title": "Minecraft ResourcePack", "desc": "Download" },
-    "bartclicker": { "title": "Bartclicker", "desc": "Bartclicker spielen" }
+    "tanggle": {
+      "title": "Tanggle.io",
+      "desc": "Live mitpuzzeln"
+    },
+    "resourcepack": {
+      "title": "Minecraft ResourcePack",
+      "desc": "Download"
+    },
+    "bartclicker": {
+      "title": "Bartclicker",
+      "desc": "Bartclicker spielen"
+    }
   },
   "clips": {
-    "ytShorts": { "title": "YT Shorts", "desc": "Shorts & Clips" },
-    "tiktokClips": { "title": "TikTok Clips", "desc": "Shorts & Clips" },
-    "instaClips": { "title": "Insta Clips", "desc": "Shorts & Clips" }
+    "ytShorts": {
+      "title": "YT Shorts",
+      "desc": "Shorts & Clips"
+    },
+    "tiktokClips": {
+      "title": "TikTok Clips",
+      "desc": "Shorts & Clips"
+    },
+    "instaClips": {
+      "title": "Insta Clips",
+      "desc": "Shorts & Clips"
+    }
   },
   "partners": {
-    "yvolve": { "title": "Yvolve", "desc": "10% Rabatt auf die gesamte Bestellung" },
-    "nclip": { "title": "NClip" },
-    "frugends": { "title": "Frugends", "desc": "10% Rabatt mit Code FullHD" }
+    "yvolve": {
+      "title": "Yvolve",
+      "desc": "10% Rabatt auf die gesamte Bestellung"
+    },
+    "nclip": {
+      "title": "NClip"
+    },
+    "frugends": {
+      "title": "Frugends",
+      "desc": "10% Rabatt mit Code FullHD"
+    }
   },
   "footer": {
     "impressum": "Impressum",
@@ -147,20 +197,62 @@
     "donateSpecific": "Spenden ({{amount}} €)"
   },
   "donations": {
-    "taschengeld": { "desc": "Taschengeld", "text": "Donation Sounds wird abgespielt (Danke von den Kids) 🎉" },
-    "tts": { "desc": "TTS", "text": "Text to Speech wird abgespielt 🔊" },
-    "knock": { "desc": "KnockKnock", "text": "Knock Knock wird abgespielt 🚪" },
-    "majortom": { "desc": "Major Tom", "text": "Major Tom wird abgespielt 🧑🏼‍🚀" },
-    "scream": { "desc": "Scream", "text": "Scream wird abgespielt 😱" },
-    "fliege1": { "desc": "nervige Fliege (60 Sekunden)", "text": "nervige Fliege wird abgespielt 🪰" },
-    "centershock": { "desc": "Sauer macht Lustig – CenterShock", "text": "Stefan isst einen CenterShock & Sound wird abgespielt 🍋" },
-    "ytSound": { "desc": "Youtube Mitglieder Sound", "text": "Youtube Mitglieder Sound wird abgespielt 🪩" },
-    "fliege2": { "desc": "Fliege XXL — 2 Minuten", "text": "sehr nervige Fliege wird abgespielt 🪰" },
-    "1920": { "desc": "1920", "text": "1920 wird abgespielt ⁉️" },
-    "fliege3": { "desc": "Fliege ultra lang", "text": "ultra nervige Fliege wird abgespielt 🪰" },
-    "konfetti": { "desc": "Konfettikanone (nur wenn verfügbar)", "text": "Stefan zündet eine Konfettikanone 🎉" },
-    "hotnuts": { "desc": "8 Hot Nuts + FIRE!!! (nur wenn verfügbar)", "text": "Stefan isst 8 Hot Nuts & Sound wird abgespielt 🔥" },
-    "sandwich": { "desc": "Satanisches Sandwich (nur wenn verfügbar)", "text": "Stefan isst ein satanisches Sandwich (Oreo + Hotnuts + Centershock) & Sound wird abgespielt 🔥" }
+    "taschengeld": {
+      "desc": "Taschengeld",
+      "text": "Donation Sounds wird abgespielt (Danke von den Kids) 🎉"
+    },
+    "tts": {
+      "desc": "TTS",
+      "text": "Text to Speech wird abgespielt 🔊"
+    },
+    "knock": {
+      "desc": "KnockKnock",
+      "text": "Knock Knock wird abgespielt 🚪"
+    },
+    "majortom": {
+      "desc": "Major Tom",
+      "text": "Major Tom wird abgespielt 🧑🏼‍🚀"
+    },
+    "scream": {
+      "desc": "Scream",
+      "text": "Scream wird abgespielt 😱"
+    },
+    "fliege1": {
+      "desc": "nervige Fliege (60 Sekunden)",
+      "text": "nervige Fliege wird abgespielt 🪰"
+    },
+    "centershock": {
+      "desc": "Sauer macht Lustig – CenterShock",
+      "text": "Stefan isst einen CenterShock & Sound wird abgespielt 🍋"
+    },
+    "ytSound": {
+      "desc": "Youtube Mitglieder Sound",
+      "text": "Youtube Mitglieder Sound wird abgespielt 🪩"
+    },
+    "fliege2": {
+      "desc": "Fliege XXL — 2 Minuten",
+      "text": "sehr nervige Fliege wird abgespielt 🪰"
+    },
+    "1920": {
+      "desc": "1920",
+      "text": "1920 wird abgespielt ⁉️"
+    },
+    "fliege3": {
+      "desc": "Fliege ultra lang",
+      "text": "ultra nervige Fliege wird abgespielt 🪰"
+    },
+    "konfetti": {
+      "desc": "Konfettikanone (nur wenn verfügbar)",
+      "text": "Stefan zündet eine Konfettikanone 🎉"
+    },
+    "hotnuts": {
+      "desc": "8 Hot Nuts + FIRE!!! (nur wenn verfügbar)",
+      "text": "Stefan isst 8 Hot Nuts & Sound wird abgespielt 🔥"
+    },
+    "sandwich": {
+      "desc": "Satanisches Sandwich (nur wenn verfügbar)",
+      "text": "Stefan isst ein satanisches Sandwich (Oreo + Hotnuts + Centershock) & Sound wird abgespielt 🔥"
+    }
   },
   "auth": {
     "loading": "Lade…",
@@ -298,7 +390,8 @@
       "click": "💪 Klick",
       "booster": "⚡ Booster",
       "relics": "💎 Relikte",
-      "autobuyer": "🤖 Automatisch"
+      "autobuyer": "🤖 Automatisch",
+      "offline": "🌙 Offline"
     },
     "rebirth": {
       "button": "🔄 Rebirth",
@@ -347,6 +440,20 @@
       "buy": "Kaufen",
       "max": "Max",
       "cost": "Kosten: {cost}"
+    },
+    "offline": {
+      "shopTitle": "🌙 Offline-Verdienst Upgrades",
+      "shopDesc": "Verbessere deinen Verdienst während du offline bist. Basis: 50% deines CPS, max. 8 Stunden.",
+      "currentRate": "Aktuelle Offline-Rate: {{rate}}%",
+      "maxTime": "Maximale Offline-Zeit: 8 Stunden",
+      "upgradesOwned": "Upgrades: {{current}}/{{max}}",
+      "upgradeEffect": "+10% Offline-Verdienst",
+      "buyUpgrade": "+10% Offline kaufen ({{cost}})",
+      "maxUpgrades": "Maximale Upgrades erreicht!",
+      "welcomeBack": "Willkommen zurück!",
+      "earned": "Du hast {{amount}} Barthaare verdient während du weg warst ({{time}}).",
+      "timeHoursMinutes": "{{hours}}h {{minutes}}min",
+      "timeMinutes": "{{minutes}}min"
     }
   }
 }

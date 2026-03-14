@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBartclickerGame } from '../../hooks/useBartclickerGame';
+import { useBartclickerGame, MAX_OFFLINE_UPGRADES } from '../../hooks/useBartclickerGame';
 import { useBartclickerLeaderboard } from '../../hooks/useBartclickerLeaderboard';
 import { BeardSVG } from './BeardSVG';
 import './BartclickerGame.css';
@@ -11,12 +11,12 @@ interface BartclickerGameProps {
 
 export default function BartclickerGame({ compact = false }: BartclickerGameProps) {
   const { t } = useTranslation();
-  const { gameState, isLoading, cps, handleClick, buyItem, buyMaxItems, activateBuff, performRebirth, buyAutobuyer, buyUpgradeAutobuyer, unlockRelic } =
+  const { gameState, isLoading, cps, handleClick, buyItem, buyMaxItems, activateBuff, performRebirth, buyAutobuyer, buyUpgradeAutobuyer, unlockRelic, buyOfflineUpgrade, offlineEarnings, dismissOfflineEarnings } =
     useBartclickerGame();
   const { entries: leaderboardEntries, isLoading: leaderboardLoading } = useBartclickerLeaderboard();
 
   const [activeTab, setActiveTab] = useState<'shop' | 'leaderboard' | 'stats'>('shop');
-  const [shopTab, setShopTab] = useState<'passive' | 'click' | 'booster' | 'relics' | 'autobuyer'>('passive');
+  const [shopTab, setShopTab] = useState<'passive' | 'click' | 'booster' | 'relics' | 'autobuyer' | 'offline'>('passive');
   const [clickPulse, setClickPulse] = useState(false);
   const [clickCount, setClickCount] = useState(0);
 
@@ -41,6 +41,20 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
     if (num >= 1e3) return (num / 1e3).toFixed(2) + 'k';
     return num.toFixed(2);
   };
+
+  const formatOfflineTime = (seconds: number): string => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    if (h > 0) return t('bartclicker.offline.timeHoursMinutes', { hours: h, minutes: m });
+    return t('bartclicker.offline.timeMinutes', { minutes: Math.max(1, m) });
+  };
+
+  // Calculate current offline earnings rate for display
+  const offlineRate = Math.round(
+    (0.5 + gameState.offline_earning_upgrades * 0.1 +
+      gameState.relics.reduce((sum, r) => (r.effect === 'offlineBonus' ? sum + (r.value || 0) : sum), 0)) * 100
+  );
+  const nextOfflineUpgradeCost = Math.floor(5000 * Math.pow(3, gameState.offline_earning_upgrades));
 
   const handleBartClick = () => {
     handleClick();
@@ -79,6 +93,17 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
   return (
     <div className={`bartclicker-game ${compact ? 'compact' : ''}`}>
+      {/* Offline Earnings Notification */}
+      {offlineEarnings && (
+        <div className="offline-earnings-banner">
+          <span className="offline-earnings-icon">🌙</span>
+          <div className="offline-earnings-text">
+            <strong>{t('bartclicker.offline.welcomeBack')}</strong>
+            <span>{t('bartclicker.offline.earned', { amount: formatNumber(offlineEarnings.amount), time: formatOfflineTime(offlineEarnings.seconds) })}</span>
+          </div>
+          <button className="offline-earnings-dismiss" onClick={dismissOfflineEarnings}>✕</button>
+        </div>
+      )}
       {/* Header Stats */}
       <div className="bartclicker-header">
         <div className="stat-box">
@@ -176,6 +201,12 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
               onClick={() => setShopTab('autobuyer')}
             >
               {t('bartclicker.shopTabs.autobuyer')}
+            </button>
+            <button
+              className={`shop-subtab ${shopTab === 'offline' ? 'active' : ''}`}
+              onClick={() => setShopTab('offline')}
+            >
+              {t('bartclicker.shopTabs.offline')}
             </button>
           </div>
 
@@ -332,6 +363,39 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                 >
                   {gameState.click_upgrade_buyer_enabled ? t('bartclicker.autobuyer.autoClickerDisable') : t('bartclicker.autobuyer.autoClickerEnable')}
                 </button>
+              </div>
+            </div>
+          )}
+
+          {shopTab === 'offline' && (
+            <div className="autobuyer-content">
+              <div className="autobuyer-card">
+                <h3>{t('bartclicker.offline.shopTitle')}</h3>
+                <p>{t('bartclicker.offline.shopDesc')}</p>
+                <p style={{ fontSize: '0.9rem', color: '#aaa', marginTop: '6px' }}>
+                  {t('bartclicker.offline.currentRate', { rate: offlineRate })}
+                </p>
+                <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
+                  {t('bartclicker.offline.maxTime')}
+                </p>
+                <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
+                  {t('bartclicker.offline.upgradesOwned', { current: gameState.offline_earning_upgrades, max: MAX_OFFLINE_UPGRADES })}
+                </p>
+                {gameState.offline_earning_upgrades < MAX_OFFLINE_UPGRADES ? (
+                  <button
+                    className="buy-button"
+                    onClick={() => buyOfflineUpgrade()}
+                    disabled={gameState.energy < nextOfflineUpgradeCost}
+                    style={{ marginTop: '10px' }}
+                    title={`${t('bartclicker.offline.upgradeEffect')}`}
+                  >
+                    {t('bartclicker.offline.buyUpgrade', { cost: formatNumber(nextOfflineUpgradeCost) })}
+                  </button>
+                ) : (
+                  <div style={{ marginTop: '10px', color: '#ffd700', fontWeight: 'bold' }}>
+                    ✅ {t('bartclicker.offline.maxUpgrades')}
+                  </div>
+                )}
               </div>
             </div>
           )}
