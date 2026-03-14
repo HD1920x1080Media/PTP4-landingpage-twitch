@@ -5,7 +5,36 @@ import type {
   BartclickerGameState,
   ShopItem,
   Buff,
+  Relic,
 } from '../types/bartclicker';
+
+// Max number of offline earning upgrades
+export const MAX_OFFLINE_UPGRADES = 8;
+// Maximum offline time cap (8 hours in seconds)
+const MAX_OFFLINE_SECONDS = 8 * 3600;
+
+// Calculate CPS from raw data (used for offline earnings – no React state needed)
+function calculateCpsFromData(
+  shopItems: ShopItem[],
+  rebirthMultiplier: number,
+  relics: Relic[],
+): number {
+  let totalCps = shopItems.reduce((sum, item) => {
+    if (item.type === 'passive' && item.cps) {
+      return sum + item.cps * item.count * rebirthMultiplier;
+    }
+    return sum;
+  }, 0);
+
+  relics.forEach((relic) => {
+    if (relic.effect === 'cpsBonus' || relic.effect === 'allBonus') {
+      const bonus = relic.cpsValue || relic.value || 0;
+      totalCps *= 1 + bonus;
+    }
+  });
+
+  return Math.max(0, totalCps);
+}
 
 // Initial shop items definition
 const INITIAL_SHOP_ITEMS: ShopItem[] = [
@@ -91,6 +120,7 @@ export function useBartclickerGame() {
   const [cps, setCps] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [lastSaveTime, setLastSaveTime] = useState(0);
+  const [offlineEarnings, setOfflineEarnings] = useState<{ amount: number; seconds: number } | null>(null);
   const gameLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const isLoadingRef = useRef(false);
@@ -262,11 +292,41 @@ export function useBartclickerGame() {
       } else if (data) {
         // Existing data found - NIEMALS State mit leerem Data überschreiben
         if (!signal.aborted && data && Object.keys(data).length > 0) {
+          // Calculate offline earnings
+          let offlineEarningsAmount = 0;
+          let offlineEarningsSeconds = 0;
+          if (data.last_updated) {
+            const lastUpdated = new Date(data.last_updated).getTime();
+            const now = Date.now();
+            offlineEarningsSeconds = Math.min((now - lastUpdated) / 1000, MAX_OFFLINE_SECONDS);
+
+            if (offlineEarningsSeconds > 60) {
+              const savedCps = calculateCpsFromData(
+                (data.shop_items || []) as ShopItem[],
+                parseFloat(data.rebirth_multiplier) || 1,
+                (data.relics || []) as Relic[],
+              );
+
+              // Base offline rate: 10% of online CPS
+              let offlineMultiplier = 0.1;
+              // Each upgrade adds +10%
+              offlineMultiplier += (data.offline_earning_upgrades || 0) * 0.1;
+              // Apply relic offlineBonus
+              (data.relics as Relic[] || []).forEach((relic) => {
+                if (relic.effect === 'offlineBonus') {
+                  offlineMultiplier += relic.value || 0;
+                }
+              });
+
+              offlineEarningsAmount = Math.floor(savedCps * offlineEarningsSeconds * offlineMultiplier);
+            }
+          }
+
           setGameState({
             id: data.id,
             user_id: data.user_id,
-            energy: parseFloat(data.energy) || 0,
-            total_ever: parseFloat(data.total_ever) || 0,
+            energy: (parseFloat(data.energy) || 0) + offlineEarningsAmount,
+            total_ever: (parseFloat(data.total_ever) || 0) + offlineEarningsAmount,
             rebirth_count: data.rebirth_count || 0,
             rebirth_multiplier: parseFloat(data.rebirth_multiplier) || 1,
             shop_items: (data.shop_items || []).map((item: ShopItem) => ({
@@ -284,6 +344,13 @@ export function useBartclickerGame() {
             last_updated: data.last_updated,
             created_at: data.created_at,
           });
+
+          if (offlineEarningsAmount > 0) {
+            setOfflineEarnings({
+              amount: offlineEarningsAmount,
+              seconds: Math.floor(offlineEarningsSeconds),
+            });
+          }
         }
       }
     } catch (err) {
@@ -516,7 +583,9 @@ export function useBartclickerGame() {
     return () => clearInterval(saveInterval);
   }, [saveGameState]);
 
-  // Also save on important state changes (rebirth, shop item count changes)
+  // Also save on important state changes (rebirth, shop item purchase, offline upgrade purchase)
+  // Use total shop item count instead of .length so we detect purchases (count changes, not length)
+  const totalShopCount = gameState.shop_items.reduce((sum, item) => sum + item.count, 0);
   useEffect(() => {
     const now = Date.now();
     if (now - lastSaveTime > 5000) {
@@ -524,7 +593,7 @@ export function useBartclickerGame() {
       saveGameState();
       setLastSaveTime(now);
     }
-  }, [gameState.rebirth_count, gameState.shop_items.length, saveGameState, lastSaveTime]);
+  }, [gameState.rebirth_count, totalShopCount, gameState.offline_earning_upgrades, saveGameState, lastSaveTime]);
 
   // Buy Autobuyer (kostet 10 Rebirths für Auto-Klicker)
   const buyAutobuyer = useCallback(() => {
@@ -570,11 +639,33 @@ export function useBartclickerGame() {
     [gameState.energy, gameState.relics]
   );
 
+  // Buy offline earning upgrade (costs 5 rebirths, each adds +10% to offline earnings rate)
+  const OFFLINE_UPGRADE_REBIRTH_COST = 5;
+  const buyOfflineUpgrade = useCallback(() => {
+    if (gameState.offline_earning_upgrades >= MAX_OFFLINE_UPGRADES) return false;
+    if (gameState.rebirth_count < OFFLINE_UPGRADE_REBIRTH_COST) return false;
+
+    setGameState((prev) => ({
+      ...prev,
+      rebirth_count: prev.rebirth_count - OFFLINE_UPGRADE_REBIRTH_COST,
+      offline_earning_upgrades: prev.offline_earning_upgrades + 1,
+    }));
+
+    return true;
+  }, [gameState.rebirth_count, gameState.offline_earning_upgrades]);
+
+  // Dismiss the offline earnings notification
+  const dismissOfflineEarnings = useCallback(() => {
+    setOfflineEarnings(null);
+  }, []);
+
   return {
     gameState,
     isLoading,
     clickPower: calculateClickPower(),
     cps,
+    offlineEarnings,
+    dismissOfflineEarnings,
     handleClick,
     buyItem,
     buyMaxItems,
@@ -583,6 +674,7 @@ export function useBartclickerGame() {
     buyAutobuyer,
     buyUpgradeAutobuyer,
     unlockRelic,
+    buyOfflineUpgrade,
     saveGameState,
     loadGameState,
   };

@@ -41,30 +41,83 @@
     }
   },
   "links": {
-    "streamplan": { "title": "Stream Schedule", "desc": "Live dates" },
-    "streamelements": { "title": "StreamElements", "desc": "Donations + List" },
-    "clipdesmonats": { "title": "Clip of the Month", "desc": "Vote for the top clips" },
-    "youtube": { "title": "YouTube", "desc": "Main channel" },
-    "tiktok": { "title": "TikTok", "desc": "Main channel" },
-    "instagram": { "title": "Instagram", "desc": "Main channel" },
-    "onlybart": { "title": "OnlyBart", "desc": "Exklusive content" },
-    "discord": { "title": "Discord", "desc": "Join server" },
-    "email": { "title": "Contact", "desc": "Contact via email" }
+    "streamplan": {
+      "title": "Stream Schedule",
+      "desc": "Live dates"
+    },
+    "streamelements": {
+      "title": "StreamElements",
+      "desc": "Donations + List"
+    },
+    "clipdesmonats": {
+      "title": "Clip of the Month",
+      "desc": "Vote for the top clips"
+    },
+    "youtube": {
+      "title": "YouTube",
+      "desc": "Main channel"
+    },
+    "tiktok": {
+      "title": "TikTok",
+      "desc": "Main channel"
+    },
+    "instagram": {
+      "title": "Instagram",
+      "desc": "Main channel"
+    },
+    "onlybart": {
+      "title": "OnlyBart",
+      "desc": "Exklusive content"
+    },
+    "discord": {
+      "title": "Discord",
+      "desc": "Join server"
+    },
+    "email": {
+      "title": "Contact",
+      "desc": "Contact via email"
+    }
   },
   "games": {
-    "tanggle": { "title": "Tanggle.io", "desc": "Puzzle along live" },
-    "resourcepack": { "title": "Minecraft ResourcePack", "desc": "Download" },
-    "bartclicker": { "title": "Bartclicker", "desc": "Play Bartclicker" }
+    "tanggle": {
+      "title": "Tanggle.io",
+      "desc": "Puzzle along live"
+    },
+    "resourcepack": {
+      "title": "Minecraft ResourcePack",
+      "desc": "Download"
+    },
+    "bartclicker": {
+      "title": "Bartclicker",
+      "desc": "Play Bartclicker"
+    }
   },
   "clips": {
-    "ytShorts": { "title": "YT Shorts", "desc": "Shorts & Clips" },
-    "tiktokClips": { "title": "TikTok Clips", "desc": "Shorts & Clips" },
-    "instaClips": { "title": "Insta Clips", "desc": "Shorts & Clips" }
+    "ytShorts": {
+      "title": "YT Shorts",
+      "desc": "Shorts & Clips"
+    },
+    "tiktokClips": {
+      "title": "TikTok Clips",
+      "desc": "Shorts & Clips"
+    },
+    "instaClips": {
+      "title": "Insta Clips",
+      "desc": "Shorts & Clips"
+    }
   },
   "partners": {
-    "yvolve": { "title": "Yvolve", "desc": "10% off your entire order" },
-    "nclip": { "title": "NClip" },
-    "frugends": { "title": "Frugends", "desc": "10% off with code FullHD" }
+    "yvolve": {
+      "title": "Yvolve",
+      "desc": "10% off your entire order"
+    },
+    "nclip": {
+      "title": "NClip"
+    },
+    "frugends": {
+      "title": "Frugends",
+      "desc": "10% off with code FullHD"
+    }
   },
   "footer": {
     "impressum": "Imprint",
@@ -148,20 +201,62 @@
     "donateSpecific": "Donate ({{amount}} €)"
   },
   "donations": {
-    "taschengeld": { "desc": "Pocket Money", "text": "Donation sound plays (Thanks from the kids) 🎉" },
-    "tts": { "desc": "TTS", "text": "Text to Speech plays 🔊" },
-    "knock": { "desc": "KnockKnock", "text": "Knock Knock plays 🚪" },
-    "majortom": { "desc": "Major Tom", "text": "Major Tom plays 🧑🏼‍🚀" },
-    "scream": { "desc": "Scream", "text": "Scream plays 😱" },
-    "fliege1": { "desc": "Annoying fly (60 seconds)", "text": "Annoying fly plays 🪰" },
-    "centershock": { "desc": "Sour makes funny – CenterShock", "text": "Stefan eats a CenterShock & sound plays 🍋" },
-    "ytSound": { "desc": "YouTube Members Sound", "text": "YouTube Members Sound plays 🪩" },
-    "fliege2": { "desc": "Fly XXL — 2 minutes", "text": "Very annoying fly plays 🪰" },
-    "1920": { "desc": "1920", "text": "1920 plays ⁉️" },
-    "fliege3": { "desc": "Ultra long fly", "text": "Ultra annoying fly plays 🪰" },
-    "konfetti": { "desc": "Confetti cannon (if available)", "text": "Stefan fires a confetti cannon 🎉" },
-    "hotnuts": { "desc": "8 Hot Nuts + FIRE!!! (if available)", "text": "Stefan eats 8 Hot Nuts & sound plays 🔥" },
-    "sandwich": { "desc": "Satanic Sandwich (if available)", "text": "Stefan eats a satanic sandwich (Oreo + Hotnuts + Centershock) & sound plays 🔥" }
+    "taschengeld": {
+      "desc": "Pocket Money",
+      "text": "Donation sound plays (Thanks from the kids) 🎉"
+    },
+    "tts": {
+      "desc": "TTS",
+      "text": "Text to Speech plays 🔊"
+    },
+    "knock": {
+      "desc": "KnockKnock",
+      "text": "Knock Knock plays 🚪"
+    },
+    "majortom": {
+      "desc": "Major Tom",
+      "text": "Major Tom plays 🧑🏼‍🚀"
+    },
+    "scream": {
+      "desc": "Scream",
+      "text": "Scream plays 😱"
+    },
+    "fliege1": {
+      "desc": "Annoying fly (60 seconds)",
+      "text": "Annoying fly plays 🪰"
+    },
+    "centershock": {
+      "desc": "Sour makes funny – CenterShock",
+      "text": "Stefan eats a CenterShock & sound plays 🍋"
+    },
+    "ytSound": {
+      "desc": "YouTube Members Sound",
+      "text": "YouTube Members Sound plays 🪩"
+    },
+    "fliege2": {
+      "desc": "Fly XXL — 2 minutes",
+      "text": "Very annoying fly plays 🪰"
+    },
+    "1920": {
+      "desc": "1920",
+      "text": "1920 plays ⁉️"
+    },
+    "fliege3": {
+      "desc": "Ultra long fly",
+      "text": "Ultra annoying fly plays 🪰"
+    },
+    "konfetti": {
+      "desc": "Confetti cannon (if available)",
+      "text": "Stefan fires a confetti cannon 🎉"
+    },
+    "hotnuts": {
+      "desc": "8 Hot Nuts + FIRE!!! (if available)",
+      "text": "Stefan eats 8 Hot Nuts & sound plays 🔥"
+    },
+    "sandwich": {
+      "desc": "Satanic Sandwich (if available)",
+      "text": "Stefan eats a satanic sandwich (Oreo + Hotnuts + Centershock) & sound plays 🔥"
+    }
   },
   "auth": {
     "loading": "Loading…",
@@ -308,7 +403,8 @@
       "click": "💪 Click",
       "booster": "⚡ Booster",
       "relics": "💎 Relics",
-      "autobuyer": "🤖 Auto"
+      "autobuyer": "🤖 Auto",
+      "offline": "🌙 Offline"
     },
     "rebirth": {
       "button": "🔄 Rebirth",
@@ -357,6 +453,21 @@
       "buy": "Buy",
       "max": "Max",
       "cost": "Cost: {cost}"
+    },
+    "offline": {
+      "shopTitle": "🌙 Offline Earnings Upgrades",
+      "shopDesc": "Improve your earnings while you are offline. Base rate: 10% of your CPS, max 8 hours.",
+      "currentRate": "Current Offline Rate: {{rate}}%",
+      "maxTime": "Maximum Offline Time: 8 Hours",
+      "upgradesOwned": "Upgrades: {{current}}/{{max}}",
+      "upgradeEffect": "+10% Offline Earnings",
+      "buyUpgrade": "Buy +10% Offline ({{cost}} Rebirths)",
+      "maxUpgrades": "Maximum upgrades reached!",
+      "welcomeBack": "Welcome back!",
+      "earned": "You earned {{amount}} beard hairs while you were away ({{time}}).",
+      "timeHoursMinutes": "{{hours}}h {{minutes}}min",
+      "timeMinutes": "{{minutes}}min",
+      "youHave": "You have: {{count}} Rebirths"
     }
   }
 }
