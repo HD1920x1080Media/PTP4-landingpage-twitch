@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useBartclickerGame, MAX_OFFLINE_UPGRADES } from '../../hooks/useBartclickerGame';
+import { useBartclickerGame, MAX_OFFLINE_UPGRADES, BASE_REBIRTH_COST } from '../../hooks/useBartclickerGame';
 import { useBartclickerLeaderboard } from '../../hooks/useBartclickerLeaderboard';
 import { BeardSVG } from './BeardSVG';
 import './BartclickerGame.css';
@@ -55,6 +55,8 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
       gameState.relics.reduce((sum, r) => (r.effect === 'offlineBonus' ? sum + (r.value || 0) : sum), 0)) * 100
   );
   const OFFLINE_UPGRADE_REBIRTH_COST = 5;
+  const rebirthCost = BASE_REBIRTH_COST * Math.pow(2, gameState.rebirth_count);
+  const canRebirth = gameState.energy >= rebirthCost;
 
   const handleBartClick = () => {
     handleClick();
@@ -135,16 +137,17 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
       </div>
 
       {/* Rebirth Section - Always accessible */}
-      {gameState.total_ever >= 1000000 && (
-        <div className="rebirth-section">
-          <button className="rebirth-button" onClick={performRebirth}>
-            {t('bartclicker.rebirth.button')} ({gameState.rebirth_count})
-          </button>
-          <p className="rebirth-info">
-            {t('bartclicker.rebirth.description')} {t('bartclicker.rebirth.multiplierBoost', { multiplier: (gameState.rebirth_multiplier * 2).toFixed(0) })}
-          </p>
-        </div>
-      )}
+      <div className="rebirth-section">
+        <button className="rebirth-button" onClick={performRebirth} disabled={!canRebirth}>
+          {t('bartclicker.rebirth.button')} ({gameState.rebirth_count})
+        </button>
+        <p className="rebirth-info">
+          {t('bartclicker.rebirth.cost', { cost: formatNumber(rebirthCost) })}
+        </p>
+        <p className="rebirth-info">
+          {t('bartclicker.rebirth.description')} {t('bartclicker.rebirth.multiplierBoost', { multiplier: (gameState.rebirth_multiplier * 2).toFixed(0) })}
+        </p>
+      </div>
 
       {/* Tabs */}
       <div className="tabs">
