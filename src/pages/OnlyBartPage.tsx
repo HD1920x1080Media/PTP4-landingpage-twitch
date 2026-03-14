@@ -490,10 +490,6 @@ export function OnlyBartPage() {
                        {siteConfig.onlyBart?.title || 'Posts'}
                    </h1>
                </div>
-               
-               <Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm border border-gray-600 px-3 py-1 rounded hover:border-gray-400">
-                   {t('common.backToHome', 'Zurück zur Startseite')}
-               </Link>
            </div>
 
            <div className="filter-bar">
@@ -528,6 +524,12 @@ export function OnlyBartPage() {
                    />
                ))
            )}
+
+           <div className="mt-8 mb-12 flex justify-center">
+               <Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm border border-gray-600 px-6 py-2 rounded-full hover:border-gray-400 bg-gray-900/50 backdrop-blur-sm">
+                   {t('common.backToHome', 'Zurück zur Startseite')}
+               </Link>
+           </div>
        </div>
     </div>
   )
