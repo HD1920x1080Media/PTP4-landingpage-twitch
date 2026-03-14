@@ -336,7 +336,6 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
             <div className="relics-grid">
               {RELICS.map((relic) => {
                 const isUnlocked = gameState.relics.some((r) => r.id === relic.id);
-                const scaledCost = getScaledCost(relic.baseCost);
                 return (
                   <div key={relic.id} className={`relic-card ${isUnlocked ? 'unlocked' : ''}`}>
                     <div className="relic-icon">{relic.icon}</div>
@@ -348,10 +347,10 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                       <button
                         className="buy-button"
                         onClick={() => unlockRelic(relic.id)}
-                        disabled={gameState.energy < scaledCost}
-                        title={`Kosten: ${formatNumber(scaledCost)}`}
+                        disabled={gameState.energy < relic.baseCost}
+                        title={`Kosten: ${formatNumber(relic.baseCost)}`}
                       >
-                        {formatNumber(scaledCost)}
+                        {formatNumber(relic.baseCost)}
                       </button>
                     )}
                   </div>
