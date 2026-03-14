@@ -174,8 +174,17 @@ CREATE TABLE IF NOT EXISTS moderators (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   twitch_user_id  text UNIQUE NOT NULL,
   display_name    text,
+  is_broadcaster  boolean DEFAULT false,
   created_at      timestamptz NOT NULL DEFAULT now()
 );
+
+-- Ensure column exists if table was already created
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='moderators' AND column_name='is_broadcaster') THEN
+        ALTER TABLE moderators ADD COLUMN is_broadcaster boolean DEFAULT false;
+    END IF;
+END $$;
 
 ALTER TABLE moderators ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "select" ON moderators FOR SELECT USING (true);
@@ -243,12 +252,17 @@ BEGIN
   END IF;
 
   -- Alle bisherigen Einträge entfernen und neu befüllen
-  DELETE FROM moderators;
+  DELETE FROM moderators WHERE true;
 
-  INSERT INTO moderators (twitch_user_id, display_name)
-  SELECT (m->>'user_id')::text, (m->>'user_name')::text
+  INSERT INTO moderators (twitch_user_id, display_name, is_broadcaster)
+  SELECT
+    (m->>'user_id')::text,
+    (m->>'user_name')::text,
+    ((m->>'user_id')::text = v_broadcaster_id)
   FROM jsonb_array_elements(p_mods) AS m
-  ON CONFLICT (twitch_user_id) DO UPDATE SET display_name = EXCLUDED.display_name;
+  ON CONFLICT (twitch_user_id) DO UPDATE SET
+    display_name = EXCLUDED.display_name,
+    is_broadcaster = EXCLUDED.is_broadcaster;
 
   SELECT count(*) INTO v_count FROM moderators;
   RETURN jsonb_build_object(

@@ -185,7 +185,7 @@ export default function ModerateVotingPage() {
 
   return (
     <SubPage>
-      <h1>🛡️ {t('moderate.votingTitle')}</h1>
+      <h1>🛡️ {t('moderate.settingsTitle')}</h1>
       <p style={{ color: 'var(--muted)', marginBottom: 4 }}>
         {t('moderate.loggedInAs', { name: userName })}
       </p>

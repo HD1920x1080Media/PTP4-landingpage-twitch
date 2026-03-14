@@ -279,6 +279,7 @@
     "unknownUser": "Moderator",
     "loggedInAs": "Logged in as {{name}}",
     "votingTitle": "Voting Management",
+    "settingsTitle": "Management",
     "actions": "Actions",
     "startRound2": "Start Round 2 (24 h)",
     "endRound2": "End Round 2",
