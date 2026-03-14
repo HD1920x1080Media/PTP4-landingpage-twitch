@@ -9,7 +9,7 @@ import type {
 } from '../types/bartclicker';
 
 // Max number of offline earning upgrades
-export const MAX_OFFLINE_UPGRADES = 10;
+export const MAX_OFFLINE_UPGRADES = 8;
 // Maximum offline time cap (8 hours in seconds)
 const MAX_OFFLINE_SECONDS = 8 * 3600;
 
