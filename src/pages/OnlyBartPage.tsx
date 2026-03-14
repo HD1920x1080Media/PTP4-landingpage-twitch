@@ -388,7 +388,7 @@ export function OnlyBartPage() {
 
   // Clean up intro
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 3000)
+    const timer = setTimeout(() => setShowIntro(false), 2000)
     return () => clearTimeout(timer)
   }, [])
 
