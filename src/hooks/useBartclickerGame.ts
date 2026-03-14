@@ -13,6 +13,8 @@ import type {
 export const MAX_OFFLINE_UPGRADES = 8;
 // Maximum offline time cap (8 hours in seconds)
 const MAX_OFFLINE_SECONDS = 8 * 3600;
+// Base cost for the first rebirth (doubles with each subsequent rebirth)
+export const BASE_REBIRTH_COST = 1_000_000;
 
 // Calculate CPS from raw data (used for offline earnings – no React state needed)
 function calculateCpsFromData(
@@ -573,20 +575,24 @@ export function useBartclickerGame() {
 
   // Rebirth - erhöht Multiplikator, setzt Items zurück, behält aber Relikte, Autobuyer & aktive Boosts
   const performRebirth = useCallback(() => {
-    setGameState((prev) => ({
-      ...prev,
-      rebirth_count: prev.rebirth_count + 1,
-      rebirth_multiplier: prev.rebirth_multiplier * 2,
-      energy: 0,
-      shop_items: prev.shop_items.map((item) => ({
-        ...item,
-        count: 0,
-        cost: Math.floor((INITIAL_SHOP_ITEMS.find((i) => i.id === item.id)?.cost || item.cost) * Math.pow(1.1, prev.rebirth_count)),
-      })),
-      active_buffs: [],
-      active_debuffs: [],
-      // Behalte: relics, auto_click_buyer_enabled, click_upgrade_buyer_enabled, Autobuyer Items
-    }));
+    setGameState((prev) => {
+      const rebirthCost = BASE_REBIRTH_COST * Math.pow(2, prev.rebirth_count);
+      if (prev.energy < rebirthCost) return prev;
+      return {
+        ...prev,
+        rebirth_count: prev.rebirth_count + 1,
+        rebirth_multiplier: prev.rebirth_multiplier * 2,
+        energy: 0,
+        shop_items: prev.shop_items.map((item) => ({
+          ...item,
+          count: 0,
+          cost: Math.floor((INITIAL_SHOP_ITEMS.find((i) => i.id === item.id)?.cost || item.cost) * Math.pow(1.1, prev.rebirth_count)),
+        })),
+        active_buffs: [],
+        active_debuffs: [],
+        // Behalte: relics, auto_click_buyer_enabled, click_upgrade_buyer_enabled, Autobuyer Items
+      };
+    });
   }, []);
 
   // Game loop for CPS
