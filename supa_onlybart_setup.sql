@@ -29,71 +29,44 @@ CREATE TABLE IF NOT EXISTS onlybart_posts (
 -- RLS for onlybart_posts
 ALTER TABLE onlybart_posts ENABLE ROW LEVEL SECURITY;
 
--- Policy: Everyone with access (Sub/VIP/Mod/Broadcaster) can view posts.
--- We'll use a helper function to check access to keep policies clean.
-CREATE OR REPLACE FUNCTION public.has_onlybart_access()
+-- Helper Function for RLS (Security Definer to avoid recursion)
+CREATE OR REPLACE FUNCTION public.is_broadcaster_role()
 RETURNS boolean AS $$
 BEGIN
-  -- Check if user is broadcaster
-  IF (SELECT count(*) FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'provider_id' = (SELECT raw_user_meta_data->>'provider_id' FROM auth.users WHERE id = auth.uid())) > 0 THEN
-      -- This logic is flawed because we need to know the broadcaster's ID.
-      -- Instead, let's rely on role checks from the user_roles table or metadata.
-      -- Assuming user_roles is populated correctly.
-      RETURN (
-        EXISTS (
-            SELECT 1 FROM user_roles
-            WHERE user_id = auth.uid()
-            AND (is_subscriber = true OR is_vip = true OR is_moderator = true)
-        )
-        OR
-        -- Fallback: Check if user is the specific broadcaster user (hardcoded or env var? No bad idea).
-        -- We will rely on is_broadcaster() RPC if it exists, otherwise assume a specific ID or role.
-        -- Let's assume the syncer marks the broadcaster as a moderator or special role too?
-        -- Or just check if they are the poster.
-        EXISTS ( SELECT 1 FROM auth.users WHERE id = auth.uid() ) -- Allow all logged in users? No.
-      );
-  END IF;
-  RETURN false;
+  RETURN EXISTS (
+    SELECT 1 FROM user_roles
+    WHERE user_id = auth.uid()
+    AND is_broadcaster = true
+  );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Let's simplify:
--- VIEW: Sub, VIP, Mod, Broadcaster.
--- Since determining "Broadcaster" inside SQL without knowing the ID is hard, we'll assume the Broadcaster is also a "Mod" or has a special flag.
--- Actually, the best way is to let the Edge Function set an 'is_broadcaster' flag in user_roles too.
-
-ALTER TABLE user_roles ADD COLUMN IF NOT EXISTS is_broadcaster boolean DEFAULT false;
-
-CREATE POLICY "Allowed users can view posts" ON onlybart_posts FOR SELECT USING (
-  EXISTS (
+CREATE OR REPLACE FUNCTION public.has_onlybart_view_access()
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
     SELECT 1 FROM user_roles
     WHERE user_id = auth.uid()
     AND (is_subscriber = true OR is_vip = true OR is_moderator = true OR is_broadcaster = true)
-  )
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+CREATE POLICY "Allowed users can view posts" ON onlybart_posts FOR SELECT USING (
+  has_onlybart_view_access()
 );
 
 CREATE POLICY "Broadcaster can insert posts" ON onlybart_posts FOR INSERT WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND is_broadcaster = true
-  )
+  is_broadcaster_role()
 );
 
 CREATE POLICY "Broadcaster can update own posts" ON onlybart_posts FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND is_broadcaster = true
-  )
+  is_broadcaster_role()
 );
 
 CREATE POLICY "Broadcaster can delete own posts" ON onlybart_posts FOR DELETE USING (
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND is_broadcaster = true
-  )
+  is_broadcaster_role()
 );
 
 
@@ -110,11 +83,7 @@ CREATE TABLE IF NOT EXISTS onlybart_likes (
 ALTER TABLE onlybart_likes ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allowed users can view likes" ON onlybart_likes FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND (is_subscriber = true OR is_vip = true OR is_moderator = true OR is_broadcaster = true)
-  )
+  has_onlybart_view_access()
 );
 
 -- Like specific logic:
@@ -122,16 +91,11 @@ CREATE POLICY "Allowed users can view likes" ON onlybart_likes FOR SELECT USING 
 -- Superlike: Only VIPs.
 
 CREATE POLICY "Allowed users can insert likes" ON onlybart_likes FOR INSERT WITH CHECK (
-  -- Must be allowed (Sub/VIP/Mod) AND NOT Broadcaster
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND (is_subscriber = true OR is_vip = true OR is_moderator = true)
-    AND is_broadcaster = false
-  )
+  has_onlybart_view_access()
+  AND
+  NOT is_broadcaster_role()
   AND
   (
-    -- If superlike, must be VIP
     (is_superlike = false) OR
     (is_superlike = true AND EXISTS (SELECT 1 FROM user_roles WHERE user_id = auth.uid() AND is_vip = true))
   )
@@ -154,19 +118,11 @@ CREATE TABLE IF NOT EXISTS onlybart_comments (
 ALTER TABLE onlybart_comments ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Allowed users can view comments" ON onlybart_comments FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND (is_subscriber = true OR is_vip = true OR is_moderator = true OR is_broadcaster = true)
-  )
+  has_onlybart_view_access()
 );
 
 CREATE POLICY "Allowed users can insert comments" ON onlybart_comments FOR INSERT WITH CHECK (
-  EXISTS (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND (is_subscriber = true OR is_vip = true OR is_moderator = true OR is_broadcaster = true)
-  )
+  has_onlybart_view_access()
 );
 
 -- Delete: Valid if it's your own comment OR if you are Mod OR Broadcaster
@@ -215,7 +171,7 @@ END $$;
 -- Broadcaster Upload
 CREATE POLICY "Broadcaster can upload media" ON storage.objects FOR INSERT TO authenticated WITH CHECK (
   bucket_id = 'onlybart-media' AND
-  EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND is_broadcaster = true)
+  is_broadcaster_role()
 );
 
 -- Public Read (since bucket is public) or restriced to allowed users?
@@ -265,3 +221,82 @@ CREATE POLICY "Broadcaster can insert twitch_permissions" ON twitch_permissions 
      AND is_broadcaster = true
    )
 );
+
+-- 8. Enhanced Sync Function (Merges "moderators" table logic with "user_roles" logic)
+CREATE OR REPLACE FUNCTION sync_moderators(p_mods jsonb, p_broadcaster_twitch_id text DEFAULT NULL)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_caller_twitch_id   text;
+  v_broadcaster_id     text;
+  v_count              integer;
+
+  -- Variables for user_roles sync
+  vote_mod_record      jsonb;
+  t_id                 text;
+  u_id                 uuid;
+  roles_synced         integer := 0;
+BEGIN
+  -- Broadcaster-ID aus Parameter oder aus der Liste der Mods (erste ID = Broadcaster)
+  v_broadcaster_id := COALESCE(
+    p_broadcaster_twitch_id,
+    (p_mods->0->>'user_id')::text
+  );
+
+  -- Update legacy moderators table (for Clip Voting compatibility)
+  DELETE FROM moderators WHERE is_manual = false;
+
+  INSERT INTO moderators (twitch_user_id, display_name, is_broadcaster, is_manual)
+  SELECT
+    (m->>'user_id')::text,
+    (m->>'user_name')::text,
+    ((m->>'user_id')::text = v_broadcaster_id),
+    false
+  FROM jsonb_array_elements(p_mods) AS m
+  ON CONFLICT (twitch_user_id) DO UPDATE SET
+    display_name = EXCLUDED.display_name,
+    is_broadcaster = EXCLUDED.is_broadcaster,
+    is_manual = EXCLUDED.is_manual;
+
+  -- Update user_roles table (for OnlyBart RLS)
+  FOR vote_mod_record IN SELECT * FROM jsonb_array_elements(p_mods)
+  LOOP
+        t_id := vote_mod_record->>'user_id';
+
+        -- Find UUID from auth.users
+        SELECT id INTO u_id FROM auth.users
+        WHERE raw_user_meta_data->>'provider_id' = t_id
+        OR raw_user_meta_data->>'sub' = t_id
+        LIMIT 1;
+
+        IF u_id IS NOT NULL THEN
+            INSERT INTO public.user_roles (user_id, is_moderator, is_broadcaster, last_synced_at)
+            VALUES (
+                u_id,
+                true,
+                (t_id = v_broadcaster_id),
+                now()
+            )
+            ON CONFLICT (user_id)
+            DO UPDATE SET
+                is_moderator = true,
+                is_broadcaster = (t_id = v_broadcaster_id),
+                last_synced_at = now();
+
+            roles_synced := roles_synced + 1;
+        END IF;
+  END LOOP;
+
+  SELECT count(*) INTO v_count FROM moderators;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'count', v_count,
+    'roles_synced', roles_synced,
+    'broadcaster_id', v_broadcaster_id
+  );
+END;
+$$;
