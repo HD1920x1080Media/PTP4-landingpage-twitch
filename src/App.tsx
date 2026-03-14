@@ -1,4 +1,5 @@
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
+import {useLayoutEffect} from 'react'
 import SettingsBar from './components/SettingsBar'
 import CookieBanner from './components/CookieBanner/CookieBanner'
 import PageTracker from './components/PageTracker'
@@ -18,6 +19,14 @@ import ModerateSettingsPage from './pages/ModerateSettingsPage'
 import NotFoundPage from './pages/NotFoundPage'
 import './App.css'
 
+// Komponente für echte Browser-Redirects zu statischen HTML-Dateien
+const RedirectToHtml: React.FC<{ to: string }> = ({ to }) => {
+    useLayoutEffect(() => {
+        window.location.href = to
+    }, [to])
+    return null
+}
+
 function App() {
     return (
         <BrowserRouter>
@@ -29,7 +38,11 @@ function App() {
                 <Route path="/datenschutz" element={<DatenschutzPage/>}/>
                 <Route path="/streamplan" element={<StreamplanPage/>}/>
                 <Route path="/streamelements" element={<StreamelementsPage/>}/>
-
+                <Route path="/onlybart" element={<RedirectToHtml to="/ob.html"/>}/>
+                <Route path="/onlybart/media" element={<RedirectToHtml to="/ob/media.html"/>}/>
+                <Route path="/onlybart/photos" element={<RedirectToHtml to="/ob/photos.html"/>}/>
+                <Route path="/onlybart/posts" element={<RedirectToHtml to="/ob/posts.html"/>}/>
+                <Route path="/onlybart/videos" element={<RedirectToHtml to="/ob/videos.html"/>}/>
                 {/* ── Login zum Aufrufen nötig ── */}
                 <Route path="/bartclicker" element={<ProtectedRoute><BartclickerPage/></ProtectedRoute>}/>
 
@@ -46,6 +59,26 @@ function App() {
 
                 {/* ── Alternative Pfade → Redirect ── */}
                 <Route path="/actuator/data" element={<Navigate to="/moderate/statistics" replace/>}/>
+                <Route path="/se" element={<Navigate to="/streamelements" replace/>}/>
+                <Route path="/s" element={<Navigate to="/streamplan" replace/>}/>
+                <Route path="/ob" element={<Navigate to="/onlybart" replace/>}/>
+                <Route path="/bc" element={<Navigate to="/bartclicker" replace/>}/>
+                <Route path="/cdm" element={<Navigate to="/clipdesmonats" replace/>}/>
+
+                {/* ── Externe Links → Redirect ── */}
+                <Route path="/twitch" element={<Navigate to="https://www.twitch.tv/hd1920x1080" replace/>}/>
+                <Route path="/insta" element={<Navigate to="https://www.instagram.com/hd1920x1080/" replace/>}/>
+                <Route path="/instagram" element={<Navigate to="https://www.instagram.com/hd1920x1080/" replace/>}/>
+                <Route path="/yt" element={<Navigate to="https://youtube.com/@hawedereplus" replace/>}/>
+                <Route path="/youtube" element={<Navigate to="https://youtube.com/@hawedereplus" replace/>}/>
+                <Route path="/dc" element={<Navigate to="https://discord.gg/Zp5KNqCHzc" replace/>}/>
+                <Route path="/discord" element={<Navigate to="https://discord.gg/Zp5KNqCHzc" replace/>}/>
+                <Route path="/tiktok" element={<Navigate to="https://tiktok.com/@hd1920x1080" replace/>}/>
+                <Route path="/rp" element={<Navigate to="https://github.com/HD1920x1080Media/Minecraft-Ressource-Pack/archive/refs/tags/latest.zip" replace/>}/>
+                <Route path="/ressourcepack" element={<Navigate to="https://github.com/HD1920x1080Media/Minecraft-Ressource-Pack/archive/refs/tags/latest.zip" replace/>}/>
+                <Route path="/tanggle" element={<Navigate to="http://tng.gl/c/hd1920x1080" replace/>}/>
+                <Route path="/puzzle" element={<Navigate to="http://tng.gl/c/hd1920x1080" replace/>}/>
+                <Route path="/nclip" element={<Navigate to="https://nclip.io/page/hd1920x1080" replace/>}/>
 
                 <Route path="*" element={<NotFoundPage/>}/>
             </Routes>

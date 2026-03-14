@@ -41,38 +41,15 @@
     }
   },
   "links": {
-    "streamplan": {
-      "title": "Stream Schedule",
-      "desc": "Live dates"
-    },
-    "streamelements": {
-      "title": "StreamElements",
-      "desc": "Donations + List"
-    },
-    "clipdesmonats": {
-      "title": "Clip of the Month",
-      "desc": "Vote for the top clips"
-    },
-    "youtube": {
-      "title": "YouTube",
-      "desc": "Main channel"
-    },
-    "tiktok": {
-      "title": "TikTok",
-      "desc": "Main channel"
-    },
-    "instagram": {
-      "title": "Instagram",
-      "desc": "Main channel"
-    },
-    "discord": {
-      "title": "Discord",
-      "desc": "Join server"
-    },
-    "email": {
-      "title": "Contact",
-      "desc": "Contact via email"
-    }
+    "streamplan": { "title": "Stream Schedule", "desc": "Live dates" },
+    "streamelements": { "title": "StreamElements", "desc": "Donations + List" },
+    "clipdesmonats": { "title": "Clip of the Month", "desc": "Vote for the top clips" },
+    "youtube": { "title": "YouTube", "desc": "Main channel" },
+    "tiktok": { "title": "TikTok", "desc": "Main channel" },
+    "instagram": { "title": "Instagram", "desc": "Main channel" },
+    "onlybart": { "title": "OnlyBart", "desc": "Exklusive content" },
+    "discord": { "title": "Discord", "desc": "Join server" },
+    "email": { "title": "Contact", "desc": "Contact via email" }
   },
   "games": {
     "tanggle": {
