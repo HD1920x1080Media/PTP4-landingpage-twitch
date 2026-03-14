@@ -47,6 +47,7 @@
     "youtube": { "title": "YouTube", "desc": "Main channel" },
     "tiktok": { "title": "TikTok", "desc": "Main channel" },
     "instagram": { "title": "Instagram", "desc": "Main channel" },
+    "onlybart": { "title": "OnlyBart", "desc": "Exklusive content" },
     "discord": { "title": "Discord", "desc": "Join server" },
     "email": { "title": "Contact", "desc": "Contact via email" }
   },

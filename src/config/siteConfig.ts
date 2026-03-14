@@ -230,6 +230,14 @@ const siteConfig: SiteConfig = {
       target: '_blank',
     },
     {
+      id: 'onlybart',
+      titleKey: 'links.onlybart.title',
+      descKey: 'links.onlybart.desc',
+      url: '/onlybart',
+      icon: '/img/logos/OB.png',
+      target: '_self',
+    },
+    {
       id: 'discord',
       titleKey: 'links.discord.title',
       descKey: 'links.discord.desc',
