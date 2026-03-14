@@ -1,0 +1,18 @@
+.ob-splash-center {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.ob-splash-logo {
+  width: 220px;
+  height: auto;
+  animation: ob-grow 1s ease forwards;
+}
+
+@keyframes ob-grow {
+  from { transform: scale(1); }
+  to   { transform: scale(2); }
+}
