@@ -393,22 +393,7 @@ export function OnlyBartPage() {
   const [showIntro, setShowIntro] = useState(true)
   const [filter, setFilter] = useState<'all' | 'media' | 'photos' | 'videos'>('all')
   const [posts, setPosts] = useState<Post[]>([])
-  const [isBlurred, setIsBlurred] = useState(false)
   
-  // Privacy protection: Blur when window loses focus
-  useEffect(() => {
-      const handleBlur = () => setIsBlurred(true)
-      const handleFocus = () => setIsBlurred(false)
-
-      window.addEventListener('blur', handleBlur)
-      window.addEventListener('focus', handleFocus)
-
-      return () => {
-          window.removeEventListener('blur', handleBlur)
-          window.removeEventListener('focus', handleFocus)
-      }
-  }, [])
-
   // Clean up intro
   useEffect(() => {
     const timer = setTimeout(() => setShowIntro(false), 2000)
@@ -515,7 +500,7 @@ export function OnlyBartPage() {
   }
 
   return (
-    <div className="onlybart-container" style={{ filter: isBlurred ? 'blur(15px)' : 'none', transition: 'filter 0.2s' }}>
+    <div className="onlybart-container">
        {showIntro && (
            <div className="onlybart-intro">
                <img src={siteConfig.onlyBart?.logoUrl || "/img/logo128.png"} alt="Logo" className="intro-logo" />
