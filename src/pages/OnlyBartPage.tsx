@@ -451,8 +451,8 @@ export function OnlyBartPage() {
                 return {
                     ...p,
                     likes_count,
-                    user_has_liked: !!myLike && !myLike?.is_superlike,
-                    user_has_superliked: myLike?.is_superlike,
+                    user_has_liked: !!myLike && !myLike.is_superlike,
+                    user_has_superliked: !!myLike && !!myLike.is_superlike,
                     comments_count
                 }
             })

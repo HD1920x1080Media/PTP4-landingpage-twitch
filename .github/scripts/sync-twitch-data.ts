@@ -186,6 +186,40 @@ async function main() {
     
     console.log('Sync completed successfully.')
 
+    // ── Upsert VIPs in user_roles ──
+    if (vips.length > 0) {
+      const vipUserRoles = vips.map(id => ({ user_id: id, is_vip: true }))
+      const { error: vipError } = await supabase.from('user_roles').upsert(vipUserRoles, {
+        onConflict: 'user_id',
+        ignoreDuplicates: false,
+      })
+      if (vipError) {
+        console.error('Error upserting VIPs in user_roles:', vipError)
+        throw vipError
+      } else {
+        console.log(`VIPs upserted in user_roles: ${vips.length}`)
+      }
+    }
+
+    // ── Upsert MODs in user_roles ──
+    if (mods.length > 0) {
+      const modUserRoles = mods.map(mod => ({ user_id: mod.user_id, is_moderator: true }))
+      // Broadcaster als Mod (falls nicht schon in mods)
+      if (!mods.find(m => m.user_id === broadcaster.id)) {
+        modUserRoles.push({ user_id: broadcaster.id, is_moderator: true })
+      }
+      const { error: modUpsertError } = await supabase.from('user_roles').upsert(modUserRoles, {
+        onConflict: 'user_id',
+        ignoreDuplicates: false,
+      })
+      if (modUpsertError) {
+        console.error('Error upserting MODs in user_roles:', modUpsertError)
+        throw modUpsertError
+      } else {
+        console.log(`MODs upserted in user_roles: ${modUserRoles.length}`)
+      }
+    }
+
   } catch (err) {
     console.error('Script failed:', err)
     process.exit(1)
