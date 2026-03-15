@@ -1,4 +1,4 @@
-
+import * as fs from 'fs'
 import { createClient } from '@supabase/supabase-js'
 
 // ── Environment Variables ──
@@ -26,25 +26,37 @@ interface TwitchMod { user_id: string; user_name: string }
 // ── Helpers ──
 
 async function getAccessToken() {
-  console.log('Refreshing Twitch Token...')
-  const params = new URLSearchParams()
-  params.append('client_id', TWITCH_CLIENT_ID!)
-  params.append('client_secret', TWITCH_CLIENT_SECRET!)
-  params.append('grant_type', 'refresh_token')
-  params.append('refresh_token', TWITCH_REFRESH_TOKEN!)
+    console.log('Refreshing Twitch Token...')
+    const params = new URLSearchParams()
+    params.append('client_id', TWITCH_CLIENT_ID!)
+    params.append('client_secret', TWITCH_CLIENT_SECRET!)
+    params.append('grant_type', 'refresh_token')
+    params.append('refresh_token', TWITCH_REFRESH_TOKEN!)
 
-  const res = await fetch('https://id.twitch.tv/oauth2/token', {
-    method: 'POST',
-    body: params,
-  })
+    const res = await fetch('https://id.twitch.tv/oauth2/token', {
+        method: 'POST',
+        body: params,
+    })
 
-  if (!res.ok) {
-    throw new Error(`Failed to refresh token: ${await res.text()}`)
-  }
+    if (!res.ok) {
+        throw new Error(`Failed to refresh token: ${await res.text()}`)
+    }
 
-  const data = await res.json()
-  return data.access_token as string
+    const data = await res.json()
+
+    // WICHTIG: Falls Twitch einen neuen Refresh Token schickt, loggen wir ihn
+    // in einem speziellen GitHub-Format, damit die Action ihn lesen kann.
+    if (data.refresh_token && data.refresh_token !== TWITCH_REFRESH_TOKEN) {
+        console.log(`::set-output name=new_refresh_token::${data.refresh_token}`);
+        // Für modernere Runner nutzen wir zusätzlich ein Environment File:
+        if (process.env.GITHUB_OUTPUT) {
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `NEW_REFRESH_TOKEN=${data.refresh_token}\n`);
+        }
+    }
+
+    return data.access_token as string
 }
+
 
 async function twitchGet<T>(endpoint: string, token: string): Promise<T> {
   const res = await fetch(`https://api.twitch.tv/helix/${endpoint}`, {
