@@ -1,13 +1,16 @@
 .settings-bar {
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    right: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 1000;
-    justify-content: space-between;
+  position: fixed;
+  top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  justify-content: space-between;
+  background: var(--color-bg, #18181b);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 0.5rem 1rem 0.5rem 1rem;
 }
 
 .settings-left {
@@ -30,8 +33,6 @@
   .settings-bar {
     position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 1001;
     background: var(--color-bg, #18181b);
     justify-content: space-between;
