@@ -29,6 +29,8 @@ export function useOnlyBartAccess(): OnlyBartAccess {
   const { isMod, isBroadcaster: isBroadcasterFromHook, loading: modLoading } = useIsModerator()
   
   const [role, setRole] = useState<OnlyBartRole>('none')
+  const [isVip, setIsVip] = useState(false)
+  const [isModerator, setIsModerator] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -56,6 +58,8 @@ export function useOnlyBartAccess(): OnlyBartAccess {
         }
 
         let detectedRole: OnlyBartRole = 'none'
+        let detectedIsVip = false
+        let detectedIsModerator = false
 
         try {
             // 1. Broadcaster
@@ -65,6 +69,7 @@ export function useOnlyBartAccess(): OnlyBartAccess {
             // 2. Moderator
             else if (isMod) {
                 detectedRole = 'moderator'
+                detectedIsModerator = true
             }
             else {
                 // 2a. Check twitch_permissions (Synced Table) - Most reliable for VIP/Sub
@@ -79,10 +84,7 @@ export function useOnlyBartAccess(): OnlyBartAccess {
                     if (permData) {
                         if (permData.is_vip) {
                             detectedRole = 'vip'
-                            // Don't return yet, check if subscriber is higher precedence? No, VIP usually > Sub for features (Superlikes)
-                            // But usually users are both. VIP role gives Superlike. Sub role gives view.
-                            // If user is both, we should grant max permissions.
-                            // My type is effectively an Enum. Let's say VIP > Subscriber.
+                            detectedIsVip = true
                         } else if (permData.is_subscriber) {
                             detectedRole = 'subscriber'
                         }
@@ -102,8 +104,14 @@ export function useOnlyBartAccess(): OnlyBartAccess {
 
                     if (roleData) {
                         if (roleData.is_broadcaster) detectedRole = 'broadcaster'
-                        else if (roleData.is_moderator) detectedRole = 'moderator'
-                        else if (roleData.is_vip) detectedRole = 'vip'
+                        else if (roleData.is_moderator) {
+                            detectedRole = 'moderator'
+                            detectedIsModerator = true
+                        }
+                        else if (roleData.is_vip) {
+                            detectedRole = 'vip'
+                            detectedIsVip = true
+                        }
                         else if (roleData.is_subscriber) detectedRole = 'subscriber'
                     }
 
@@ -150,6 +158,8 @@ export function useOnlyBartAccess(): OnlyBartAccess {
 
         if (!cancelled) {
             setRole(detectedRole)
+            setIsVip(detectedIsVip)
+            setIsModerator(detectedIsModerator)
             if (detectedRole !== 'none') {
                 roleCache[user.id] = { role: detectedRole, timestamp: Date.now() }
             }
@@ -169,7 +179,7 @@ export function useOnlyBartAccess(): OnlyBartAccess {
     canView: isAllowed,
     canPost: isBroadcaster,
     canLike: isAllowed && !isBroadcaster,
-    canSuperlike: role === 'vip', // Only VIPs
+    canSuperlike: isVip || isModerator, // VIPs und Moderatoren
     canComment: isAllowed,
     canDeleteComment: isBroadcaster || role === 'moderator',
     loading,
