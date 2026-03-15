@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FaHome } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../context/useTheme'
@@ -31,6 +31,7 @@ function getCurrentLang(language: string): Lang {
 export default function SettingsBar() {
   const { mode, setMode } = useTheme()
   const { t, i18n } = useTranslation()
+  const location = useLocation()
 
   const cycleTheme = () => {
     const idx = themeOrder.indexOf(mode)
@@ -48,9 +49,11 @@ export default function SettingsBar() {
     <div className="settings-bar">
       <div className="settings-left">
         <ProfileButton />
-        <Link to="/" className="settings-home-link" title={t('home')}>
-          <FaHome size={24} />
-        </Link>
+        {location.pathname !== '/' && (
+          <Link to="/" className="settings-home-link" title={t('home')}>
+            <FaHome size={24} />
+          </Link>
+        )}
       </div>
       <div className="settings-right">
         <button className="settings-btn" onClick={cycleTheme} title={t('settings.theme')}>
