@@ -48,12 +48,12 @@ export default function SettingsBar() {
   return (
     <div className="settings-bar">
       <div className="settings-left">
+        <ProfileButton />
         {location.pathname !== '/' && (
           <Link to="/" className="settings-home-link" title={t('home')}>
             <FaHome size={24} />
           </Link>
         )}
-        <ProfileButton />
       </div>
       <div className="settings-right">
         <button className="settings-btn" onClick={cycleTheme} title={t('settings.theme')}>

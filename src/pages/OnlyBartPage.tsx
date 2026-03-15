@@ -153,7 +153,7 @@ function CreatePost({ onSuccess }: { onSuccess: () => void }) {
   )
 }
 
-function PostCard({ post, access, onDelete }: { post: Post, access: OnlyBartAccess, onDelete: (id: string) => void }) {
+function PostCard({ post, access, onDelete, onLikeChange }: { post: Post, access: OnlyBartAccess, onDelete: (id: string) => void, onLikeChange?: () => void }) {
   const { user } = useAuth()
   const { t } = useTranslation()
   const [comments, setComments] = useState<Comment[]>([])
@@ -213,31 +213,28 @@ function PostCard({ post, access, onDelete }: { post: Post, access: OnlyBartAcce
     if (!access.canLike && !access.canSuperlike) return
     if (isSuper && !access.canSuperlike) return
 
-    // Optimistic UI
     const currentlyLiked = hasLiked || hasSuperliked
     if (currentlyLiked) {
-        // Unlike
-        setHasLiked(false)
-        setHasSuperliked(false)
-        setLikesCount(prev => Math.max(0, prev - 1))
-        
-        await supabase
-            .from('onlybart_likes')
-            .delete()
-            .match({ post_id: post.id, user_id: user?.id })
+      setHasLiked(false)
+      setHasSuperliked(false)
+      setLikesCount(prev => Math.max(0, prev - 1))
+      await supabase
+        .from('onlybart_likes')
+        .delete()
+        .match({ post_id: post.id, user_id: user?.id })
+      if (onLikeChange) onLikeChange()
     } else {
-        // Like
-        if (isSuper) setHasSuperliked(true)
-        else setHasLiked(true)
-        setLikesCount(prev => prev + 1)
-
-        await supabase
-            .from('onlybart_likes')
-            .insert({
-                post_id: post.id,
-                user_id: user?.id,
-                is_superlike: isSuper
-            })
+      if (isSuper) setHasSuperliked(true)
+      else setHasLiked(true)
+      setLikesCount(prev => prev + 1)
+      await supabase
+        .from('onlybart_likes')
+        .insert({
+          post_id: post.id,
+          user_id: user?.id,
+          is_superlike: isSuper
+        })
+      if (onLikeChange) onLikeChange()
     }
   }
 
@@ -437,7 +434,7 @@ export function OnlyBartPage() {
      
      if (data) {
         // Enhance with likes count, user status und Kommentaranzahl
-        const enhancedPromise = data.map(async (p: any) => {
+        const enhancedPromise = data.map(async (p: Post) => {
             const { count } = await supabase
                 .from('onlybart_likes')
                 .select('*', { count: 'exact', head: true })
@@ -564,12 +561,13 @@ export function OnlyBartPage() {
                </div>
            ) : (
                filteredPosts.map(post => (
-                   <PostCard 
-                        key={post.id} 
-                        post={post} 
-                        access={access} 
-                        onDelete={(id) => setPosts(prev => prev.filter(p => p.id !== id))}
-                   />
+                 <PostCard 
+                   key={post.id} 
+                   post={post} 
+                   access={access} 
+                   onDelete={(id) => setPosts(prev => prev.filter(p => p.id !== id))}
+                   onLikeChange={fetchPosts}
+                 />
                ))
            )}
        </div>
