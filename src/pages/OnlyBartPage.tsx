@@ -507,7 +507,7 @@ export function OnlyBartPage() {
            </div>
        )}
 
-       <div className="feed-layout pt-20">
+        <div className="feed-layout">
            {/* Header / Filter */}
            <div className="flex justify-between items-center mb-6">
                <div className="flex items-center gap-2">

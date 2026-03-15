@@ -3,7 +3,6 @@
   background-color: #000; /* Dark theme base */
   color: #fff;
   padding-bottom: 80px;
-  padding-top: var(--settingsbar-height, 64px); /* Abstand für SettingsBar */
 }
 
 /* Intro Animation */
@@ -41,7 +40,7 @@
 .feed-layout {
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 8px;
 }
 
 .filter-bar {
