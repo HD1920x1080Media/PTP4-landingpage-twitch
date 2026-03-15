@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/useAuth'
 import { useOnlyBartAccess, type OnlyBartAccess } from '../hooks/useOnlyBartAccess'
-import { FaHeart, FaRegHeart, FaComment, FaTrash, FaYoutube, FaImage, FaLock, FaStar } from 'react-icons/fa'
+import { FaHeart, FaRegHeart, FaComment, FaTrash, FaYoutube, FaImage, FaLock, FaStar, FaHome } from 'react-icons/fa'
 import './OnlyBartPage.css'
 import siteConfig from '../config/siteConfig'
 
@@ -499,6 +499,9 @@ export function OnlyBartPage() {
            {/* Header / Filter */}
            <div className="flex justify-between items-center mb-6">
                <div className="flex items-center gap-2">
+                   <Link to="/" className="onlybart-home-link" title={t('home')}> 
+                       <FaHome size={28} style={{marginRight: '8px'}} />
+                   </Link>
                    <img 
                         src={siteConfig.onlyBart?.logoUrl || "/img/logo128.png"} 
                         alt="Logo" 
@@ -543,9 +546,7 @@ export function OnlyBartPage() {
                ))
            )}
 
-           <div className="mt-8 mb-12 flex justify-center">
-               <Link to="/" className="btn btn-primary">{t('home')}</Link>
-           </div>
+           {/* Home-Button entfernt, stattdessen Haus-Icon oben links */}
        </div>
     </div>
   )
