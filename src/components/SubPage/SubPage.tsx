@@ -25,7 +25,6 @@ export default function SubPage({children}: SubPageProps) {
                             {t('back')}
                         </Link>
                     )}
-                    <Link to="/" className="btn btn-primary">{t('home')}</Link>
                 </div>
             </div>
             <Footer/>

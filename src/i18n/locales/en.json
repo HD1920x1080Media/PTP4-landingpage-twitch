@@ -141,8 +141,7 @@
     "downloadStarted": "Download started"
   },
   "discountCode": "Code: {{code}}",
-  "back": "← Back Home",
-  "home": "← Home",
+  "back": "← Back",
   "impressumPage": {
     "title": "Imprint",
     "contact": "Contact"

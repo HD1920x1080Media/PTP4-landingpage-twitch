@@ -541,8 +541,6 @@ export function OnlyBartPage() {
                    />
                ))
            )}
-
-           {/* Home-Button entfernt, stattdessen Haus-Icon in SettingsBar */}
        </div>
     </div>
   )

@@ -142,7 +142,6 @@
   },
   "discountCode": "Code: {{code}}",
   "back": "← Zurück",
-  "home": "← Startseite",
   "impressumPage": {
     "title": "Impressum",
     "contact": "Kontakt"

@@ -46,11 +46,12 @@ export default function SettingsBar() {
 
   return (
     <div className="settings-bar">
-      <Link to="/" className="settings-home-link" title={t('home')}>
-        <FaHome size={24} />
-      </Link>
-      <ProfileButton />
-
+      <div className="settings-left">
+        <ProfileButton />
+        <Link to="/" className="settings-home-link" title={t('home')}>
+          <FaHome size={24} />
+        </Link>
+      </div>
       <div className="settings-right">
         <button className="settings-btn" onClick={cycleTheme} title={t('settings.theme')}>
           {themeIcons[mode]} <span className="settings-btn-text">{t(`settings.${mode}`)}</span>
