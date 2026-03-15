@@ -272,7 +272,7 @@
   "moderate": {
     "forbidden": "Kei Zuegriff",
     "forbiddenHint": "Dä Bereich isch nur für Moderatore und de Streamer zugänglich.",
-    "landingTitle": "\uD83D\uDEE1\uFE0F Moderations-Bereich",
+    "landingTitle": "Moderations-Bereich",
     "welcome": "Willkomme, {{name}}!",
     "settings": "Iistellige",
     "unknownUser": "Moderator",

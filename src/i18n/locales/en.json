@@ -284,7 +284,7 @@
   "moderate": {
     "forbidden": "Access Denied",
     "forbiddenHint": "This area is only accessible to moderators and the streamer.",
-    "landingTitle": "\uD83D\uDEE1\uFE0F Moderation Area",
+    "landingTitle": "Moderation Area",
     "welcome": "Welcome, {{name}}!",
     "settings": "Settings",
     "unknownUser": "Moderator",
