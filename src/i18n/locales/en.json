@@ -507,6 +507,9 @@
       "subHint": "Are you a subscriber? Please ensure you are logged in with the correct account."
     },
     "notLoggedIn": "Log in with Twitch to check if you have access to OnlyBart.",
-    "noPosts": "No posts yet. Be the first to see something amazing!"
+    "noPosts": "No posts yet. Be the first to see something amazing!",
+    "comment": {
+      "placeholder": "Write a comment..."
+    }
   }
 }

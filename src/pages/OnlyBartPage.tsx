@@ -348,7 +348,7 @@ function PostCard({ post, access, onDelete }: { post: Post, access: OnlyBartAcce
                         className="comment-input" 
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Write a comment..."
+                        placeholder={t('onlybart.comment.placeholder')}
                         onKeyDown={(e) => e.key === 'Enter' && handlePostComment()}
                       />
                   </div>
