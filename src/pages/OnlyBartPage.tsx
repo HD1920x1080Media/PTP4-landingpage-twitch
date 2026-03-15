@@ -31,6 +31,11 @@ interface Comment {
   display_name?: string // Joined from profiles
 }
 
+interface Profile {
+  id: string
+  username: string
+}
+
 // ------------------------------------------------------------------
 // Sub-Components
 // ------------------------------------------------------------------
@@ -159,24 +164,39 @@ function PostCard({ post, access, onDelete }: { post: Post, access: OnlyBartAcce
   const [hasSuperliked, setHasSuperliked] = useState(post.user_has_superliked || false)
 
   const loadComments = useCallback(async () => {
-    const { data } = await supabase
+    // 1. Kommentare laden (ohne Join)
+    const { data: commentsData } = await supabase
       .from('onlybart_comments')
-      .select('*, profiles(username)')
+      .select('*')
       .eq('post_id', post.id)
       .order('created_at', { ascending: true })
-    
-    if (data) {
-       // Map profile username to display_name
-       const formatted: Comment[] = data.map((c: { id: string, post_id: string, user_id: string, content: string, created_at: string, profiles?: { username: string } }) => ({
-           id: c.id,
-           post_id: c.post_id,
-           user_id: c.user_id,
-           content: c.content,
-           created_at: c.created_at,
-           display_name: c.profiles?.username || 'Unknown'
-       }))
-       setComments(formatted)
+
+    if (!commentsData || commentsData.length === 0) {
+      setComments([])
+      return
     }
+
+    // 2. Alle unique user_id extrahieren
+    const userIds = Array.from(new Set(commentsData.map((c: Comment) => c.user_id)))
+
+    // 3. Profile laden
+    let profilesMap: Record<string, string> = {}
+    if (userIds.length > 0) {
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIds)
+      if (profilesData) {
+        profilesMap = Object.fromEntries((profilesData as Profile[]).map((p: Profile) => [p.id, p.username]))
+      }
+    }
+
+    // 4. display_name zuordnen
+    const formatted: Comment[] = (commentsData as Comment[]).map((c: Comment) => ({
+      ...c,
+      display_name: profilesMap[c.user_id] || 'Unknown'
+    }))
+    setComments(formatted)
   }, [post.id])
 
   useEffect(() => {
