@@ -1,8 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 import { FaHome } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '../context/useTheme'
-import ProfileButton from './ProfileButton/ProfileButton'
+import { useTheme } from '../../context/useTheme.ts'
+import ProfileButton from '../ProfileButton/ProfileButton.tsx'
 import './SettingsBar.css'
 
 const themeIcons: Record<string, string> = {

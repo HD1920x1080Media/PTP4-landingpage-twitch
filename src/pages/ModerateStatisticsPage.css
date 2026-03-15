@@ -1,6 +1,7 @@
 .moderate-stats-intro {
   color: var(--muted);
   margin-bottom: 16px;
+  padding-top: var(--settingsbar-height, 64px); /* Abstand für SettingsBar */
 }
 
 .moderate-stats-toolbar {
@@ -160,4 +161,3 @@
     grid-template-columns: 1fr;
   }
 }
-

@@ -1,6 +1,6 @@
 import {BrowserRouter, Routes, Route, Navigate, useLocation} from 'react-router-dom'
 import {useLayoutEffect} from 'react'
-import SettingsBar from './components/SettingsBar'
+import SettingsBar from './components/SettingsBar/SettingsBar.tsx'
 import CookieBanner from './components/CookieBanner/CookieBanner'
 import PageTracker from './components/PageTracker'
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'

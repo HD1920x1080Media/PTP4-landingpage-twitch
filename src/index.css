@@ -52,6 +52,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   min-width: 320px;
+  padding-top: var(--settingsbar-height, 64px); /* Abstand für SettingsBar */
 }
 
 a {
