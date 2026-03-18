@@ -215,24 +215,80 @@ function PostCard({post, access, onDelete, onLikeChange}: {
         }
     }, [showComments, loadComments])
 
+    // Realtime subscription for comments
+    useEffect(() => {
+        const channel = supabase
+            .channel(`comments-${post.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'onlybart_comments',
+                    filter: `post_id=eq.${post.id}`
+                },
+                () => {
+                    // Reload comments when any change happens
+                    loadComments()
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [post.id, loadComments])
+
     const handleLike = async (isSuper = false) => {
         if (!access.canLike && !access.canSuperlike) return
         if (isSuper && !access.canSuperlike) return
 
         const currentlyLiked = hasLiked || hasSuperliked
+
         if (currentlyLiked) {
-            setHasLiked(false)
-            setHasSuperliked(false)
-            setLikesCount(prev => Math.max(0, prev - 1))
-            await supabase
-                .from('onlybart_likes')
-                .delete()
-                .match({post_id: post.id, user_id: user?.id})
+            // Determine how much to subtract based on current like type
+            const currentValue = hasSuperliked ? 10 : 1
+
+            // Check if we're switching type (like -> superlike or superlike -> like)
+            const isSwitching = (isSuper && hasLiked) || (!isSuper && hasSuperliked)
+
+            if (isSwitching) {
+                // Switch: remove old, add new in one go
+                const newValue = isSuper ? 10 : 1
+                setHasLiked(!isSuper)
+                setHasSuperliked(isSuper)
+                setLikesCount(prev => Math.max(0, prev - currentValue + newValue))
+
+                // Delete old like, then insert new one
+                await supabase
+                    .from('onlybart_likes')
+                    .delete()
+                    .match({post_id: post.id, user_id: user?.id})
+                await supabase
+                    .from('onlybart_likes')
+                    .insert({
+                        post_id: post.id,
+                        user_id: user?.id,
+                        is_superlike: isSuper
+                    })
+            } else {
+                // Same button again -> remove like
+                setHasLiked(false)
+                setHasSuperliked(false)
+                setLikesCount(prev => Math.max(0, prev - currentValue))
+
+                await supabase
+                    .from('onlybart_likes')
+                    .delete()
+                    .match({post_id: post.id, user_id: user?.id})
+            }
             if (onLikeChange) onLikeChange()
         } else {
+            // No like yet -> add new like
+            const addValue = isSuper ? 10 : 1
             if (isSuper) setHasSuperliked(true)
             else setHasLiked(true)
-            setLikesCount(prev => prev + 1)
+            setLikesCount(prev => prev + addValue)
             await supabase
                 .from('onlybart_likes')
                 .insert({
@@ -304,10 +360,10 @@ function PostCard({post, access, onDelete, onLikeChange}: {
             )}
 
             {post.type === 'video' && post.video_url && (
-                <div className="post-video w-full h-full">
+                <div className="post-video">
                     <iframe
                         width="100%"
-                        height="315"
+                        height="100%"
                         src={`https://www.youtube.com/embed/${getYoutubeId(post.video_url)}`}
                         title="YouTube video player"
                         style={{border: 0}}
