@@ -207,12 +207,7 @@ CREATE POLICY IF NOT EXISTS "select_mod_sync_excluded" ON mod_sync_excluded FOR 
 
 -- Moderatoren dürfen Ausschlüsse löschen
 CREATE POLICY IF NOT EXISTS "delete_mod_sync_excluded" ON mod_sync_excluded FOR DELETE USING (
-  EXISTS (
-    SELECT 1 FROM moderators WHERE moderators.twitch_user_id = COALESCE(
-      (SELECT raw_user_meta_data->>'sub' FROM auth.users WHERE id = auth.uid()),
-      (SELECT raw_user_meta_data->>'provider_id' FROM auth.users WHERE id = auth.uid())
-    )
-  )
+  auth.uid() IS NOT NULL
 );
 
 -- ── Sync: Twitch-Mods automatisch übernehmen ──
