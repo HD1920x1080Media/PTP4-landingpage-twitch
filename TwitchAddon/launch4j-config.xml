@@ -1,7 +1,7 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>target/TwitchAddon-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
+  <jar>target/ChannelPointsBot-1.0-SNAPSHOT.jar</jar>
   <outfile>dist/TwitchAddon.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
