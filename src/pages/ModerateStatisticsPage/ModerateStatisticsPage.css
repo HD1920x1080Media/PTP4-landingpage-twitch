@@ -1,0 +1,264 @@
+.moderate-stats-intro {
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-top: var(--settingsbar-height, 64px); /* Abstand für SettingsBar */
+}
+
+.moderate-stats-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.moderate-stats-range {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.moderate-stats-note {
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.moderate-stats-error {
+  margin: 8px 0 16px;
+  color: #ff6f91;
+  font-weight: 600;
+}
+
+.moderate-stats-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.moderate-stats-card,
+.moderate-stats-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--box-border);
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.moderate-stats-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.moderate-stats-card strong {
+  display: block;
+  font-size: 1.35rem;
+  margin-top: 3px;
+}
+
+.moderate-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 12px;
+}
+
+.moderate-stats-panel h2 {
+  margin: 0 0 10px;
+  font-size: 1.02rem;
+}
+
+/* Trend-Panels sollen auf großen Screens die volle Breite nutzen */
+.moderate-stats-panel--trend {
+  grid-column: 1 / -1;
+}
+
+.moderate-stats-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.moderate-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  table-layout: fixed;
+}
+
+.moderate-stats-table th,
+.moderate-stats-table td {
+  text-align: left;
+  padding: 7px 6px;
+  border-bottom: 1px solid var(--box-border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moderate-stats-table td span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moderate-stats-dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.moderate-stats-dl div {
+  background: rgba(124, 77, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.moderate-stats-dl dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+
+.moderate-stats-dl dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.moderate-stats-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.moderate-stats-list li {
+  display: grid;
+  gap: 1px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--box-border);
+}
+
+.moderate-stats-list li span,
+.moderate-stats-list li small {
+  color: var(--muted);
+}
+
+/* ── Trend-Bars Container ── */
+.moderate-stats-bars-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -12px;
+  padding: 0 12px 6px;
+}
+
+.moderate-stats-bars {
+  height: 170px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  /* Mindestbreite: jeder Balken bekommt genug Platz */
+  min-width: max-content;
+}
+
+.moderate-stats-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  /* Feste Breite pro Balken für konsistentes Layout */
+  min-width: 22px;
+  flex: 1 1 22px;
+  max-width: 36px;
+  position: relative;
+}
+
+.moderate-stats-bar {
+  width: 100%;
+  max-width: 18px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(124, 77, 255, 0.95), rgba(100, 50, 240, 0.95));
+  transition: height 0.3s ease;
+}
+
+.moderate-stats-bar-value {
+  position: absolute;
+  top: -2px;
+  transform: translateY(-100%);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--color-text);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.moderate-stats-bar-wrap:hover .moderate-stats-bar-value {
+  opacity: 1;
+}
+
+.moderate-stats-bar-wrap span.moderate-stats-bar-label {
+  color: var(--muted);
+  font-size: 0.6rem;
+  margin-top: 4px;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Bei 7 Tagen: Balken dürfen wachsen, kein Scroll nötig */
+.moderate-stats-bars[data-count="7"] {
+  min-width: unset;
+}
+
+.moderate-stats-bars[data-count="7"] .moderate-stats-bar-wrap {
+  max-width: 48px;
+}
+
+.moderate-stats-bars[data-count="7"] .moderate-stats-bar {
+  max-width: 26px;
+}
+
+@media (max-width: 720px) {
+  .moderate-stats-dl {
+    grid-template-columns: 1fr;
+  }
+
+  .moderate-stats-table {
+    font-size: 0.82rem;
+  }
+
+  .moderate-stats-table th,
+  .moderate-stats-table td {
+    padding: 6px 4px;
+  }
+
+  /* Tabellen in overflow-scroll-Container packen */
+  .moderate-stats-panel > .moderate-stats-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -12px;
+    padding: 0 12px;
+  }
+
+  .moderate-stats-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .moderate-stats-range {
+    width: 100%;
+  }
+
+  .moderate-stats-range .btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  .moderate-stats-bars {
+    height: 140px;
+  }
+}

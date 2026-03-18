@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import SubPage from '../components/SubPage/SubPage'
-import { useModerateStatistics } from '../hooks/useModerateStatistics'
-import type { StatisticsRangeDays, TrendPoint } from '../types/moderateStatistics'
+import SubPage from '../../components/SubPage/SubPage'
+import { useModerateStatistics } from '../../hooks/useModerateStatistics'
+import type { StatisticsRangeDays, TrendPoint } from '../../types/moderateStatistics'
 import './ModerateStatisticsPage.css'
 
 const RANGE_OPTIONS: StatisticsRangeDays[] = [7, 30, 90]
@@ -21,20 +21,32 @@ function formatRoundLabel(month: number | null, year: number): string {
   return month ? `${month.toString().padStart(2, '0')}/${year}` : `${year}`
 }
 
+function formatBarLabel(day: string, count: number): string {
+  // day = "2026-03-18" → show only DD.MM (or DD for 7-day range)
+  const parts = day.split('-')
+  if (parts.length === 3) {
+    return count <= 7 ? `${parts[2]}.${parts[1]}` : parts[2]
+  }
+  return day
+}
+
 function TrendBars({ points }: { points: TrendPoint[] }) {
   const maxValue = Math.max(...points.map((point) => point.value), 1)
 
   return (
-    <div className="moderate-stats-bars" aria-hidden="true">
-      {points.map((point) => {
-        const height = Math.max((point.value / maxValue) * 100, point.value > 0 ? 10 : 3)
-        return (
-          <div key={point.day} className="moderate-stats-bar-wrap" title={`${point.day}: ${point.value}`}>
-            <div className="moderate-stats-bar" style={{ height: `${height}%` }} />
-            <span>{point.day}</span>
-          </div>
-        )
-      })}
+    <div className="moderate-stats-bars-scroll">
+      <div className="moderate-stats-bars" data-count={points.length} aria-hidden="true">
+        {points.map((point) => {
+          const height = Math.max((point.value / maxValue) * 100, point.value > 0 ? 10 : 3)
+          return (
+            <div key={point.day} className="moderate-stats-bar-wrap" title={`${point.day}: ${point.value}`}>
+              <span className="moderate-stats-bar-value">{point.value}</span>
+              <div className="moderate-stats-bar" style={{ height: `${height}%` }} />
+              <span className="moderate-stats-bar-label">{formatBarLabel(point.day, points.length)}</span>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -152,6 +164,7 @@ export default function ModerateStatisticsPage() {
               {data.topClips.length === 0 ? (
                 <p className="moderate-stats-note">{t('moderate.statisticsNoData')}</p>
               ) : (
+                <div className="moderate-stats-table-scroll">
                 <table className="moderate-stats-table">
                   <thead>
                     <tr>
@@ -173,15 +186,16 @@ export default function ModerateStatisticsPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </article>
 
-            <article className="moderate-stats-panel">
+            <article className="moderate-stats-panel moderate-stats-panel--trend">
               <h2>{t('moderate.statisticsVoteTrend')}</h2>
               <TrendBars points={data.votesPerDay} />
             </article>
 
-            <article className="moderate-stats-panel">
+            <article className="moderate-stats-panel moderate-stats-panel--trend">
               <h2>{t('moderate.statisticsViewsTrend')}</h2>
               <TrendBars points={data.viewsPerDay} />
             </article>
@@ -191,6 +205,7 @@ export default function ModerateStatisticsPage() {
               {data.topPages.length === 0 ? (
                 <p className="moderate-stats-note">{t('moderate.statisticsNoData')}</p>
               ) : (
+                <div className="moderate-stats-table-scroll">
                 <table className="moderate-stats-table">
                   <thead>
                     <tr>
@@ -207,6 +222,7 @@ export default function ModerateStatisticsPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </article>
 
@@ -215,6 +231,7 @@ export default function ModerateStatisticsPage() {
               {data.topReferrers.length === 0 ? (
                 <p className="moderate-stats-note">{t('moderate.statisticsNoData')}</p>
               ) : (
+                <div className="moderate-stats-table-scroll">
                 <table className="moderate-stats-table">
                   <thead>
                     <tr>
@@ -231,6 +248,7 @@ export default function ModerateStatisticsPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </article>
 
@@ -260,6 +278,7 @@ export default function ModerateStatisticsPage() {
               {data.recentRounds.length === 0 ? (
                 <p className="moderate-stats-note">{t('moderate.statisticsNoRound')}</p>
               ) : (
+                <div className="moderate-stats-table-scroll">
                 <table className="moderate-stats-table">
                   <thead>
                     <tr>
@@ -282,6 +301,7 @@ export default function ModerateStatisticsPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </article>
           </section>

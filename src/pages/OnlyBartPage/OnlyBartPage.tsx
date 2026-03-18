@@ -1,14 +1,14 @@
 import {useState, useEffect, useRef, useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import {motion, AnimatePresence} from 'framer-motion'
-import {supabase} from '../lib/supabase'
-import {useAuth} from '../context/useAuth'
-import {useConfirmModal} from '../context/useConfirmModal'
-import {useOnlyBartAccess, type OnlyBartAccess} from '../hooks/useOnlyBartAccess'
+import {supabase} from '../../lib/supabase'
+import {useAuth} from '../../context/useAuth'
+import {useConfirmModal} from '../../context/useConfirmModal'
+import {useOnlyBartAccess, type OnlyBartAccess} from '../../hooks/useOnlyBartAccess'
 import {FaHeart, FaRegHeart, FaComment, FaTrash, FaYoutube, FaImage, FaLock, FaStar} from 'react-icons/fa'
 import './OnlyBartPage.css'
-import siteConfig from '../config/siteConfig'
-import Footer from "../components/Footer/Footer.tsx";
+import siteConfig from '../../config/siteConfig'
+import Footer from "../../components/Footer/Footer.tsx";
 
 // Types based on DB schema
 interface Post {

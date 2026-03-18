@@ -352,10 +352,18 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
           {shopTab === 'autobuyer' && (
             <div className="autobuyer-content">
+              <p style={{ fontSize: '0.85rem', color: '#ff9800', marginBottom: '10px' }}>
+                ⚠️ Rebirths ausgeben senkt deinen Multiplier! (Aktuell: ×{formatNumber(gameState.rebirth_multiplier)})
+              </p>
               <div className="autobuyer-card">
                 <h3>{t('bartclicker.autobuyer.autoClicker')}</h3>
                 <p>{t('bartclicker.autobuyer.autoClickerDesc')}</p>
                 <p style={{ fontSize: '0.9rem', color: '#999' }}>{t('bartclicker.autobuyer.youHave', { count: gameState.rebirth_count })}</p>
+                {gameState.rebirth_count >= 10 && (
+                  <p style={{ fontSize: '0.8rem', color: '#ff9800' }}>
+                    Multiplier nach Kauf: ×{formatNumber(Math.pow(2, gameState.rebirth_count - 10))}
+                  </p>
+                )}
                 <button
                   className="buy-button"
                   onClick={() => buyAutobuyer()}
@@ -369,6 +377,11 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                 <h3>{t('bartclicker.autobuyer.upgradebuyer')}</h3>
                 <p>{t('bartclicker.autobuyer.upgradebuyerDesc')}</p>
                 <p style={{ fontSize: '0.9rem', color: '#999' }}>{t('bartclicker.autobuyer.youHave', { count: gameState.rebirth_count })}</p>
+                {gameState.rebirth_count >= 15 && (
+                  <p style={{ fontSize: '0.8rem', color: '#ff9800' }}>
+                    Multiplier nach Kauf: ×{formatNumber(Math.pow(2, gameState.rebirth_count - 10))}
+                  </p>
+                )}
                 <button
                   className="buy-button"
                   onClick={() => buyUpgradeAutobuyer()}
@@ -383,6 +396,9 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
           {shopTab === 'offline' && (
             <div className="autobuyer-content">
+              <p style={{ fontSize: '0.85rem', color: '#ff9800', marginBottom: '10px' }}>
+                ⚠️ Rebirths ausgeben senkt deinen Multiplier! (Aktuell: ×{formatNumber(gameState.rebirth_multiplier)})
+              </p>
               <div className="autobuyer-card">
                 <h3>{t('bartclicker.offline.shopTitle')}</h3>
                 <p>{t('bartclicker.offline.shopDesc')}</p>

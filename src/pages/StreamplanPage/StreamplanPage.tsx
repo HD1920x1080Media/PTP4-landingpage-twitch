@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import siteConfig from '../config/siteConfig'
-import SubPage from '../components/SubPage/SubPage'
+import siteConfig from '../../config/siteConfig'
+import SubPage from '../../components/SubPage/SubPage'
 import ICAL from 'ical.js'
 import { format, isSameDay, startOfDay, addDays } from 'date-fns'
 import { de, enUS } from 'date-fns/locale' // Import locales

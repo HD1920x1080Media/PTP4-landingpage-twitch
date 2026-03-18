@@ -16,12 +16,20 @@ const MAX_OFFLINE_SECONDS = 8 * 3600;
 // Base cost for the first rebirth (doubles with each subsequent rebirth)
 export const BASE_REBIRTH_COST = 1_000_000;
 
+// Derive the rebirth multiplier from the current rebirth_count.
+// Every rebirth doubles the multiplier, but spending rebirths on shop items
+// (autobuyer, offline upgrades, …) lowers the count and thus the multiplier.
+function deriveRebirthMultiplier(rebirthCount: number): number {
+  return Math.pow(2, rebirthCount);
+}
+
 // Calculate CPS from raw data (used for offline earnings – no React state needed)
 function calculateCpsFromData(
   shopItems: ShopItem[],
-  rebirthMultiplier: number,
+  rebirthCount: number,
   relics: Relic[],
 ): number {
+  const rebirthMultiplier = deriveRebirthMultiplier(rebirthCount);
   let totalCps = shopItems.reduce((sum, item) => {
     if (item.type === 'passive' && item.cps) {
       return sum + item.cps * item.count * rebirthMultiplier;
@@ -162,9 +170,10 @@ export function useBartclickerGame() {
 
   // Calculate CPS based on shop items, relics, and multipliers
   const calculateCps = useCallback((): number => {
+    const rebirthMult = deriveRebirthMultiplier(gameState.rebirth_count);
     let totalCps = gameState.shop_items.reduce((sum, item) => {
       if (item.type === 'passive' && item.cps) {
-        return sum + item.cps * item.count * gameState.rebirth_multiplier;
+        return sum + item.cps * item.count * rebirthMult;
       }
       return sum;
     }, 0);
@@ -196,9 +205,10 @@ export function useBartclickerGame() {
 
   // Calculate click power
   const calculateClickPower = useCallback((): number => {
+    const rebirthMult = deriveRebirthMultiplier(gameState.rebirth_count);
     let power = gameState.shop_items.reduce((sum, item) => {
       if (item.type === 'click' && item.clickPower) {
-        return sum + item.clickPower * item.count * gameState.rebirth_multiplier;
+        return sum + item.clickPower * item.count * rebirthMult;
       }
       return sum;
     }, 0);
@@ -338,7 +348,7 @@ export function useBartclickerGame() {
             if (offlineEarningsSeconds > 60) {
               const savedCps = calculateCpsFromData(
                 (data.shop_items || []) as ShopItem[],
-                parseFloat(data.rebirth_multiplier) || 1,
+                data.rebirth_count || 0,
                 (data.relics || []) as Relic[],
               );
 
@@ -363,7 +373,7 @@ export function useBartclickerGame() {
             energy: (parseFloat(data.energy) || 0) + offlineEarningsAmount,
             total_ever: (parseFloat(data.total_ever) || 0) + offlineEarningsAmount,
             rebirth_count: data.rebirth_count || 0,
-            rebirth_multiplier: parseFloat(data.rebirth_multiplier) || 1,
+            rebirth_multiplier: deriveRebirthMultiplier(data.rebirth_count || 0),
             shop_items: (data.shop_items || []).map((item: ShopItem) => ({
               ...item,
               cost: item.cost || INITIAL_SHOP_ITEMS.find(i => i.id === item.id)?.cost || 0,
@@ -639,15 +649,16 @@ export function useBartclickerGame() {
     setGameState((prev) => {
       const rebirthCost = BASE_REBIRTH_COST * Math.pow(2, prev.rebirth_count);
       if (prev.energy < rebirthCost) return prev;
+      const newRebirthCount = prev.rebirth_count + 1;
       return {
         ...prev,
-        rebirth_count: prev.rebirth_count + 1,
-        rebirth_multiplier: prev.rebirth_multiplier * 2,
+        rebirth_count: newRebirthCount,
+        rebirth_multiplier: deriveRebirthMultiplier(newRebirthCount),
         energy: 0,
         shop_items: prev.shop_items.map((item) => ({
           ...item,
           count: 0,
-          cost: Math.floor((INITIAL_SHOP_ITEMS.find((i) => i.id === item.id)?.cost || item.cost) * Math.pow(1.1, prev.rebirth_count + 1)),
+          cost: Math.floor((INITIAL_SHOP_ITEMS.find((i) => i.id === item.id)?.cost || item.cost) * Math.pow(1.1, newRebirthCount)),
         })),
         active_buffs: [],
         active_debuffs: [],
@@ -728,11 +739,15 @@ export function useBartclickerGame() {
   const buyAutobuyer = useCallback(() => {
     if (gameState.rebirth_count < 10) return false;
 
-    setGameState((prev) => ({
-      ...prev,
-      rebirth_count: prev.rebirth_count - 10,
-      auto_click_buyer_enabled: !prev.auto_click_buyer_enabled,
-    }));
+    setGameState((prev) => {
+      const newRebirthCount = prev.rebirth_count - 10;
+      return {
+        ...prev,
+        rebirth_count: newRebirthCount,
+        rebirth_multiplier: deriveRebirthMultiplier(newRebirthCount),
+        auto_click_buyer_enabled: !prev.auto_click_buyer_enabled,
+      };
+    });
 
     return true;
   }, [gameState.rebirth_count]);
@@ -741,11 +756,15 @@ export function useBartclickerGame() {
   const buyUpgradeAutobuyer = useCallback(() => {
     if (gameState.rebirth_count < 10) return false;
 
-    setGameState((prev) => ({
-      ...prev,
-      rebirth_count: prev.rebirth_count - 10,
-      click_upgrade_buyer_enabled: !prev.click_upgrade_buyer_enabled,
-    }));
+    setGameState((prev) => {
+      const newRebirthCount = prev.rebirth_count - 10;
+      return {
+        ...prev,
+        rebirth_count: newRebirthCount,
+        rebirth_multiplier: deriveRebirthMultiplier(newRebirthCount),
+        click_upgrade_buyer_enabled: !prev.click_upgrade_buyer_enabled,
+      };
+    });
 
     return true;
   }, [gameState.rebirth_count]);
@@ -774,11 +793,15 @@ export function useBartclickerGame() {
     if (gameState.offline_earning_upgrades >= MAX_OFFLINE_UPGRADES) return false;
     if (gameState.rebirth_count < OFFLINE_UPGRADE_REBIRTH_COST) return false;
 
-    setGameState((prev) => ({
-      ...prev,
-      rebirth_count: prev.rebirth_count - OFFLINE_UPGRADE_REBIRTH_COST,
-      offline_earning_upgrades: prev.offline_earning_upgrades + 1,
-    }));
+    setGameState((prev) => {
+      const newRebirthCount = prev.rebirth_count - OFFLINE_UPGRADE_REBIRTH_COST;
+      return {
+        ...prev,
+        rebirth_count: newRebirthCount,
+        rebirth_multiplier: deriveRebirthMultiplier(newRebirthCount),
+        offline_earning_upgrades: prev.offline_earning_upgrades + 1,
+      };
+    });
 
     return true;
   }, [gameState.rebirth_count, gameState.offline_earning_upgrades]);
