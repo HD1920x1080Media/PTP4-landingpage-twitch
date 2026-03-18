@@ -62,21 +62,24 @@ jobs:
           echo TWITCH_CLIENT_ID=${{ secrets.TWITCH_CLIENT_ID }} >> TwitchAddon/.env
           echo CHANNEL_NAME=${{ secrets.CHANNEL_NAME }} >> TwitchAddon/.env
 
+      - name: Create dist directory
+        run: mkdir -p TwitchAddon/dist
+
+
       - name: Build EXE with Launch4j
         shell: pwsh
         run: |
-          # Wir suchen die launch4j.exe im gesamten Workspace, falls der Ordnername variiert
-          $l4jExe = Get-ChildItem -Path "${{ github.workspace }}" -Filter "launch4j.exe" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+          # Suche explizit die Konsolen-Version
+          $l4jExe = Get-ChildItem -Path "${{ github.workspace }}" -Filter "launch4jc.exe" -Recurse | Select-Object -First 1 -ExpandProperty FullName
           
-          if (-not $l4jExe) {
-              Write-Error "launch4j.exe wurde im Workspace nicht gefunden!"
-              exit 1
-          }
-
-          Write-Host "Nutze Launch4j von: $l4jExe"
+          Write-Host "Nutze Launch4j: $l4jExe"
           
-          # Ausführung mit dem gefundenen absoluten Pfad
+          # Starte den Build
           & $l4jExe "${{ github.workspace }}/TwitchAddon/launch4j-config.xml"
+          
+          # Kontrolle: Was wurde erzeugt?
+          Write-Host "Inhalt von TwitchAddon/dist:"
+          Get-ChildItem -Path "${{ github.workspace }}/TwitchAddon/dist" -ErrorAction SilentlyContinue
         working-directory: TwitchAddon
 
       - name: Upload EXE as artifact
