@@ -200,6 +200,8 @@ export default function ModerateSettingsPage() {
 
   /* ── Re-Login mit moderation:read ── */
   async function loginForSync() {
+    // Speichere den aktuellen Hash-Pfad für Redirect nach Login
+    sessionStorage.setItem('auth-redirect-path', window.location.hash || '#/moderate/settings')
     await supabase.auth.signInWithOAuth({
       provider: 'twitch',
       options: {
