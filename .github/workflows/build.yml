@@ -30,7 +30,7 @@ jobs:
           java-version: '17'
 
       - name: Build Fat JAR
-        run: mvnw.cmd package
+        run: mvn package
         working-directory: TwitchAddon
 
       - name: Download Launch4j
