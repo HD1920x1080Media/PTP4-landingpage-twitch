@@ -39,6 +39,7 @@ jobs:
           Expand-Archive -Path launch4j.zip -DestinationPath launch4j
 
       - name: Get Twitch OAuth Access Token
+        shell: bash
         id: get_oauth
         run: |
           RESPONSE=$(curl -s -X POST "https://id.twitch.tv/oauth2/token" \
