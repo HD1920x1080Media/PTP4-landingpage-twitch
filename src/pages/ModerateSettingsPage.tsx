@@ -413,9 +413,9 @@ export default function ModerateSettingsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                <thead>
                  <tr style={{ borderBottom: '1px solid var(--box-border)', textAlign: 'left' }}>
-                   <th style={{ padding: '8px 6px' }}>{t('moderate.exclusionName')}</th>
-                   <th style={{ padding: '8px 6px' }}>{t('moderate.exclusionTwitchId')}</th>
-                   <th style={{ padding: '8px 6px' }}>{t('moderate.exclusionSince')}</th>
+                   <th style={{ padding: '8px 6px' }}>{t('sync.exclusionName')}</th>
+                   <th style={{ padding: '8px 6px' }}>{t('sync.exclusionTwitchId')}</th>
+                   <th style={{ padding: '8px 6px' }}>{t('sync.exclusionSince')}</th>
                    <th style={{ padding: '8px 6px' }}></th>
                  </tr>
               </thead>
