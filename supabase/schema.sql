@@ -226,6 +226,12 @@ DECLARE
   v_is_moderator       boolean;
   v_broadcaster_id     text;
 BEGIN
+  -- Service-Role-Bypass für Backend-Sync
+  IF current_setting('request.jwt.claim.role', true) = 'service_role' THEN
+    -- Backend darf immer synchronisieren
+    v_is_broadcaster := true;
+    v_is_moderator := true;
+  END IF;
   -- Twitch-ID des Aufrufers ermitteln
   SELECT coalesce(
     raw_user_meta_data->>'sub',
@@ -233,7 +239,7 @@ BEGIN
   ) INTO v_caller_twitch_id
   FROM auth.users WHERE id = auth.uid();
 
-  IF v_caller_twitch_id IS NULL THEN
+  IF v_caller_twitch_id IS NULL AND current_setting('request.jwt.claim.role', true) != 'service_role' THEN
     RETURN jsonb_build_object('error', 'not_authenticated', 'message', 'Benutzer nicht authentifiziert.');
   END IF;
 
