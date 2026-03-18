@@ -58,11 +58,20 @@ jobs:
           echo "TWITCH_OAUTH_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
       - name: Create .env file for build
+        shell: pwsh
         run: |
-          echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} > TwitchAddon/.env
-          echo SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }} >> TwitchAddon/.env
-          echo TWITCH_CLIENT_ID=${{ secrets.TWITCH_CLIENT_ID }} >> TwitchAddon/.env
-          echo CHANNEL_NAME=${{ secrets.CHANNEL_NAME }} >> TwitchAddon/.env
+          # Wir erstellen die Datei direkt, ohne die Werte per 'echo' in die Konsole zu schreiben
+          $envContent = @(
+            "SUPABASE_URL=${{ secrets.SUPABASE_URL }}",
+            "SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}",
+            "TWITCH_OAUTH_TOKEN=$env:TWITCH_OAUTH_TOKEN",
+            "TWITCH_CLIENT_ID=${{ secrets.VITE_TWITCH_CLIENT_ID }}",
+            "CHANNEL_NAME=${{ secrets.CHANNEL_NAME }}"
+          )
+          $envContent | Out-File -FilePath "TwitchAddon/.env" -Encoding utf8
+        env:
+          TWITCH_OAUTH_TOKEN: ${{ env.TWITCH_OAUTH_TOKEN }}
+
 
       - name: Prepare dist folder
         # Wir nutzen den relativen Pfad direkt im Arbeitsverzeichnis
