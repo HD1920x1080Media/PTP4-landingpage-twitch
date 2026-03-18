@@ -45,15 +45,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Navigiere zum gespeicherten Hash-Pfad nach erfolgreicher Anmeldung
+  // Navigiere zum gespeicherten Pfad nach erfolgreicher Anmeldung
   useEffect(() => {
     if (user && session) {
-      const savedHash = sessionStorage.getItem(REDIRECT_PATH_KEY)
-      if (savedHash && savedHash !== '#/' && savedHash !== '#') {
+      const savedPath = sessionStorage.getItem(REDIRECT_PATH_KEY)
+      if (savedPath && savedPath !== '/' && savedPath !== '') {
         sessionStorage.removeItem(REDIRECT_PATH_KEY)
-        // Nur navigieren wenn wir nicht schon dort sind
-        if (window.location.hash !== savedHash) {
-          window.location.hash = savedHash.startsWith('#') ? savedHash.slice(1) : savedHash
+        // Redirect nur, wenn wir nicht schon auf dem Ziel sind
+        if (window.location.pathname !== savedPath) {
+          window.location.replace(savedPath)
         }
       } else {
         sessionStorage.removeItem(REDIRECT_PATH_KEY)
@@ -113,9 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user])
 
   const signInWithTwitch = useCallback(async () => {
-    // Speichere den aktuellen Hash-Pfad vor der Anmeldung (HashRouter nutzt #/path)
-    const hashPath = window.location.hash || '#/'
-    sessionStorage.setItem(REDIRECT_PATH_KEY, hashPath)
+    // Speichere den aktuellen Pfad vor der Anmeldung (BrowserRouter nutzt echte Pfade)
+    const path = window.location.pathname || '/'
+    sessionStorage.setItem(REDIRECT_PATH_KEY, path)
 
     await supabase.auth.signInWithOAuth({
       provider: 'twitch',
@@ -136,4 +136,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   )
 }
-
