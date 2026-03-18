@@ -34,7 +34,7 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
       </div>
     );
   }
-
+//ToDo: Einheiten
   const formatNumber = (num: number) => {
     if (num >= 1e9) return (num / 1e9).toFixed(2) + 'b';
     if (num >= 1e6) return (num / 1e6).toFixed(2) + 'm';
@@ -488,7 +488,7 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
           </div>
           <div className="stat-row">
             <label>Hand-CPS (live):</label>
-            <span>{formatCPS(handCps)}</span>
+            <span>{Math.floor(handCps)}</span>
           </div>
           <div className="stat-row">
             <label>Hand-CPS (Ø):</label>
