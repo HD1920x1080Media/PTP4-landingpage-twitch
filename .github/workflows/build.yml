@@ -1,0 +1,89 @@
+name: Build TwitchAddon EXE
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
+      TWITCH_OAUTH_TOKEN: ${{ secrets.TWITCH_OAUTH_TOKEN }}
+      TWITCH_CLIENT_ID: ${{ secrets.VITE_TWITCH_CLIENT_ID }}
+      CHANNEL_NAME: ${{ secrets.CHANNEL_NAME }}
+      TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+      TWITCH_REFRESH_TOKEN: ${{ secrets.TWITCH_REFRESH_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Fat JAR
+        run: ./mvnw.cmd package
+        working-directory: TwitchAddon
+
+      - name: Download Launch4j
+        run: |
+          curl -L -o launch4j.zip https://github.com/launch4j/launch4j/releases/download/3.50/launch4j-3.50-win32.zip
+          tar -xf launch4j.zip
+
+      - name: Get Twitch OAuth Access Token
+        id: get_oauth
+        run: |
+          RESPONSE=$(curl -s -X POST "https://id.twitch.tv/oauth2/token" \
+            -d client_id=${{ secrets.VITE_TWITCH_CLIENT_ID }} \
+            -d client_secret=${{ secrets.TWITCH_CLIENT_SECRET }} \
+            -d grant_type=refresh_token \
+            -d refresh_token=${{ secrets.TWITCH_REFRESH_TOKEN }})
+          ACCESS_TOKEN=$(echo "$RESPONSE" | jq -r .access_token)
+          if [ "$ACCESS_TOKEN" = "null" ] || [ -z "$ACCESS_TOKEN" ]; then
+            echo "Fehler beim Abrufen des Access Tokens: $RESPONSE"
+            exit 1
+          fi
+          echo "TWITCH_OAUTH_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+
+      - name: Create .env file for build
+        run: |
+          echo SUPABASE_URL=${{ secrets.SUPABASE_URL }} > TwitchAddon/.env
+          echo SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }} >> TwitchAddon/.env
+          echo TWITCH_OAUTH_TOKEN=$TWITCH_OAUTH_TOKEN >> TwitchAddon/.env
+          echo TWITCH_CLIENT_ID=${{ secrets.TWITCH_CLIENT_ID }} >> TwitchAddon/.env
+          echo CHANNEL_NAME=${{ secrets.CHANNEL_NAME }} >> TwitchAddon/.env
+
+      - name: Build EXE with Launch4j
+        run: |
+          ./launch4j/launch4j.exe TwitchAddon/launch4j-config.xml
+
+      - name: Upload EXE as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TwitchAddon-exe
+          path: TwitchAddon/dist/*.exe
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.sha }}
+          name: TwitchAddon Release ${{ github.sha }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload EXE to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: TwitchAddon/dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
