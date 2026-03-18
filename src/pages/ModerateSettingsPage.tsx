@@ -260,13 +260,19 @@ export default function ModerateSettingsPage() {
   async function removeMod(twitchUserId: string) {
     setBusy(true)
     const { data, error } = await supabase.rpc('remove_moderator', { p_twitch_user_id: twitchUserId })
-    const result = data as { error?: string } | null
+    const result = data as { error?: string; success?: boolean } | null
     if (error || result?.error) {
-      const errKey = result?.error
+      const errKey = result?.error ?? error?.message ?? ''
       if (errKey === 'cannot_remove_self') showToast(`❌ ${t('moderate.cannotRemoveSelf')}`)
       else if (errKey === 'cannot_remove_broadcaster') showToast(`❌ ${t('moderate.cannotRemoveBroadcaster')}`)
-      else showToast(`❌ ${error?.message ?? errKey}`)
-    } else showToast('✅ Entfernt')
+      else if (errKey === 'forbidden') showToast(`❌ ${t('moderate.removeForbidden')}`)
+      else if (errKey === 'not_authenticated') showToast(`❌ ${t('moderate.notAuthenticated')}`)
+      else showToast(`❌ ${errKey || 'Fehler beim Entfernen'}`)
+    } else if (result?.success) {
+      showToast('✅ Moderator entfernt')
+    } else {
+      showToast('❌ Unbekannter Fehler beim Entfernen')
+    }
     setRefreshKey((k) => k + 1)
     setBusy(false)
   }
