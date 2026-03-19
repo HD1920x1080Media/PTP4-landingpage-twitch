@@ -69,6 +69,31 @@ FOR SELECT
                );
 
 
+-- RLS für Rewards
+ALTER TABLE rewards ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Broadcaster kann Rewards einfügen"
+ON rewards
+FOR INSERT
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM user_roles
+    WHERE user_id = auth.uid()
+    AND is_broadcaster = true
+  )
+);
+
+CREATE POLICY "Broadcaster kann Rewards ändern"
+ON rewards
+FOR UPDATE
+USING (
+  EXISTS (
+    SELECT 1 FROM user_roles
+    WHERE user_id = auth.uid()
+    AND is_broadcaster = true
+  )
+);
+
 -- Hinweise:
 -- - Rewards werden in rewards.json gepflegt und mit obigem Befehl in die DB übernommen.
 -- - Das Overlay erkennt automatisch, wie der Reward angezeigt/abgespielt wird.

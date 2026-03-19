@@ -221,30 +221,43 @@ export default function ModerateAccountPage() {
 
       {/* Kanalpunkte-Panel */}
       <h2 style={{ marginTop: 32 }}>{t('moderate.channelPoints')}</h2>
-      <input
-        type="text"
-        value={pointsName}
-        onChange={e => setPointsName(e.target.value)}
-        placeholder={t('moderate.pointsInputPlaceholder')}
-        style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--box-border)', marginRight: 8 }}
-      />
-      <select value={pointsAction} onChange={e => setPointsAction(e.target.value as 'reset' | 'give')} style={{ marginRight: 8 }}>
-        <option value="reset">{t('moderate.resetPoints')}</option>
-        <option value="give">{t('moderate.givePoints')}</option>
-      </select>
-      {pointsAction === 'give' && (
-        <input
-          type="number"
-          value={pointsValue}
-          min={1}
-          onChange={e => setPointsValue(Number(e.target.value))}
-          placeholder={t('moderate.pointsValuePlaceholder')}
-          style={{ width: 100, marginRight: 8, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--box-border)' }}
-        />
-      )}
-      <button className="btn btn-primary" disabled={!pointsName.trim() || (pointsAction==='give' && (!pointsValue || pointsValue<=0)) || busy} onClick={handlePoints}>
-        {pointsAction === 'reset' ? '🗑️' : '➕'} {pointsAction === 'reset' ? t('moderate.resetPoints') : t('moderate.givePoints')}
-      </button>
+      <div style={{display:'flex',alignItems:'center',gap:16,marginBottom:8}}>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          <label htmlFor="pointsName" style={{fontWeight:'bold'}}>{t('moderate.pointsInputLabel')}</label>
+          <input
+            id="pointsName"
+            type="text"
+            value={pointsName}
+            onChange={e => setPointsName(e.target.value)}
+            placeholder={t('moderate.pointsInputPlaceholder')}
+            style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--box-border)', minWidth:180 }}
+          />
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:4}}>
+          <label htmlFor="pointsAction" style={{fontWeight:'bold'}}>{t('moderate.pointsActionLabel')}</label>
+          <select id="pointsAction" value={pointsAction} onChange={e => setPointsAction(e.target.value as 'reset' | 'give')} style={{ padding:'8px 12px', borderRadius:8, border:'1px solid var(--box-border)', minWidth:120 }}>
+            <option value="reset">{t('moderate.resetPoints')}</option>
+            <option value="give">{t('moderate.givePoints')}</option>
+          </select>
+        </div>
+        {pointsAction === 'give' && (
+          <div style={{display:'flex',flexDirection:'column',gap:4}}>
+            <label htmlFor="pointsValue" style={{fontWeight:'bold'}}>{t('moderate.pointsValueLabel')}</label>
+            <input
+              id="pointsValue"
+              type="number"
+              value={pointsValue}
+              min={1}
+              onChange={e => setPointsValue(Number(e.target.value))}
+              placeholder={t('moderate.pointsValuePlaceholder')}
+              style={{ width: 100, padding: '8px 12px', borderRadius: 8, border: '1px solid var(--box-border)' }}
+            />
+          </div>
+        )}
+        <button className="btn btn-primary" style={{marginTop:22}} disabled={!pointsName.trim() || (pointsAction==='give' && (!pointsValue || pointsValue<=0)) || busy} onClick={handlePoints}>
+          {pointsAction === 'reset' ? '🗑️' : '➕'} {pointsAction === 'reset' ? t('moderate.resetPoints') : t('moderate.givePoints')}
+        </button>
+      </div>
 
       {/* Belohnungen-Panel */}
       <h2 style={{ marginTop: 32 }}>{t('moderate.rewards')}</h2>
@@ -267,15 +280,32 @@ export default function ModerateAccountPage() {
         {/* Reward-Formular */}
         <div style={{marginTop:16}}>
           <b>{rewardEdit ? t('moderate.editRewardTitle') : t('moderate.newRewardTitle')}</b>
-          <div style={{display:'flex',gap:8,flexWrap:'wrap',marginTop:8}}>
-            <input type="text" placeholder={t('moderate.rewardNameKeyPlaceholder')} value={rewardForm.nameKey} onChange={e => setRewardForm((f: Reward) => ({...f, nameKey: e.target.value}))} style={{flex:1}} />
-            <input type="text" placeholder={t('moderate.rewardDescKeyPlaceholder')} value={rewardForm.descKey} onChange={e => setRewardForm((f: Reward) => ({...f, descKey: e.target.value}))} style={{flex:2}} />
-            <input type="number" placeholder={t('moderate.rewardCostPlaceholder')} value={rewardForm.cost} min={0} onChange={e => setRewardForm((f: Reward) => ({...f, cost: Number(e.target.value)}))} style={{width:100}} />
-            <input type="text" placeholder={t('moderate.rewardTypePlaceholder')} value={rewardForm.type} onChange={e => setRewardForm((f: Reward) => ({...f, type: e.target.value}))} style={{width:100}} />
-            <input type="number" placeholder={t('moderate.rewardCooldownPlaceholder')} value={rewardForm.cooldown} min={0} onChange={e => setRewardForm((f: Reward) => ({...f, cooldown: Number(e.target.value)}))} style={{width:120}} />
-            <button className="btn btn-primary" onClick={saveReward} disabled={rewardBusy || !rewardForm.nameKey || !rewardForm.type}>{t('moderate.saveRewardBtn')}</button>
-            {rewardEdit && <button className="btn btn-secondary" onClick={() => { setRewardEdit(null); setRewardForm({ nameKey: '', descKey: '', cost: 0, type: '', cooldown: 0 }) }}>{t('moderate.cancelRewardBtn')}</button>}
-          </div>
+          <form style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginTop:8}} onSubmit={e => {e.preventDefault();saveReward();}}>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              <label htmlFor="rewardNameKey" style={{fontWeight:'bold'}}>{t('moderate.rewardNameKeyLabel')}</label>
+              <input id="rewardNameKey" type="text" placeholder={t('moderate.rewardNameKeyPlaceholder')} value={rewardForm.nameKey} onChange={e => setRewardForm((f: Reward) => ({...f, nameKey: e.target.value}))} />
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              <label htmlFor="rewardDescKey" style={{fontWeight:'bold'}}>{t('moderate.rewardDescKeyLabel')}</label>
+              <input id="rewardDescKey" type="text" placeholder={t('moderate.rewardDescKeyPlaceholder')} value={rewardForm.descKey} onChange={e => setRewardForm((f: Reward) => ({...f, descKey: e.target.value}))} />
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              <label htmlFor="rewardCost" style={{fontWeight:'bold'}}>{t('moderate.rewardCostLabel')}</label>
+              <input id="rewardCost" type="number" placeholder={t('moderate.rewardCostPlaceholder')} value={rewardForm.cost} min={0} onChange={e => setRewardForm((f: Reward) => ({...f, cost: Number(e.target.value)}))} />
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              <label htmlFor="rewardType" style={{fontWeight:'bold'}}>{t('moderate.rewardTypeLabel')}</label>
+              <input id="rewardType" type="text" placeholder={t('moderate.rewardTypePlaceholder')} value={rewardForm.type} onChange={e => setRewardForm((f: Reward) => ({...f, type: e.target.value}))} />
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:4}}>
+              <label htmlFor="rewardCooldown" style={{fontWeight:'bold'}}>{t('moderate.rewardCooldownLabel')}</label>
+              <input id="rewardCooldown" type="number" placeholder={t('moderate.rewardCooldownPlaceholder')} value={rewardForm.cooldown} min={0} onChange={e => setRewardForm((f: Reward) => ({...f, cooldown: Number(e.target.value)}))} />
+            </div>
+            <div style={{display:'flex',flexDirection:'row',gap:8,alignItems:'center',marginTop:22}}>
+              <button className="btn btn-primary" type="submit" disabled={rewardBusy || !rewardForm.nameKey || !rewardForm.type}>{t('moderate.saveRewardBtn')}</button>
+              {rewardEdit && <button className="btn btn-secondary" type="button" onClick={() => { setRewardEdit(null); setRewardForm({ nameKey: '', descKey: '', cost: 0, type: '', cooldown: 0 }) }}>{t('moderate.cancelRewardBtn')}</button>}
+            </div>
+          </form>
         </div>
       </div>
 
