@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { supabase } from '../../lib/supabase'
 import './CurrentGame.css'
 
 interface GameInfo {
@@ -74,14 +73,23 @@ export default function CurrentGame({ isLive }: CurrentGameProps) {
     async function fetchGame() {
       setLoading(true)
       try {
-        const { data, error } = await supabase.functions.invoke<
-          GameInfo & { isLive: boolean }
-        >('twitch-game')
-
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const res = await fetch(`${supabaseUrl}/functions/v1/twitch-game`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
         if (cancelled) return
-        if (error || !data?.isLive) {
+        if (!res.ok) {
           setGame(null)
-          console.log('[CurrentGame] Fehler oder nicht live:', error, data)
+          console.log('[CurrentGame] Fehler oder nicht live:', res.status, await res.text())
+          return
+        }
+        const data = await res.json()
+        if (!data?.isLive) {
+          setGame(null)
+          console.log('[CurrentGame] Fehler oder nicht live:', data)
         } else {
           setGame({
             gameId: data.gameId,
