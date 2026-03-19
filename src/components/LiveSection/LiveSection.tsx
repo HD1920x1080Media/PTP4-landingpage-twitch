@@ -156,7 +156,7 @@ export default function LiveSection() {
               </a>
             </div>
             {/* Punkte & Rewards direkt unter dem Chat anzeigen */}
-            <PointsAndRewardSection isLive={showStream} />
+            <PointsAndRewardSection isLive={true} />
           </div>
         </div>
       </div>

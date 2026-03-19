@@ -32,6 +32,7 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
   }, [rewards]);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       console.log('[PointsAndRewardSection] Kein User eingeloggt');
       return;
@@ -57,7 +58,7 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
           console.log('[PointsAndRewardSection] Punkte geladen:', data?.points);
         }
       });
-  }, [user]);
+  }, [user, loading]);
 
   // Rewards aus der Datenbank laden
   useEffect(() => {
