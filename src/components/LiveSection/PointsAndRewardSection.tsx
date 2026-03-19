@@ -95,10 +95,17 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
       setRedeemLoading(false);
       return;
     }
+    // Twitch-User-ID extrahieren
+    let twitchUserId = user.user_metadata?.provider_id || user.user_metadata?.sub;
+    if (!twitchUserId) {
+      setError('Keine Twitch-User-ID gefunden');
+      setRedeemLoading(false);
+      twitchUserId = user.id; // Fallback: Verwende Supabase-User-ID, wenn Twitch-ID nicht verfügbar
+    }
     // Insert in redeemed_rewards
     const { error: insertError } = await supabase.from('redeemed_rewards').insert([
       {
-        twitch_user_id: user.id,
+        twitch_user_id: twitchUserId,
         reward_id: reward.id,
         description: reward.type === 'tts' ? ttsText : reward.description,
         cost: reward.cost,

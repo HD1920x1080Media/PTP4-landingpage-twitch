@@ -19,8 +19,8 @@ public class OverlayApiServer {
         HttpServer server = HttpServer.create(new java.net.InetSocketAddress(8081), 0);
         server.createContext("/api/redeemed_rewards", new RedeemedRewardsHandler());
         server.createContext("/api/rewards.json", new RewardsJsonHandler());
-        server.createContext("/overlay.html", new StaticFileHandler("src/main/resources/overlay.html", "text/html"));
-        server.createContext("/media", new StaticDirHandler("src/main/resources/media"));
+        server.createContext("/overlay.html", new StaticFileHandler("overlay.html", "text/html"));
+        server.createContext("/media", new StaticDirHandler("media"));
         server.setExecutor(null);
         server.start();
 
@@ -112,21 +112,21 @@ public class OverlayApiServer {
     }
 
     static class StaticFileHandler implements HttpHandler {
-        private final String filePath;
+        private final String resourcePath;
         private final String contentType;
-        public StaticFileHandler(String filePath, String contentType) {
-            this.filePath = filePath;
+        public StaticFileHandler(String resourcePath, String contentType) {
+            this.resourcePath = resourcePath;
             this.contentType = contentType;
         }
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            if (!Files.exists(Paths.get(filePath))) {
-                exchange.sendResponseHeaders(404, 0);
-                exchange.getResponseBody().close();
-                return;
-            }
-            try {
-                byte[] data = Files.readAllBytes(Paths.get(filePath));
+            try (java.io.InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+                if (is == null) {
+                    exchange.sendResponseHeaders(404, 0);
+                    exchange.getResponseBody().close();
+                    return;
+                }
+                byte[] data = is.readAllBytes();
                 exchange.getResponseHeaders().add("Content-Type", contentType);
                 exchange.sendResponseHeaders(200, data.length);
                 OutputStream os = exchange.getResponseBody();
@@ -140,27 +140,32 @@ public class OverlayApiServer {
     }
 
     static class StaticDirHandler implements HttpHandler {
-        private final String dirPath;
-        public StaticDirHandler(String dirPath) {
-            this.dirPath = dirPath;
+        private final String resourceDir;
+        public StaticDirHandler(String resourceDir) {
+            this.resourceDir = resourceDir;
         }
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             String uri = exchange.getRequestURI().getPath();
             String fileName = uri.substring(uri.lastIndexOf("/") + 1);
-            String filePath = dirPath + "/" + fileName;
-            if (!Files.exists(Paths.get(filePath))) {
-                exchange.sendResponseHeaders(404, 0);
+            String resourcePath = resourceDir + "/" + fileName;
+            try (java.io.InputStream is = getClass().getClassLoader().getResourceAsStream(resourcePath)) {
+                if (is == null) {
+                    exchange.sendResponseHeaders(404, 0);
+                    exchange.getResponseBody().close();
+                    return;
+                }
+                String contentType = java.nio.file.Files.probeContentType(java.nio.file.Paths.get(fileName));
+                byte[] data = is.readAllBytes();
+                exchange.getResponseHeaders().add("Content-Type", contentType != null ? contentType : "application/octet-stream");
+                exchange.sendResponseHeaders(200, data.length);
+                OutputStream os = exchange.getResponseBody();
+                os.write(data);
+                os.close();
+            } catch (IOException e) {
+                exchange.sendResponseHeaders(500, 0);
                 exchange.getResponseBody().close();
-                return;
             }
-            String contentType = Files.probeContentType(Paths.get(filePath));
-            byte[] data = Files.readAllBytes(Paths.get(filePath));
-            exchange.getResponseHeaders().add("Content-Type", contentType != null ? contentType : "application/octet-stream");
-            exchange.sendResponseHeaders(200, data.length);
-            OutputStream os = exchange.getResponseBody();
-            os.write(data);
-            os.close();
         }
     }
 
