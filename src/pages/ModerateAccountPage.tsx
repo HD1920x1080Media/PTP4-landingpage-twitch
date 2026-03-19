@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/useAuth'
 import { useToast } from '../context/useToast'
@@ -15,6 +15,8 @@ interface Reward {
   cost: number;
   type: string;
   cooldown?: number;
+  name?: string;
+  description?: string;
 }
 
 
@@ -43,11 +45,11 @@ export default function ModerateAccountPage() {
   }
 
   // Rewards laden
-  async function fetchRewards() {
+  const fetchRewards = useCallback(async () => {
     const { data, error } = await supabase.from('rewards').select('*')
     if (!error && data) setRewards(data)
     else showToast('Fehler beim Laden der Rewards')
-  }
+  }, [showToast])
   useEffect(() => { fetchRewards() }, [fetchRewards])
 
   // Initial fetch
@@ -269,8 +271,8 @@ export default function ModerateAccountPage() {
           {rewards.map(r => (
             <li key={r.id} style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
               <span style={{flex:1}}>
-                <b>{t(r.nameKey)}</b> ({r.cost} {t('pointsAndRewardSection.punkte')}) – {r.type} {r.cooldown ? `/ CD: ${r.cooldown}s` : ''}
-                <div style={{fontSize:'0.95em',color:'var(--color-muted)'}}>{t(r.descKey)}</div>
+                <b>{r.name || t(r.nameKey)}</b> ({r.cost} {t('pointsAndRewardSection.punkte')}) – {r.type} {r.cooldown ? `/ CD: ${r.cooldown}s` : ''}
+                <div style={{fontSize:'0.95em',color:'var(--color-muted)'}}>{r.description || t(r.descKey)}</div>
               </span>
               <button className="btn btn-sm btn-secondary" onClick={() => { setRewardEdit(r); setRewardForm(r); }}>{t('moderate.editRewardBtn')}</button>
               <button className="btn btn-sm btn-danger" onClick={() => r.id && deleteReward(r.id)} disabled={rewardBusy}>{t('moderate.deleteRewardBtn')}</button>
