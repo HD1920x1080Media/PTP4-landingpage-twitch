@@ -1,6 +1,8 @@
 /* ── CSS Variables ── */
 :root {
   --accent: #7C4DFF;
+  --warning: #ff9800;
+  --gold: #ffd700;
   --muted: #9aa0a6;
   --card-bg: rgba(255, 255, 255, 0.02);
   --box-gradient: linear-gradient(180deg, rgba(124, 77, 255, 0.16), rgba(0, 0, 0, 0.12));

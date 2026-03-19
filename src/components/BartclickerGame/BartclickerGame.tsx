@@ -352,15 +352,15 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
           {shopTab === 'autobuyer' && (
             <div className="autobuyer-content">
-              <p style={{ fontSize: '0.85rem', color: '#ff9800', marginBottom: '10px' }}>
+              <p className="highlight-warning" style={{ fontSize: '0.85rem', marginBottom: '10px' }}>
                 ⚠️ Rebirths ausgeben senkt deinen Multiplier! (Aktuell: ×{formatNumber(gameState.rebirth_multiplier)})
               </p>
               <div className="autobuyer-card">
                 <h3>{t('bartclicker.autobuyer.autoClicker')}</h3>
                 <p>{t('bartclicker.autobuyer.autoClickerDesc')}</p>
-                <p style={{ fontSize: '0.9rem', color: '#999' }}>{t('bartclicker.autobuyer.youHave', { count: gameState.rebirth_count })}</p>
+                <p className="muted-text" style={{ fontSize: '0.9rem' }}>{t('bartclicker.autobuyer.youHave', { count: gameState.rebirth_count })}</p>
                 {gameState.rebirth_count >= 10 && (
-                  <p style={{ fontSize: '0.8rem', color: '#ff9800' }}>
+                  <p className="highlight-warning" style={{ fontSize: '0.8rem' }}>
                     Multiplier nach Kauf: ×{formatNumber(Math.pow(2, gameState.rebirth_count - 10))}
                   </p>
                 )}
@@ -376,9 +376,9 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
               <div className="autobuyer-card">
                 <h3>{t('bartclicker.autobuyer.upgradebuyer')}</h3>
                 <p>{t('bartclicker.autobuyer.upgradebuyerDesc')}</p>
-                <p style={{ fontSize: '0.9rem', color: '#999' }}>{t('bartclicker.autobuyer.youHave', { count: gameState.rebirth_count })}</p>
+                <p className="muted-text" style={{ fontSize: '0.9rem' }}>{t('bartclicker.autobuyer.youHave', { count: gameState.rebirth_count })}</p>
                 {gameState.rebirth_count >= 15 && (
-                  <p style={{ fontSize: '0.8rem', color: '#ff9800' }}>
+                  <p className="highlight-warning" style={{ fontSize: '0.8rem' }}>
                     Multiplier nach Kauf: ×{formatNumber(Math.pow(2, gameState.rebirth_count - 10))}
                   </p>
                 )}
@@ -396,22 +396,22 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
 
           {shopTab === 'offline' && (
             <div className="autobuyer-content">
-              <p style={{ fontSize: '0.85rem', color: '#ff9800', marginBottom: '10px' }}>
+              <p className="highlight-warning" style={{ fontSize: '0.85rem', marginBottom: '10px' }}>
                 ⚠️ Rebirths ausgeben senkt deinen Multiplier! (Aktuell: ×{formatNumber(gameState.rebirth_multiplier)})
               </p>
               <div className="autobuyer-card">
                 <h3>{t('bartclicker.offline.shopTitle')}</h3>
                 <p>{t('bartclicker.offline.shopDesc')}</p>
-                <p style={{ fontSize: '0.9rem', color: '#aaa', marginTop: '6px' }}>
+                <p className="muted-text" style={{ fontSize: '0.9rem', marginTop: '6px' }}>
                   {t('bartclicker.offline.currentRate', { rate: offlineRate })}
                 </p>
-                <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
+                <p className="muted-text" style={{ fontSize: '0.9rem' }}>
                   {t('bartclicker.offline.maxTime')}
                 </p>
-                <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
+                <p className="muted-text" style={{ fontSize: '0.9rem' }}>
                   {t('bartclicker.offline.upgradesOwned', { current: gameState.offline_earning_upgrades, max: MAX_OFFLINE_UPGRADES })}
                 </p>
-                <p style={{ fontSize: '0.9rem', color: '#999' }}>{t('bartclicker.offline.youHave', { count: gameState.rebirth_count })}</p>
+                <p className="muted-text" style={{ fontSize: '0.9rem' }}>{t('bartclicker.offline.youHave', { count: gameState.rebirth_count })}</p>
                 {gameState.offline_earning_upgrades < MAX_OFFLINE_UPGRADES ? (
                   <button
                     className="buy-button"
@@ -423,8 +423,8 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
                     {t('bartclicker.offline.buyUpgrade', { cost: OFFLINE_UPGRADE_REBIRTH_COST })}
                   </button>
                 ) : (
-                  <div style={{ marginTop: '10px', color: '#ffd700', fontWeight: 'bold' }}>
-                    ✅ {t('bartclicker.offline.maxUpgrades')}
+                  <div style={{ marginTop: '10px' }}>
+                    <span className="gold-text">✅ {t('bartclicker.offline.maxUpgrades')}</span>
                   </div>
                 )}
               </div>
