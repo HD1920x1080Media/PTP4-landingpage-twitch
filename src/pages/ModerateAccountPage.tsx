@@ -261,7 +261,7 @@ export default function ModerateAccountPage() {
 
       {/* Belohnungen-Panel */}
       <h2 style={{ marginTop: 32 }}>{t('moderate.rewards')}</h2>
-      <div style={{background:'#f4f4f4',border:'1px solid #ccc',borderRadius:8,padding:16,marginBottom:24}}>
+      <div style={{background:'var(--box-bg)',border:'1px solid var(--box-border)',borderRadius:8,padding:16,marginBottom:24}}>
         {/* Reward-Liste */}
         <b>{t('moderate.rewardsListTitle')}</b>
         <ul style={{margin:'8px 0',padding:0,listStyle:'none'}}>
@@ -310,7 +310,7 @@ export default function ModerateAccountPage() {
       </div>
 
       {/* Anleitung */}
-      <div style={{background:'#f8f8f8',border:'1px solid #ddd',borderRadius:8,padding:16,marginBottom:32}}>
+      <div style={{background:'var(--box-bg)',border:'1px solid var(--box-border)',borderRadius:8,padding:16,marginBottom:32}}>
         <h2 style={{marginTop:0}}>{t('moderate.instructionsTitle')}</h2>
         <ul style={{marginBottom:8}}>
           <li><b>{t('moderate.instructionsBan')}</b> {t('moderate.instructionsBanDesc')}</li>
