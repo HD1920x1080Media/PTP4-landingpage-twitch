@@ -125,45 +125,57 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
 
 
   if (loading) {
-    return <div className="points-reward-section"><i>Lade Benutzerdaten...</i></div>;
+    return
   }
   if (!user) {
-    return <div className="points-reward-section"><i>Bitte einloggen, um Punkte & Rewards zu sehen.</i></div>;
+    return
   }
   if (!isLive) {
-    return <div className="points-reward-section"><i>Punkte & Rewards sind nur während eines Livestreams verfügbar.</i></div>;
+    return
   }
 
   return (
-    <div className="points-reward-section">
+    <div className="points-reward-section compact">
       <div className="points-display">
         <b>{t('Deine Punkte')}:</b> {points ?? '-'}
       </div>
-      <div className="reward-redeem">
-        <select
-          value={selectedReward}
-          onChange={e => setSelectedReward(e.target.value)}
-        >
-          <option value="">{t('Reward auswählen')}</option>
-          {rewards.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name} ({r.cost} Punkte)
-            </option>
-          ))}
-        </select>
-        {rewards.find((r: { id: string; }) => r.id === selectedReward)?.type === 'tts' && (
-          <input
-            type="text"
-            placeholder={t('TTS Nachricht eingeben')}
-            value={ttsText}
-            onChange={e => setTtsText(e.target.value)}
-            maxLength={200}
-          />
-        )}
-        <button onClick={handleRedeem} disabled={redeemLoading || !selectedReward}>
-          {t('Einlösen')}
-        </button>
+      <div className="reward-list-scroll">
+        {rewards.map((r) => (
+          <button
+            key={r.id}
+            className={`reward-card${selectedReward === r.id ? ' selected' : ''}`}
+            onClick={() => setSelectedReward(r.id)}
+            type="button"
+            tabIndex={0}
+            aria-pressed={selectedReward === r.id}
+          >
+            <div className="reward-card-title">{r.name}</div>
+            <div className="reward-card-cost">{r.cost} Punkte</div>
+            <div className="reward-card-type">{r.type === 'tts' ? 'TTS' : ''}</div>
+          </button>
+        ))}
       </div>
+      {selectedReward && (
+        <div className="reward-action-box">
+          {rewards.find((r) => r.id === selectedReward)?.type === 'tts' && (
+            <input
+              type="text"
+              className="tts-input"
+              placeholder={t('TTS Nachricht eingeben')}
+              value={ttsText}
+              onChange={e => setTtsText(e.target.value)}
+              maxLength={200}
+            />
+          )}
+          <button
+            className="btn btn-primary redeem-btn"
+            onClick={handleRedeem}
+            disabled={redeemLoading || (rewards.find((r) => r.id === selectedReward)?.type === 'tts' && !ttsText)}
+          >
+            {t('Einlösen')}
+          </button>
+        </div>
+      )}
       {success && <div className="success-msg">{success}</div>}
       {error && <div className="error-msg">{error}</div>}
     </div>
