@@ -55,6 +55,7 @@ export function useClipVoting(): VotingState & {
     try {
       // 1 — Fetch the three most relevant rounds
       const { data: rounds } = await supabase
+        .schema('clipvoting')
         .from('voting_rounds')
         .select('*')
         .order('created_at', { ascending: false })
@@ -87,6 +88,7 @@ export function useClipVoting(): VotingState & {
             : displayRound.id
 
         const { data } = await supabase
+          .schema('clipvoting')
           .from('clipvoting.clip_vote_counts')
           .select('*')
           .eq('round_id', roundIdForClips)
@@ -99,6 +101,7 @@ export function useClipVoting(): VotingState & {
       let userVote: string | null = null
       if (active && user) {
         const { data } = await supabase
+          .schema('clipvoting')
           .from('votes')
           .select('clip_id')
           .eq('round_id', active.id)
@@ -109,6 +112,7 @@ export function useClipVoting(): VotingState & {
 
       // 4 — Latest monthly winner
       const { data: mw } = await supabase
+        .schema('clipvoting')
         .from('monthly_winners')
         .select('*, clips(*)')
         .order('created_at', { ascending: false })
@@ -117,6 +121,7 @@ export function useClipVoting(): VotingState & {
 
       // 5 — Latest yearly winner
       const { data: yw } = await supabase
+        .schema('clipvoting')
         .from('yearly_winners')
         .select('*, clips(*)')
         .order('year', { ascending: false })

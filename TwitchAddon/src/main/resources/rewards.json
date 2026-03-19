@@ -5,7 +5,7 @@
     "cost": 30,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=fcGMZ3-40hQ",
+    "mediaurl": "https://www.youtube.com/watch?v=fcGMZ3-40hQ",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -15,7 +15,7 @@
     "cost": 100,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=X-4pJ_6y9-0",
+    "mediaurl": "https://www.youtube.com/watch?v=X-4pJ_6y9-0",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -25,7 +25,7 @@
     "cost": 300,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=r5sTTlph2Vk",
+    "mediaurl": "https://www.youtube.com/watch?v=r5sTTlph2Vk",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -35,7 +35,7 @@
     "cost": 500,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "mediaurl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -45,7 +45,7 @@
     "cost": 500,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "mediaurl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -55,7 +55,7 @@
     "cost": 500,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=SbwCnVJ5Clk",
+    "mediaurl": "https://www.youtube.com/watch?v=SbwCnVJ5Clk",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -65,7 +65,7 @@
     "cost": 500,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=iPXakryoWYM",
+    "mediaurl": "https://www.youtube.com/watch?v=iPXakryoWYM",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -75,7 +75,7 @@
     "cost": 500,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=emdEWtsp2X0",
+    "mediaurl": "https://www.youtube.com/watch?v=emdEWtsp2X0",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 15
   },
@@ -85,7 +85,7 @@
     "cost": 1000,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=D7npse9n-Yw&list=RDD7npse9n-Yw&start_radio=1",
+    "mediaurl": "https://www.youtube.com/watch?v=D7npse9n-Yw&list=RDD7npse9n-Yw&start_radio=1",
     "description": "Spielt ein Meme von YouTube ab.",
     "duration": 24
   },
@@ -111,7 +111,7 @@
     "name": "Oreo",
     "cost": 500,
     "type": "image_text",
-    "mediaUrl": "https://pngimg.com/d/oreo_PNG30.png",
+    "mediaurl": "https://pngimg.com/d/oreo_PNG30.png",
     "description": "Snäck!",
     "duration": 5
   },
@@ -121,10 +121,10 @@
     "cost": 10000,
     "type": "video",
     "source": "youtube",
-    "mediaUrl": "https://www.youtube.com/watch?v=4FHlp88vSuU",
+    "mediaurl": "https://www.youtube.com/watch?v=4FHlp88vSuU",
     "showYoutubeVideo": false,
     "description": "Stefan futtert nen Centershock",
-    "customImageUrl": "https://www.sweetsanddrinks.ch/temp/resize_800x800_20051_9688.png",
+    "customimageurl": "https://www.sweetsanddrinks.ch/temp/resize_800x800_20051_9688.png",
     "text": "Sour and Sweet + 1x Centershock",
     "duration": 60
   }
