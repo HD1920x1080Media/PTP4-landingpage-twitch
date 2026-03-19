@@ -10,16 +10,6 @@ public class Main {
         String twitchOauthToken = getEnv(dotenv, "TWITCH_OAUTH_TOKEN");
         String twitchClientId = getEnv(dotenv, "TWITCH_CLIENT_ID");
         String channelName = getEnv(dotenv, "CHANNEL_NAME");
-        /**
-         * Holt eine Umgebungsvariable: zuerst aus Dotenv, dann aus System.getenv().
-         */
-        private static String getEnv(Dotenv dotenv, String key) {
-            String value = dotenv.get(key);
-            if (value == null || value.isEmpty()) {
-                value = System.getenv(key);
-            }
-            return value;
-        }
 
         SupabaseClient supabaseClient = new SupabaseClient(supabaseUrl, supabaseApiKey);
         // Rewards aus rewards.json im aktuellen Arbeitsverzeichnis in die DB synchronisieren
@@ -32,5 +22,16 @@ public class Main {
         OverlayApiServer overlayApiServer = new OverlayApiServer(supabaseClient);
 
         System.out.println("Bot läuft. Punkte werden in Supabase gespeichert.");
+    }
+
+    /**
+     * Holt eine Umgebungsvariable: zuerst aus Dotenv, dann aus System.getenv().
+     */
+    private static String getEnv(Dotenv dotenv, String key) {
+        String value = dotenv.get(key);
+        if (value == null || value.isEmpty()) {
+            value = System.getenv(key);
+        }
+        return value;
     }
 }
