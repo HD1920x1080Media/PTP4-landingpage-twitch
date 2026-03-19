@@ -74,15 +74,15 @@ export default function CurrentGame({ isLive }: CurrentGameProps) {
       setLoading(true)
       try {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-        // explizit KEIN Authorization/apikey setzen, auch nicht leer!
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY // Ensure this is in your .env
+
         const headers = new Headers()
         headers.set('Content-Type', 'application/json')
-        // Falls Supabase-js oder ein Interceptor Header injiziert, explizit löschen:
-        headers.delete('Authorization')
-        headers.delete('authorization')
-        headers.delete('apikey')
-        // fetch direkt von globalThis, um eventuelle Patches zu umgehen
-        const res = await (globalThis.fetch ?? fetch)(`${supabaseUrl}/functions/v1/twitch-game`, {
+        // Supabase requires the anon key for edge functions unless explicitly configured otherwise
+        headers.set('apikey', supabaseAnonKey)
+        headers.set('Authorization', `Bearer ${supabaseAnonKey}`)
+
+        const res = await fetch(`${supabaseUrl}/functions/v1/twitch-game`, {
           method: 'POST',
           headers,
         })
