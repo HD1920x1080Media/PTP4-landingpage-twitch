@@ -11,7 +11,8 @@ import java.nio.file.Paths;
 
 public class OverlayApiServer {
     private final SupabaseClient supabaseClient;
-    private final String rewardsJsonPath = "src/main/resources/rewards.json";
+    // rewards.json wird aus dem aktuellen Arbeitsverzeichnis geladen (liegt neben der EXE)
+    private final String rewardsJsonPath = "rewards.json";
 
     public OverlayApiServer(SupabaseClient supabaseClient) throws IOException {
         this.supabaseClient = supabaseClient;

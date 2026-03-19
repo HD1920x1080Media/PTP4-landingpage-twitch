@@ -87,6 +87,13 @@ jobs:
           & $l4jExe "${{ github.workspace }}/TwitchAddon/launch4j-config.xml"
         working-directory: TwitchAddon
 
+      # 5.1. rewards.json in den dist-Ordner kopieren
+      - name: Copy rewards.json to dist
+        shell: pwsh
+        run: |
+          Copy-Item "${{ github.workspace }}/TwitchAddon/config/rewards.json" "${{ github.workspace }}/TwitchAddon/dist/rewards.json" -Force
+        working-directory: TwitchAddon
+
       # 6. RELEASE
       - name: Create and Upload Release
         uses: softprops/action-gh-release@v2
