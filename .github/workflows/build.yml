@@ -53,7 +53,7 @@ jobs:
           if (!(Test-Path $resPath)) { New-Item -ItemType Directory -Force -Path $resPath }
           
           $envContent = @(
-            "SUPABASE_URL=${{ secrets.SUPABASE_URL }}",
+            "SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}",
             "SUPABASE_API_KEY=${{ secrets.SUPABASE_API_KEY }}",
             "TWITCH_OAUTH_TOKEN=$($env:TWITCH_OAUTH_TOKEN)",
             "TWITCH_CLIENT_ID=${{ secrets.VITE_TWITCH_CLIENT_ID }}",
