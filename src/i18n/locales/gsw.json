@@ -281,7 +281,7 @@
     "title": "Bartclicker",
     "description": "Klick uf de Bart und verdiene Barthaare! Chauf Upgrades, starte Rebirths und erreich d'Spitze vom Leaderboard."
   },
-    "moderate": {
+  "moderate": {
     "forbidden": "Kei Zuegriff",
     "forbiddenHint": "Dä Bereich isch nur für Moderatore und de Streamer zugänglich.",
     "landingTitle": "Moderations-Bereich",
@@ -388,9 +388,14 @@
     "rewardDescKeyPlaceholder": "Beschrieb-Key iigä",
     "rewardCostPlaceholder": "Kosten iigä",
     "rewardTypePlaceholder": "Typ iigä",
-    "rewardCooldownPlaceholder": "Cooldown (Sekunde)",
-    "saveRewardBtn": "Speichere",
-    "cancelRewardBtn": "Abbreche",
+    "rewardCooldownPlaceholder": "Abkühlig (Sekunde)",
+    "rewardNameKeyLabel": "Name-Schlüssel",
+    "rewardDescKeyLabel": "Beschreibig-Schlüssel",
+    "rewardCostLabel": "Koschte",
+    "rewardTypeLabel": "Typ",
+    "rewardCooldownLabel": "Abkühlig (Sekunde)",
+    "pointsInputLabel": "Punkt iigäh",
+    "pointsActionLabel": "Aktion uswähle",
     "instructionsTitle": "Aaleitig",
     "instructionsBan": "Account sperre:",
     "instructionsBanDesc": "Gib d Twitch-User-ID oder de Username i, um en Account z sperre.",
@@ -402,7 +407,7 @@
     "technicalHintPoints": "Punkte werde direkt i de Datenbank ändere.",
     "technicalHintRewards": "Belohnige werde sofort überno.",
     "technicalHintBanned": "Gspärri Accounts chönd jederziit entsperrt werde."
-    },
+  },
   "clipVotingPage": {
     "title": "Clip vom Monet – Voting",
     "intro": "Stimm für dine Liebligs-Clip vom Monet ab! Pro Runde häsch du eine Stimm."

@@ -292,7 +292,7 @@
     "title": "Bartclicker",
     "description": "Click on the bart and earn beard hairs! Buy upgrades, trigger rebirths, and reach the top of the leaderboard."
   },
-    "moderate": {
+  "moderate": {
     "forbidden": "Access Denied",
     "forbiddenHint": "This area is only accessible to moderators and the streamer.",
     "landingTitle": "Moderation Area",
@@ -400,8 +400,13 @@
     "rewardCostPlaceholder": "Enter cost",
     "rewardTypePlaceholder": "Enter type",
     "rewardCooldownPlaceholder": "Cooldown (seconds)",
-    "saveRewardBtn": "Save",
-    "cancelRewardBtn": "Cancel",
+    "rewardNameKeyLabel": "Name Key",
+    "rewardDescKeyLabel": "Description Key",
+    "rewardCostLabel": "Cost",
+    "rewardTypeLabel": "Type",
+    "rewardCooldownLabel": "Cooldown (seconds)",
+    "pointsInputLabel": "Enter points",
+    "pointsActionLabel": "Select action",
     "instructionsTitle": "Instructions",
     "instructionsBan": "Ban account:",
     "instructionsBanDesc": "Enter the Twitch user ID or username to ban an account.",
@@ -413,7 +418,7 @@
     "technicalHintPoints": "Points are changed directly in the database.",
     "technicalHintRewards": "Rewards are applied immediately.",
     "technicalHintBanned": "Banned accounts can be unbanned at any time."
-    },
+  },
   "clipVotingPage": {
     "title": "Clip of the Month – Voting",
     "intro": "Vote for your favourite clip of the month! You have one vote per round."

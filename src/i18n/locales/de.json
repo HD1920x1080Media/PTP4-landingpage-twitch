@@ -292,7 +292,7 @@
     "title": "Bartclicker",
     "description": "Klicke auf den Bart und verdiene Barthaare! Kaufe Upgrades, starte Rebirths und erreiche die Spitze des Leaderboards."
   },
-    "moderate": {
+  "moderate": {
     "forbidden": "Kein Zugriff",
     "forbiddenHint": "Dieser Bereich ist nur für Moderatoren und den Streamer zugänglich.",
     "landingTitle": "Moderations-Bereich",
@@ -400,6 +400,13 @@
     "rewardCostPlaceholder": "Kosten eingeben",
     "rewardTypePlaceholder": "Typ eingeben",
     "rewardCooldownPlaceholder": "Cooldown (Sekunden)",
+    "rewardNameKeyLabel": "Name-Key",
+    "rewardDescKeyLabel": "Beschreibung-Key",
+    "rewardCostLabel": "Kosten",
+    "rewardTypeLabel": "Typ",
+    "rewardCooldownLabel": "Cooldown (Sekunden)",
+    "pointsInputLabel": "Punkte eingeben",
+    "pointsActionLabel": "Aktion auswählen",
     "saveRewardBtn": "Speichern",
     "cancelRewardBtn": "Abbrechen",
     "instructionsTitle": "Anleitung",
@@ -413,7 +420,7 @@
     "technicalHintPoints": "Punkte werden direkt in der Datenbank geändert.",
     "technicalHintRewards": "Belohnungen werden sofort übernommen.",
     "technicalHintBanned": "Gebannte Accounts können jederzeit entbannt werden."
-    },
+  },
   "clipVotingPage": {
     "title": "Clip des Monats – Voting",
     "intro": "Stimme für deinen Lieblings-Clip des Monats ab! Pro Runde hast du eine Stimme."
@@ -575,9 +582,9 @@
     "loading": "Lädt …"
   },
   "sync": {
-      "exclusionName": "Name",
-      "exclusionTwitchId": "Twitch-ID",
-      "exclusionSince": "Ausgeschlossen seit"
+    "exclusionName": "Name",
+    "exclusionTwitchId": "Twitch-ID",
+    "exclusionSince": "Ausgeschlossen seit"
   },
   "pointsAndRewardSection": {
     "deinePunkte": "Deine Punkte",
