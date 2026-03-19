@@ -5,11 +5,21 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         Dotenv dotenv = Dotenv.load();
-        String supabaseUrl = dotenv.get("SUPABASE_URL");
-        String supabaseApiKey = dotenv.get("SUPABASE_API_KEY");
-        String twitchOauthToken = dotenv.get("TWITCH_OAUTH_TOKEN");
-        String twitchClientId = dotenv.get("TWITCH_CLIENT_ID");
-        String channelName = dotenv.get("CHANNEL_NAME");
+        String supabaseUrl = getEnv(dotenv, "SUPABASE_URL");
+        String supabaseApiKey = getEnv(dotenv, "SUPABASE_API_KEY");
+        String twitchOauthToken = getEnv(dotenv, "TWITCH_OAUTH_TOKEN");
+        String twitchClientId = getEnv(dotenv, "TWITCH_CLIENT_ID");
+        String channelName = getEnv(dotenv, "CHANNEL_NAME");
+        /**
+         * Holt eine Umgebungsvariable: zuerst aus Dotenv, dann aus System.getenv().
+         */
+        private static String getEnv(Dotenv dotenv, String key) {
+            String value = dotenv.get(key);
+            if (value == null || value.isEmpty()) {
+                value = System.getenv(key);
+            }
+            return value;
+        }
 
         SupabaseClient supabaseClient = new SupabaseClient(supabaseUrl, supabaseApiKey);
         // Rewards aus rewards.json im aktuellen Arbeitsverzeichnis in die DB synchronisieren
