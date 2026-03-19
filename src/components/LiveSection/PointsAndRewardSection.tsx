@@ -32,8 +32,14 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
       .from('points')
       .select('points')
       .eq('twitch_user_id', twitchUserId)
-      .single()
-      .then(({ data }) => setPoints(data?.points ?? 0));
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error) {
+          setPoints(0);
+        } else {
+          setPoints(data?.points ?? 0);
+        }
+      });
   }, [user]);
 
   // Rewards aus der Datenbank laden

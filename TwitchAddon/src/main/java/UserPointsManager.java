@@ -7,12 +7,22 @@ public class UserPointsManager {
     private static final Logger logger = LoggerFactory.getLogger(UserPointsManager.class);
     private final SupabaseClient supabaseClient;
     private final Map<String, UserSession> sessions = new ConcurrentHashMap<>();
+    private final String broadcasterId;
 
-    public UserPointsManager(SupabaseClient supabaseClient) {
+    public UserPointsManager(SupabaseClient supabaseClient, String broadcasterId) {
         this.supabaseClient = supabaseClient;
+        this.broadcasterId = broadcasterId;
+    }
+
+    public boolean isBroadcaster(String username, String userid) {
+        return userid != null && userid.equals(broadcasterId);
     }
 
     public void userJoined(String username, String userid) {
+        if (isBroadcaster(username, userid)) {
+            logger.info("userJoined: {} (broadcaster, keine Punkte)", username);
+            return;
+        }
         logger.info("userJoined: {}", username);
         sessions.put(username, new UserSession(username, userid, System.currentTimeMillis()));
         // Prüfe, ob User in DB existiert, sonst anlegen
@@ -31,6 +41,10 @@ public class UserPointsManager {
     }
 
     public void addPoints(String username, String userid, int points, String reason) {
+        if (isBroadcaster(username, userid) && !"max für broadcaster".equals(reason)) {
+            logger.info("addPoints: {} (broadcaster, keine Punkte)", username);
+            return;
+        }
         logger.info("addPoints: {} | {} | {}", username, points, reason);
         supabaseClient.addOrUpdatePoints(username, userid, points, reason);
     }

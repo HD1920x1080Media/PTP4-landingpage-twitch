@@ -55,6 +55,20 @@ create table if not exists points (
     timestamp text
     );
 
+-- 1. RLS für die Tabelle aktivieren
+ALTER TABLE points ENABLE ROW LEVEL SECURITY;
+
+-- 2. Policy: Jeder darf seine EIGENEN Punkte sehen
+CREATE POLICY "Nutzer können eigene Punkte sehen"
+ON points
+FOR SELECT
+               USING (
+               -- Wir vergleichen die twitch_user_id in der Tabelle
+               -- mit der provider_id aus dem JWT-Token des Users
+               twitch_user_id = (auth.jwt() -> 'user_metadata' ->> 'provider_id')
+               );
+
+
 -- Hinweise:
 -- - Rewards werden in rewards.json gepflegt und mit obigem Befehl in die DB übernommen.
 -- - Das Overlay erkennt automatisch, wie der Reward angezeigt/abgespielt wird.

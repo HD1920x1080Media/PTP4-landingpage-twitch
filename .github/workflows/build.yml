@@ -59,6 +59,7 @@ jobs:
             "TWITCH_CLIENT_ID=${{ secrets.VITE_TWITCH_CLIENT_ID }}",
             "TWITCH_CLIENT_SECRET=${{ secrets.TWITCH_CLIENT_SECRET }}",
             "CHANNEL_NAME=${{ secrets.CHANNEL_NAME }}"
+            "TWITCH_REFRESH_TOKEN=${{ secrets.TWITCH_REFRESH_TOKEN }}"
           )
           $envContent | Out-File -FilePath "$resPath/.env" -Encoding utf8
         env:

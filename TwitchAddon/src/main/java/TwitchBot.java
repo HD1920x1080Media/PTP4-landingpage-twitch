@@ -21,13 +21,21 @@ public class TwitchBot {
     private Timer timer;
     private Timer streamStatusTimer;
     private boolean lastStreamOnline = false;
+    private String oauthToken;
+    private final String clientId;
+    private final String clientSecret;
+    private final String refreshToken;
 
-    public TwitchBot(String oauthToken, String clientId, String clientSecret, String channelName, UserPointsManager pointsManager) {
-        this(oauthToken, clientId, clientSecret, channelName, pointsManager, 10000); // Standard-Intervall 10 Sekunden
+    public TwitchBot(String oauthToken, String clientId, String clientSecret, String refreshToken, String channelName, UserPointsManager pointsManager) {
+        this(oauthToken, clientId, clientSecret, refreshToken, channelName, pointsManager, 10000);
     }
 
-    public TwitchBot(String oauthToken, String clientId, String clientSecret, String channelName, UserPointsManager pointsManager, long timerIntervalMs) {
+    public TwitchBot(String oauthToken, String clientId, String clientSecret, String refreshToken, String channelName, UserPointsManager pointsManager, long timerIntervalMs) {
         logger.info("Konstruktor betreten: oauthToken={}, clientId={}, channelName={}, timerIntervalMs={}", oauthToken != null, clientId, channelName, timerIntervalMs);
+        this.oauthToken = oauthToken;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.refreshToken = refreshToken;
         this.channelName = channelName;
         this.pointsManager = pointsManager;
         this.timerIntervalMs = timerIntervalMs;
@@ -193,8 +201,63 @@ public class TwitchBot {
         stopTimer();
     }
 
+    // Wrapper für Helix-API-Calls mit automatischem Token-Refresh bei "invalid oauth token"
+    private <T> T executeWithTokenRetry(TokenApiCall<T> call) throws Exception {
+        try {
+            return call.execute(oauthToken);
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains("invalid oauth token")) {
+                logger.warn("OAuth-Token ungültig, versuche automatischen Refresh...");
+                if (refreshOAuthTokenIfNeeded()) {
+                    return call.execute(oauthToken);
+                } else {
+                    throw new Exception("OAuth-Token konnte nicht erneuert werden.", e);
+                }
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface TokenApiCall<T> {
+        T execute(String token) throws Exception;
+    }
+
+    /**
+     * Erneuert das OAuth-Token mit dem Refresh-Token und aktualisiert den TwitchClient.
+     * Gibt true zurück, wenn erfolgreich.
+     */
+    private synchronized boolean refreshOAuthTokenIfNeeded() {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            logger.error("Kein Refresh-Token vorhanden, kann OAuth-Token nicht erneuern!");
+            return false;
+        }
+        try {
+            String newToken = TwitchOAuthUtil.refreshAccessToken(clientId, clientSecret, refreshToken);
+            if (newToken != null && !newToken.isEmpty()) {
+                logger.info("Neues OAuth-Token per Refresh erhalten. Aktualisiere TwitchClient...");
+                this.oauthToken = newToken;
+                OAuth2Credential credential = new OAuth2Credential("twitch", newToken);
+                // TwitchClient kann nicht direkt das Token wechseln, daher ggf. Neustart nötig
+                // Workaround: Hinweis loggen, ggf. Bot-Neustart triggern
+                logger.warn("TwitchClient benötigt einen Neustart, um neues Token zu nutzen!");
+                return true;
+            } else {
+                logger.error("Konnte kein neues OAuth-Token generieren.");
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Fehler beim Erneuern des OAuth-Tokens: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
     public void connect() {
         logger.info("Bot tritt Channel {} bei...", channelName);
         twitchClient.getChat().joinChannel(channelName);
     }
 }
+
+// Beispielnutzung für Helix-API-Call:
+// User user = executeWithTokenRetry(token -> twitchClient.getHelix().getUsers(null, null, List.of(username)).execute().getUsers().get(0));
