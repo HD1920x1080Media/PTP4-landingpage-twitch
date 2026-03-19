@@ -3,26 +3,9 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import './NotFoundPage.css'
 
-const CONFUSED_MESSAGES_DE = [
-  'Der Bart hat sich verlaufen…',
-  'Hier wächst kein Bart.',
-  'Diese Seite wurde rasiert.',
-  '404 – Bart nicht gefunden.',
-  'Selbst der Bart weiß nicht, wo das ist.',
-]
-
-const CONFUSED_MESSAGES_EN = [
-  'The beard got lost…',
-  'No beard grows here.',
-  'This page has been shaved.',
-  '404 – Beard not found.',
-  'Even the beard doesn\'t know where this is.',
-]
-
 export default function NotFoundPage() {
-  const { t, i18n } = useTranslation()
-  const messages = i18n.language?.startsWith('de') ? CONFUSED_MESSAGES_DE : CONFUSED_MESSAGES_EN
-  // Initialize with a random index, lazy init avoids useEffect
+  const { t } = useTranslation()
+  const messages = t('notFound.confusedMessages', { returnObjects: true }) as string[]
   const [msgIndex, setMsgIndex] = useState(() => Math.floor(Math.random() * messages.length))
   const [spin, setSpin] = useState(false)
 
@@ -32,7 +15,6 @@ export default function NotFoundPage() {
     setMsgIndex((prev) => (prev + 1) % messages.length)
     setTimeout(() => setSpin(false), 600)
   }
-
 
   return (
     <main className="not-found">
@@ -66,9 +48,7 @@ export default function NotFoundPage() {
           {messages[msgIndex]}
         </p>
         <p className="not-found-hint">
-          {i18n.language?.startsWith('de')
-            ? '(Klick auf den Bart für mehr Weisheiten)'
-            : '(Click the beard for more wisdom)'}
+          {t('notFound.hint')}
         </p>
 
         {/* Back button */}

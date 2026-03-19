@@ -553,5 +553,15 @@
     "fehlerBeimEinloesen": "Error redeeming: {{msg}}",
     "erfolgreichEingeloest": "Successfully redeemed!",
     "deineNachricht": "Your message..."
+  },
+  "notFound": {
+    "confusedMessages": [
+      "The beard got lost…",
+      "No beard grows here.",
+      "This page has been shaved.",
+      "404 – Beard not found.",
+      "Even the beard doesn't know where this is."
+    ],
+    "hint": "(Click the beard for more wisdom)"
   }
 }

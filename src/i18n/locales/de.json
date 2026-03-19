@@ -553,5 +553,15 @@
     "fehlerBeimEinloesen": "Fehler beim Einlösen: {{msg}}",
     "erfolgreichEingeloest": "Erfolgreich eingelöst!",
     "deineNachricht": "Deine Nachricht..."
+  },
+  "notFound": {
+    "confusedMessages": [
+      "Der Bart hat sich verlaufen…",
+      "Hier wächst kein Bart.",
+      "Diese Seite wurde rasiert.",
+      "404 – Bart nicht gefunden.",
+      "Selbst der Bart weiß nicht, wo das ist."
+    ],
+    "hint": "(Klick auf den Bart für mehr Weisheiten)"
   }
 }

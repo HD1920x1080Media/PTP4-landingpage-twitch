@@ -542,5 +542,15 @@
     "fehlerBeimEinloesen": "Fehler bim Iilöse: {{msg}}",
     "erfolgreichEingeloest": "Erfolgrich iiglöst!",
     "deineNachricht": "Dini Nachricht..."
+  },
+  "notFound": {
+    "confusedMessages": [
+      "Dr Bart het sich verlaufe…",
+      "Da wachst kei Bart.",
+      "Die Site isch rasiert worde.",
+      "404 – Bart nöd gfunde.",
+      "Sogar dr Bart weiss nöd, wo das isch."
+    ],
+    "hint": "(Klick uf dr Bart für meh Wisheitä)"
   }
 }
