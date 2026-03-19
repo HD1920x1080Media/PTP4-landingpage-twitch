@@ -74,11 +74,11 @@ export default function CurrentGame({ isLive }: CurrentGameProps) {
       setLoading(true)
       try {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const headers = new Headers()
+        headers.set('Content-Type', 'application/json')
         const res = await fetch(`${supabaseUrl}/functions/v1/twitch-game`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers,
         })
         if (cancelled) return
         if (!res.ok) {
