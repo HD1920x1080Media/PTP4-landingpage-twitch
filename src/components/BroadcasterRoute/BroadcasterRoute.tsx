@@ -45,7 +45,7 @@ export default function BroadcasterRoute({ children }: BroadcasterRouteProps) {
       <SubPage>
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <h2>⛔ {t('error.title', { defaultValue: 'Zugriff verweigert' })}</h2>
-          <p>{t('error.forbidden', { defaultValue: 'Diese Seite ist nur für den Broadcaster verfügbar.' })}</p>
+          <p>{t('error.forbidden', { defaultValue: 'Diese Seite ist für dich nicht verfügbar.' })}</p>
         </div>
       </SubPage>
     )

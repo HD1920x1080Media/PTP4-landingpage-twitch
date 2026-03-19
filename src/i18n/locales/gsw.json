@@ -277,6 +277,11 @@
     "requiredTitle": "Login nötig",
     "requiredMsg": "Bitte logg di i, zum wyterzmache."
   },
+
+  "error": {
+    "title": "Zuegriff verweigert",
+    "forbidden": "Die Siite isch für di nöd verfiegbar."
+  },
   "bartclickerPage": {
     "title": "Bartclicker",
     "description": "Klick uf de Bart und verdiene Barthaare! Chauf Upgrades, starte Rebirths und erreich d'Spitze vom Leaderboard."
@@ -375,7 +380,7 @@
     "channelPoints": "Kanalpunkte verwalte",
     "pointsInputPlaceholder": "Twitch-User-ID iigä",
     "resetPoints": "Punkte lösche",
-    "givePoints": "Punkte gä",
+    "givePoints": "Punkte feschtlegge",
     "pointsValuePlaceholder": "Punktewert iigä",
     "rewards": "Belohnige verwalte",
     "rewardsListTitle": "Belohnige-Lischt",

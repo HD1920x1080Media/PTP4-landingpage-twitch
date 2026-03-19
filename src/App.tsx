@@ -89,7 +89,7 @@ function App() {
                 <Route path="/moderate/settings"
                        element={<BroadcasterRoute><ModerateSettingsPage/></BroadcasterRoute>}/>
                 <Route path="/moderate/account"
-                       element={<BroadcasterRoute><ModerateAccountPage/></BroadcasterRoute>}/>
+                       element={<ModeratorRoute><ModerateAccountPage/></ModeratorRoute>}/>
 
                 {/* ── Alternative Pfade → Redirect ── */}
                 <Route path="/actuator/data" element={<Navigate to="/moderate/statistics" replace/>}/>

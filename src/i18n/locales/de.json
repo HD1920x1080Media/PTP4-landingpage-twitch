@@ -288,6 +288,11 @@
     "requiredTitle": "Authentifizierung erforderlich",
     "requiredMsg": "Bitte logge dich ein, um fortzufahren."
   },
+
+  "error": {
+    "title": "Zugriff verweigert",
+    "forbidden": "Diese Seite ist für dich nicht verfügbar."
+  },
   "bartclickerPage": {
     "title": "Bartclicker",
     "description": "Klicke auf den Bart und verdiene Barthaare! Kaufe Upgrades, starte Rebirths und erreiche die Spitze des Leaderboards."
@@ -386,7 +391,7 @@
     "channelPoints": "Kanalpunkte verwalten",
     "pointsInputPlaceholder": "Twitch-User-ID eingeben",
     "resetPoints": "Punkte löschen",
-    "givePoints": "Punkte vergeben",
+    "givePoints": "Punkte setzen",
     "pointsValuePlaceholder": "Punktewert eingeben",
     "rewards": "Belohnungen verwalten",
     "rewardsListTitle": "Belohnungen-Liste",

@@ -288,6 +288,11 @@
     "requiredTitle": "Authentication required",
     "requiredMsg": "Please log in to continue."
   },
+
+  "error": {
+    "title": "Access denied",
+    "forbidden": "This page is not available to you."
+  },
   "bartclickerPage": {
     "title": "Bartclicker",
     "description": "Click on the bart and earn beard hairs! Buy upgrades, trigger rebirths, and reach the top of the leaderboard."
@@ -386,7 +391,7 @@
     "channelPoints": "Manage Channel Points",
     "pointsInputPlaceholder": "Enter Twitch user ID",
     "resetPoints": "Reset Points",
-    "givePoints": "Give Points",
+    "givePoints": "Set Points",
     "pointsValuePlaceholder": "Enter points value",
     "rewards": "Manage Rewards",
     "rewardsListTitle": "Rewards List",
