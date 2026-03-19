@@ -101,7 +101,6 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
         user: user.id,
         reward_id: reward.id,
         description: reward.type === 'tts' ? ttsText : reward.description,
-        ttsText: reward.type === 'tts' ? ttsText : null,
         cost: reward.cost,
       },
     ]);
