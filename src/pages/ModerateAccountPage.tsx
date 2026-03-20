@@ -33,7 +33,7 @@ export default function ModerateAccountPage() {
   const [pointsName, setPointsName] = useState('')
   const [pointsAction, setPointsAction] = useState<'reset' | 'give'>('reset')
   const [pointsValue, setPointsValue] = useState<number>(0)
-  const [banned, setBanned] = useState<string[]>([])
+  const [banned, setBanned] = useState<{ twitch_user_id: string; display_name?: string }[]>([])
   const [busy, setBusy] = useState(false)
   const { isBroadcaster, isMod } = useIsModerator()
   const { showConfirm } = useConfirmModal()
@@ -99,16 +99,16 @@ export default function ModerateAccountPage() {
 
   // Bann-Liste laden
   async function fetchBanned() {
-    const { data, error } = await supabase.from('banned_accounts').select('twitch_user_id')
-    if (!error && data) setBanned(data.map((b: { twitch_user_id: string }) => b.twitch_user_id))
+    const { data, error } = await supabase.from('banned_accounts').select('twitch_user_id, display_name')
+    if (!error && data) setBanned((data as { twitch_user_id: string; display_name?: string }[]).map(b => ({ twitch_user_id: b.twitch_user_id, display_name: b.display_name ?? undefined })))
   }
 
   // Rewards laden
   const fetchRewards = useCallback(async () => {
     const { data, error } = await supabase.from('rewards').select('*')
     if (!error && data) setRewards(data)
-    else showToast('Fehler beim Laden der Rewards')
-  }, [showToast])
+    else showToast(t('moderate.errorLoadRewards') || 'Fehler beim Laden der Rewards')
+  }, [showToast, t])
   useEffect(() => { fetchRewards() }, [fetchRewards])
 
   // Initial fetch
@@ -125,7 +125,7 @@ export default function ModerateAccountPage() {
   async function banAccount() {
     // Only moderators or broadcaster can perform bans
     if (!isBroadcaster && !isMod) {
-      showToast('Keine Berechtigung!')
+      showToast(t('moderate.noPermission') || 'Keine Berechtigung!')
       return
     }
     setBusy(true)
@@ -135,7 +135,7 @@ export default function ModerateAccountPage() {
       if (!/^\d+$/.test(twitch_user_id)) {
         const res = await fetch(`https://decapi.me/twitch/id/${encodeURIComponent(twitch_user_id)}`)
         if (!res.ok) {
-          showToast('Konnte Twitch-ID nicht abrufen')
+          showToast(t('moderate.couldNotFetchTwitchId') || 'Konnte Twitch-ID nicht abrufen')
           return
         }
         twitch_user_id = (await res.text()).trim()
@@ -145,7 +145,7 @@ export default function ModerateAccountPage() {
       // Broadcaster may ban anyone except themselves
       if (isBroadcaster) {
         if (twitch_user_id === myTwitchId) {
-          showToast('Du kannst dich nicht selbst bannen')
+          showToast(t('moderate.cannotBanYourself') || 'Du kannst dich nicht selbst bannen')
           return
         }
       }
@@ -155,11 +155,11 @@ export default function ModerateAccountPage() {
         // Check if target is a moderator or broadcaster
         const { data: modRow, error: modErr } = await supabase.from('moderators').select('twitch_user_id, is_broadcaster').eq('twitch_user_id', twitch_user_id).maybeSingle()
         if (modErr) {
-          showToast('Fehler beim Prüfen des Benutzers: ' + getErrorMessage(modErr))
+          showToast((t('moderate.errorCheckingUser') || 'Fehler beim Prüfen des Benutzers: ') + getErrorMessage(modErr))
           return
         }
         if (modRow) {
-          showToast('Moderatoren können nur normale Benutzer bannen')
+          showToast(t('moderate.modsCanOnlyBanUsers') || 'Moderatoren können nur normale Benutzer bannen')
           return
         }
       }
@@ -168,14 +168,14 @@ export default function ModerateAccountPage() {
       const banned_by = myTwitchId
       const { error } = await supabase.from('banned_accounts').insert([{ twitch_user_id, display_name, banned_by }])
       if (error) {
-        showToast('Fehler beim Bannen: ' + getErrorMessage(error))
+        showToast((t('moderate.errorBanning') || 'Fehler beim Bannen: ') + getErrorMessage(error))
         return
       }
-      showToast('Account gebannt!')
+      showToast(t('moderate.accountBanned') || 'Account gebannt!')
       setBanName('')
       fetchBanned()
     } catch (e: unknown) {
-      showToast('Fehler beim Bannen: ' + getErrorMessage(e))
+      showToast((t('moderate.errorBanning') || 'Fehler beim Bannen: ') + getErrorMessage(e))
     } finally {
       setBusy(false)
     }
@@ -184,7 +184,7 @@ export default function ModerateAccountPage() {
   async function unbanAccount(twitch_user_id: string) {
     // Allow broadcaster or moderators to unban, but moderators may not unban other mods/broadcaster
     if (!isBroadcaster && !isMod) {
-      showToast('Keine Berechtigung!')
+      showToast(t('moderate.noPermission') || 'Keine Berechtigung!')
       return
     }
     setBusy(true)
@@ -193,24 +193,24 @@ export default function ModerateAccountPage() {
         // Check if target is a moderator or the broadcaster
         const { data: modRow, error: modErr } = await supabase.from('moderators').select('twitch_user_id, is_broadcaster').eq('twitch_user_id', twitch_user_id).maybeSingle()
         if (modErr) {
-          showToast('Fehler beim Prüfen des Benutzers: ' + getErrorMessage(modErr))
+          showToast((t('moderate.errorCheckingUser') || 'Fehler beim Prüfen des Benutzers: ') + getErrorMessage(modErr))
           return
         }
         if (modRow) {
-          showToast('Moderatoren können keine Moderatoren oder den Broadcaster entbannen')
+          showToast(t('moderate.modsCannotUnbanModsOrBroadcaster') || 'Moderatoren können keine Moderatoren oder den Broadcaster entbannen')
           return
         }
       }
 
       const { error } = await supabase.from('banned_accounts').delete().eq('twitch_user_id', twitch_user_id)
       if (error) {
-        showToast('Fehler beim Entbannen: ' + getErrorMessage(error))
+        showToast((t('moderate.errorUnbanning') || 'Fehler beim Entbannen: ') + getErrorMessage(error))
         return
       }
-      showToast('Account entbannt!')
+      showToast(t('moderate.accountUnbanned') || 'Account entbannt!')
       fetchBanned()
     } catch (e: unknown) {
-      showToast('Fehler beim Entbannen: ' + getErrorMessage(e))
+      showToast((t('moderate.errorUnbanning') || 'Fehler beim Entbannen: ') + getErrorMessage(e))
     } finally {
       setBusy(false)
     }
@@ -225,12 +225,12 @@ export default function ModerateAccountPage() {
       if (!/^\d+$/.test(targetUser)) {
         const res = await fetch(`https://decapi.me/twitch/id/${encodeURIComponent(targetUser)}`)
         if (!res.ok) {
-          showToast('Konnte Twitch-ID nicht abrufen')
+          showToast(t('moderate.couldNotFetchTwitchId') || 'Konnte Twitch-ID nicht abrufen')
           return
         }
         const id = (await res.text()).trim()
         if (!/^\d+$/.test(id)) {
-          showToast('Ungültige Twitch-ID erhalten')
+          showToast(t('moderate.invalidTwitchIdReceived') || 'Ungültige Twitch-ID erhalten')
           return
         }
         targetUser = id
@@ -244,7 +244,7 @@ export default function ModerateAccountPage() {
           .select()
         if (updateError) {
           console.error('points reset update error', updateError)
-          showToast('Fehler beim Punkte löschen: ' + getErrorMessage(updateError))
+          showToast((t('moderate.errorResettingPoints') || 'Fehler beim Punkte löschen: ') + getErrorMessage(updateError))
           return
         }
         console.debug('points reset update result', updated)
@@ -254,15 +254,15 @@ export default function ModerateAccountPage() {
             .insert([{ twitch_user_id: targetUser, points: 0, reason: 'reset by mod' }]).select()
           if (insertError) {
             console.error('points reset insert error', insertError)
-            showToast('Fehler beim Punkte löschen: ' + getErrorMessage(insertError))
+            showToast((t('moderate.errorResettingPoints') || 'Fehler beim Punkte löschen: ') + getErrorMessage(insertError))
             return
           }
           console.debug('points reset insert result', inserted)
         }
-        showToast('Punkte gelöscht!')
+        showToast(t('moderate.pointsReset') || 'Punkte gelöscht!')
       } else if (pointsAction === 'give') {
         if (!pointsValue || isNaN(pointsValue)) {
-          showToast('Bitte gültigen Punktewert eingeben')
+          showToast(t('moderate.pleaseEnterValidPoints') || 'Bitte gültigen Punktewert eingeben')
           return
         }
         const { data, error: fetchError } = await supabase
@@ -271,7 +271,7 @@ export default function ModerateAccountPage() {
           .eq('twitch_user_id', targetUser)
           .maybeSingle()
         if (fetchError) {
-          showToast('Fehler beim Punkte holen: ' + getErrorMessage(fetchError))
+          showToast((t('moderate.errorFetchingPoints') || 'Fehler beim Punkte holen: ') + getErrorMessage(fetchError))
           return
         }
         let newPoints = pointsValue
@@ -286,7 +286,7 @@ export default function ModerateAccountPage() {
           .select()
         if (updateErr) {
           console.error('points give update error', updateErr)
-          showToast('Fehler beim Punkte vergeben: ' + getErrorMessage(updateErr))
+          showToast((t('moderate.errorGivingPoints') || 'Fehler beim Punkte vergeben: ') + getErrorMessage(updateErr))
           return
         }
         console.debug('points give update result', updatedRows)
@@ -296,17 +296,17 @@ export default function ModerateAccountPage() {
             .insert([{ twitch_user_id: targetUser, points: newPoints, reason: 'added by mod' }]).select()
           if (insertErr) {
             console.error('points give insert error', insertErr)
-            showToast('Fehler beim Punkte vergeben: ' + getErrorMessage(insertErr))
+            showToast((t('moderate.errorGivingPoints') || 'Fehler beim Punkte vergeben: ') + getErrorMessage(insertErr))
             return
           }
           console.debug('points give insert result', insertedNew)
         }
-        showToast('Punkte vergeben!')
+        showToast(t('moderate.pointsGiven') || 'Punkte vergeben!')
       }
       setPointsName('')
       setPointsValue(0)
     } catch (e) {
-      showToast('Fehler bei Punkte-Aktion: ' + getErrorMessage(e))
+      showToast((t('moderate.errorPointsAction') || 'Fehler bei Punkte-Aktion: ') + getErrorMessage(e))
     } finally {
       setBusy(false)
     }
@@ -320,15 +320,15 @@ export default function ModerateAccountPage() {
       if (rewardEdit && rewardEdit.id) upsert.id = rewardEdit.id
       const { error } = await supabase.from('rewards').upsert([upsert], { onConflict: 'id' })
       if (error) {
-        showToast('Fehler beim Speichern: ' + getErrorMessage(error))
+        showToast((t('moderate.errorSavingReward') || 'Fehler beim Speichern: ') + getErrorMessage(error))
         return
       }
-      showToast('Reward gespeichert!')
+      showToast(t('moderate.rewardSaved') || 'Reward gespeichert!')
       setRewardEdit(null)
       setRewardForm({ ...defaultReward })
       fetchRewards()
     } catch (e) {
-      showToast('Fehler beim Speichern: ' + getErrorMessage(e))
+      showToast((t('moderate.errorSavingReward') || 'Fehler beim Speichern: ') + getErrorMessage(e))
     } finally {
       setRewardBusy(false)
     }
@@ -356,29 +356,29 @@ export default function ModerateAccountPage() {
           try {
             const { error: delError } = await supabase.from('rewards').delete().eq('id', id)
             if (!delError) {
-              showToast('Reward gelöscht (Direktlöschung). Hinweis: Falls es sich um RLS handelt, die zuständige DB-Funktion sollte in der DB angelegt werden.')
+              showToast(t('moderate.rewardDeletedFallback') || 'Reward gelöscht (Direktlöschung). Hinweis: Falls es sich um RLS handelt, die zuständige DB-Funktion sollte in der DB angelegt werden.')
               fetchRewards()
             } else {
               // Could not delete directly — likely RLS or permission issue. Show actionable instruction.
-              showToast('Fehler: Die RPC-Funktion `admin_delete_reward` ist nicht in der Datenbank vorhanden und Direktlöschung fehlgeschlagen. Bitte die SQL-Funktion aus `supabase/db_anleitung_allgemein.sql` in deiner Supabase-DB ausführen (SQL Editor) oder den DB-Administrator kontaktieren.')
+              showToast(t('moderate.rpcMissingAndDeleteFailed') || 'Fehler: Die RPC-Funktion `admin_delete_reward` ist nicht in der Datenbank vorhanden und Direktlöschung fehlgeschlagen. Bitte die SQL-Funktion aus `supabase/db_anleitung_allgemein.sql` in deiner Supabase-DB ausführen (SQL Editor) oder den DB-Administrator kontaktieren.')
             }
           } catch {
-            showToast('Fehler: Die RPC-Funktion `admin_delete_reward` ist nicht vorhanden und Direktlöschung ist fehlgeschlagen. Bitte die SQL-Funktion aus `supabase/db_anleitung_allgemein.sql` in deiner Supabase-DB ausführen.')
+            showToast(t('moderate.rpcMissingAndDeleteFailedShort') || 'Fehler: Die RPC-Funktion `admin_delete_reward` ist nicht vorhanden und Direktlöschung ist fehlgeschlagen. Bitte die SQL-Funktion aus `supabase/db_anleitung_allgemein.sql` in deiner Supabase-DB ausführen.')
           }
         } else {
-          showToast('Fehler beim Löschen: ' + msg)
+          showToast((t('moderate.errorDeletingReward') || 'Fehler beim Löschen: ') + msg)
         }
         return
       }
       if (data && typeof data === 'object' && 'error' in data) {
         const err = (data as { error?: string }).error
-        showToast('Fehler beim Löschen: ' + (err ?? JSON.stringify(data)))
+        showToast((t('moderate.errorDeletingReward') || 'Fehler beim Löschen: ') + (err ?? JSON.stringify(data)))
         return
       }
-      showToast('Reward gelöscht!')
+      showToast(t('moderate.rewardDeleted') || 'Reward gelöscht!')
       fetchRewards()
     } catch (e) {
-      showToast('Fehler beim Löschen: ' + getErrorMessage(e))
+      showToast((t('moderate.errorDeletingReward') || 'Fehler beim Löschen: ') + getErrorMessage(e))
     } finally {
       setRewardBusy(false)
     }
@@ -408,10 +408,12 @@ export default function ModerateAccountPage() {
         <b>{t('moderate.bannedAccountsTitle')}</b>
         <ul style={{margin:'8px 0'}}>
           {banned.length === 0 && <li style={{color:'#888'}}>{t('moderate.noBannedAccounts')}</li>}
-          {banned.map((id) => (
-            <li key={id} style={{display:'flex',alignItems:'center',gap:8}}>
-              <span>{id}</span>
-                <button className="btn btn-sm btn-secondary" onClick={() => unbanAccount(id)} disabled={busy}>{t('moderate.unbanBtn')}</button>
+          {banned.map((b) => (
+            <li key={b.twitch_user_id} style={{display:'flex',alignItems:'center',gap:8}}>
+              <span>{b.display_name || b.twitch_user_id}</span>
+              {(isBroadcaster || isMod) && (
+                <button className="btn btn-sm btn-secondary" onClick={() => unbanAccount(b.twitch_user_id)} disabled={busy}>{t('moderate.unbanBtn')}</button>
+              )}
             </li>
           ))}
         </ul>
