@@ -1,16 +1,14 @@
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/useAuth'
-import { useIsBanned } from '../../hooks/useIsBanned'
 import { useIsModerator } from '../../hooks/useIsModerator'
 import LoginButton from '../LoginButton/LoginButton'
 
 export default function BroadcasterRoute({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { isBroadcaster, loading: modLoading } = useIsModerator();
-  const { isBanned, loading: banLoading } = useIsBanned();
   const { t } = useTranslation();
 
-  if (authLoading || modLoading || banLoading) {
+  if (authLoading || modLoading) {
     return (
       <div className="auth-loading">
         <div className="auth-spinner" />
@@ -27,16 +25,6 @@ export default function BroadcasterRoute({ children }: { children: React.ReactNo
         <div style={{ marginTop: 20 }}>
           <LoginButton />
         </div>
-      </div>
-    );
-  }
-
-  if (isBanned) {
-    return (
-      <div className="auth-gate">
-        <div className="auth-gate-icon">⛔</div>
-        <h1>{t('banned.title', 'Account gesperrt')}</h1>
-        <p>{t('banned.message', 'Dein Account wurde gesperrt. Bei Fragen wende dich bitte an den Support.')}</p>
       </div>
     );
   }

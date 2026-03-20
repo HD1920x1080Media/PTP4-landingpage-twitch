@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/useAuth'
-import { useIsBanned } from '../../hooks/useIsBanned'
 import SubPage from '../SubPage/SubPage'
 import './ProtectedRoute.css'
 
@@ -12,10 +11,9 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading, signInWithTwitch } = useAuth();
-  const { isBanned, loading: banLoading } = useIsBanned();
   const { t } = useTranslation();
 
-  if (loading || banLoading) {
+  if (loading) {
     return (
       <SubPage>
         <div className="auth-loading">
@@ -44,18 +42,5 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (isBanned) {
-    return (
-      <SubPage>
-        <div className="auth-gate">
-          <div className="auth-gate-icon">⛔</div>
-          <h1>{t('banned.title', 'Account gesperrt')}</h1>
-          <p>{t('banned.message', 'Dein Account wurde gesperrt. Bei Fragen wende dich bitte an den Support.')}</p>
-        </div>
-      </SubPage>
-    );
-  }
-
   return <>{children}</>;
 }
-

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/useAuth'
-import { useIsBanned } from '../../hooks/useIsBanned'
 import { useIsModerator } from '../../hooks/useIsModerator'
 import SubPage from '../SubPage/SubPage'
 import '../ProtectedRoute/ProtectedRoute.css'
@@ -14,10 +13,9 @@ interface ModeratorRouteProps {
 export default function ModeratorRoute({ children }: ModeratorRouteProps) {
   const { user, loading: authLoading, signInWithTwitch } = useAuth();
   const { isMod, loading: modLoading } = useIsModerator();
-  const { isBanned, loading: banLoading } = useIsBanned();
   const { t } = useTranslation();
 
-  if (authLoading || modLoading || banLoading) {
+  if (authLoading || modLoading) {
     return (
       <SubPage>
         <div className="auth-loading">
@@ -46,18 +44,6 @@ export default function ModeratorRoute({ children }: ModeratorRouteProps) {
     );
   }
 
-  if (isBanned) {
-    return (
-      <SubPage>
-        <div className="auth-gate">
-          <div className="auth-gate-icon">⛔</div>
-          <h1>{t('banned.title', 'Account gesperrt')}</h1>
-          <p>{t('banned.message', 'Dein Account wurde gesperrt. Bei Fragen wende dich bitte an den Support.')}</p>
-        </div>
-      </SubPage>
-    );
-  }
-
   if (!isMod) {
     return (
       <SubPage>
@@ -72,4 +58,3 @@ export default function ModeratorRoute({ children }: ModeratorRouteProps) {
 
   return <>{children}</>;
 }
-
