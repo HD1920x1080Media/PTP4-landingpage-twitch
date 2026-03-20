@@ -110,12 +110,12 @@ const siteConfig: SiteConfig = {
   twitch: {
     // Allow overriding the channel via Vite env var VITE_CHANNEL_NAME for different deployments.
     // If not present, fall back to the hardcoded username.
-    channel: (import.meta.env.CHANNEL_NAME as string),
+    channel: (import.meta.env.VITE_CHANNEL_NAME as string),
 
     // Allow overriding the chat fallback URL entirely via VITE_CHAT_FALLBACK_URL.
     // If not set, derive a sensible default from the channel name.
     chatFallbackUrl:
-      `https://www.twitch.tv/${(import.meta.env.CHANNEL_NAME as string)}/chat`,
+      `https://www.twitch.tv/${(import.meta.env.VITE_CHANNEL_NAME as string)}/chat`,
 
     icsUrl: '/api/calendar.ics',
   },
