@@ -207,8 +207,9 @@ export default defineConfig({
             if (/\/node_modules\/react-icons(\/|$)/.test(nid)) return 'vendor-react-icons'
             if (/\/node_modules\/ical\.js(\/|$)/.test(nid)) return 'vendor-ical'
 
-            // Fallback: alle übrigen node_modules in einen allgemeinen vendor-Chunk
-            return 'vendor'
+            // Kein generischer Fallback mehr: für unbekannte node_modules
+            // zurückgeben undefined und Rollup seine Standard-Aufteilung wählen lassen.
+            return undefined
           }
         },
       },
