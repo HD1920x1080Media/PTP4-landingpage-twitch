@@ -4,10 +4,27 @@
   <meta charset="UTF-8">
   <title>Overlay</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
     body { background: #222; margin: 0; width: 100vw; height: 100vh; overflow: hidden; }
     #media { display: flex; align-items: center; justify-content: center; height: 100vh; width: 100vw; }
     video, audio, iframe { max-width: 80vw; max-height: 80vh; }
-    .reward-text { color: #fff; font-size: 2em; text-align: center; }
+    .reward-text {
+      font-family: 'Poppins', 'Segoe UI', 'Arial', sans-serif;
+      font-size: 2.2em;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.3em 0.8em;
+      border-radius: 18px;
+      background: linear-gradient(90deg, #ffb347 0%, #ffcc33 40%, #fff6b7 100%);
+      color: #222;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+      display: inline-block;
+      margin: 0.5em auto;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      /* Für schöne Schrift: Google Fonts Poppins */
+    }
   </style>
 </head>
 <body>
@@ -70,42 +87,60 @@
 
       let duration = reward.duration ? parseInt(reward.duration, 10) : 10; // Standard 10 Sekunden
       let timeoutId;
-      console.log(`[Overlay] Zeige Reward: ${reward.id} (${reward.type}), Dauer: ${duration}s`);
-      if (reward.type === 'video') {
-        if (reward.source === 'local') {
-          mediaDiv.innerHTML = `<video id="rewardVideo" src="${reward.mediaPath}" controls autoplay></video>`;
-          console.log('[Overlay] Video-Element erzeugt:', reward.mediaPath);
-          const video = document.getElementById('rewardVideo');
-          if (video) {
-            video.onloadedmetadata = () => {
-              if (!reward.duration) duration = Math.ceil(video.duration);
-              timeoutId = setTimeout(clearAndDelete, duration * 1000);
-              console.log('[Overlay] Video geladen, Dauer:', video.duration);
-            };
-          }
-        } else if (reward.source === 'youtube') {
-          if (reward.showyoutubevideo === false) {
-            // Unsichtbares YouTube-Video für Ton + Bild/Text anzeigen (sichtbar, aber außerhalb des Viewports)
+      console.log(`[Overlay] Zeige Reward: ${reward.id}, Dauer: ${duration}s`);
+
+      // Neue Feldstruktur: mediaurl, showmedia, imageurl, text, istts, onceperstream
+      const mediaUrl = reward.mediaurl || '';
+      const imageUrl = reward.imageurl || '';
+      const textContent = reward.text || reward.description || '';
+
+      // Helper to detect media type
+      const lower = (mediaUrl || '').toLowerCase();
+      const isYouTube = /youtube\.com|youtu\.be/.test(lower);
+      const isAudio = /\.(mp3|wav|ogg|m4a)(\?|$)/.test(lower);
+      const isImage = /\.(png|jpe?g|gif|webp)(\?|$)/.test(lower) || imageUrl;
+
+      if (reward.istts) {
+        // TTS
+        let text;
+        if (reward.id === 'raid_leader') {
+          const username = redeemed.user || '';
+          const target = redeemed.ttsText || redeemed.description || '';
+          text = `RAID-Anführer ${username} zu ${target}`;
+        } else {
+          text = redeemed.ttsText || redeemed.description || reward.description || 'Text to Speech';
+        }
+        mediaDiv.innerHTML = `<div class="reward-text">${text}</div>`;
+        if ('speechSynthesis' in window) {
+          const utter = new window.SpeechSynthesisUtterance(text);
+          window.speechSynthesis.speak(utter);
+        }
+        console.log('[Overlay] TTS Reward:', text);
+        timeoutId = setTimeout(clearAndDelete, duration * 1000);
+      } else if (mediaUrl) {
+        // YouTube handling
+        if (isYouTube) {
+          // extract video id (naive)
+          const ytIdMatch = mediaUrl.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+          const ytId = ytIdMatch ? ytIdMatch[1] : '';
+          if (reward.showmedia === false) {
+            // hide video but play audio; show image/text
             let imgHtml = '';
-            if (reward.customimageurl) {
-              imgHtml = `<img src="${reward.customimageurl}" alt="Reward-Bild" style="max-width:60vw;max-height:60vh;" />`;
-            }
-            const ytId = reward.mediaurl.split('v=')[1];
+            if (imageUrl) imgHtml = `<img src="${imageUrl}" alt="Reward-Bild" style="max-width:60vw;max-height:60vh;" />`;
             mediaDiv.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;'>
               <iframe width="1" height="1" style="opacity:0;position:absolute;left:-9999px;pointer-events:none;" src="https://www.youtube.com/embed/${ytId}?autoplay=1" allow="autoplay; encrypted-media"></iframe>
-              ${imgHtml}<div class="reward-text">${reward.text || reward.description || ''}</div>
+              ${imgHtml}<div class="reward-text">${textContent}</div>
             </div>`;
-            console.log('[Overlay] YouTube-Video ausgeblendet, Ton läuft, zeige stattdessen Bild/Text:', reward.customimageurl, reward.text || reward.description);
+            console.log('[Overlay] YouTube-Video ausgeblendet, Ton läuft, zeige stattdessen Bild/Text:', imageUrl, textContent);
             timeoutId = setTimeout(clearAndDelete, duration * 1000);
           } else {
-            // YouTube IFrame Player API einbinden, falls noch nicht vorhanden
+            // embed YouTube player via API
             if (!window.YT) {
               let tag = document.createElement('script');
               tag.src = "https://www.youtube.com/iframe_api";
               document.body.appendChild(tag);
             }
             function onYouTubeIframeAPIReadyWrapper() {
-              const ytId = reward.mediaurl.split('v=')[1];
               mediaDiv.innerHTML = `<div id="ytplayer"></div>`;
               let player = new window.YT.Player('ytplayer', {
                 height: '315',
@@ -115,88 +150,53 @@
                 events: {
                   'onStateChange': function(event) {
                     if (event.data === window.YT.PlayerState.PLAYING) {
-                      console.log('[Overlay] YouTube-Video PLAYING:', reward.mediaurl, '| getCurrentTime:', player.getCurrentTime());
-                      // Kein Timeout mehr hier! Nur Logging.
+                      console.log('[Overlay] YouTube-Video PLAYING:', mediaUrl, '| getCurrentTime:', player.getCurrentTime());
                     }
                     if (event.data === window.YT.PlayerState.ENDED) {
-                      console.log('[Overlay] YouTube-Video ENDED:', reward.mediaurl);
+                      console.log('[Overlay] YouTube-Video ENDED:', mediaUrl);
                       clearAndDelete();
                     }
                   }
                 }
               });
-              // Fallback: Timeout, falls ENDED nicht getriggert wird (z.B. bei Fehlern)
               timeoutId = setTimeout(() => {
                 console.warn('[Overlay] YouTube-Timeout als Fallback ausgelöst!');
                 clearAndDelete();
               }, duration * 1000);
-              console.log('[Overlay] YouTube-Video eingebettet (API):', reward.mediaurl);
+              console.log('[Overlay] YouTube-Video eingebettet (API):', mediaUrl);
             }
-            // API ready-Callback setzen
             if (window.YT && window.YT.Player) {
               onYouTubeIframeAPIReadyWrapper();
             } else {
               window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReadyWrapper;
             }
           }
-        }
-      } else if (reward.type === 'sound') {
-        mediaDiv.innerHTML = `<audio id="rewardAudio" src="${reward.mediaPath}" controls autoplay></audio>`;
-        console.log('[Overlay] Audio-Element erzeugt:', reward.mediaPath);
-        const audio = document.getElementById('rewardAudio');
-        if (audio) {
-          audio.onloadedmetadata = () => {
-            if (!reward.duration) duration = Math.ceil(audio.duration);
-            timeoutId = setTimeout(clearAndDelete, duration * 1000);
-            console.log('[Overlay] Sound geladen, Dauer:', audio.duration);
-          };
-        }
-      } else if (reward.type === 'audio_text') {
-        if (reward.source === 'youtube') {
-          // YouTube als Audioquelle: Unsichtbares IFrame + Text
-          const ytId = reward.mediaurl.split('v=')[1];
-          mediaDiv.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;'>
-            <iframe width="0" height="0" style="display:none;" src="https://www.youtube.com/embed/${ytId}?autoplay=1" allow="autoplay; encrypted-media"></iframe>
-            <div class="reward-text">${reward.text || reward.description || ''}</div>
-          </div>`;
-          console.log('[Overlay] YouTube-Audio+Text Reward:', reward.mediaurl);
-          timeoutId = setTimeout(clearAndDelete, duration * 1000);
-        } else {
-          // Lokale Audiodatei
-          mediaDiv.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;'><audio id="rewardAudioText" src="${reward.mediaurl}" controls autoplay></audio><div class="reward-text">${reward.text || reward.description || ''}</div></div>`;
-          console.log('[Overlay] Audio+Text-Element erzeugt:', reward.mediaurl);
-          const audio = document.getElementById('rewardAudioText');
+        } else if (isAudio) {
+          // local audio file
+          mediaDiv.innerHTML = `<audio id="rewardAudio" src="${mediaUrl}" controls autoplay></audio>`;
+          console.log('[Overlay] Audio-Element erzeugt:', mediaUrl);
+          const audio = document.getElementById('rewardAudio');
           if (audio) {
             audio.onloadedmetadata = () => {
               if (!reward.duration) duration = Math.ceil(audio.duration);
               timeoutId = setTimeout(clearAndDelete, duration * 1000);
-              console.log('[Overlay] Audio+Text geladen, Dauer:', audio.duration);
+              console.log('[Overlay] Sound geladen, Dauer:', audio.duration);
             };
           }
-        }
-      } else if (reward.type === 'image_text') {
-        mediaDiv.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;'><img src="${reward.mediaurl}" alt="Reward-Bild" style="max-width:60vw;max-height:60vh;" /><div class="reward-text">${reward.text || reward.description || ''}</div></div>`;
-        console.log('[Overlay] Image+Text Reward:', reward.mediaurl, reward.text || reward.description);
-        timeoutId = setTimeout(clearAndDelete, duration * 1000);
-      } else if (reward.type === 'tts') {
-        let text;
-        if (reward.id === 'raid_leader') {
-          // Dynamischer TTS-Text für RAID-Anführer
-          const username = redeemed.user || '';
-          const target = redeemed.ttsText || redeemed.description || '';
-          text = `RAID-Anführer ${username} zu ${target}`;
+        } else if (isImage) {
+          const imgSrc = imageUrl || mediaUrl;
+          mediaDiv.innerHTML = `<div style='display:flex;flex-direction:column;align-items:center;justify-content:center;'><img src="${imgSrc}" alt="Reward-Bild" style="max-width:60vw;max-height:60vh;" /><div class="reward-text">${textContent}</div></div>`;
+          console.log('[Overlay] Image+Text Reward:', imgSrc, textContent);
+          timeoutId = setTimeout(clearAndDelete, duration * 1000);
         } else {
-          text = redeemed.ttsText || redeemed.description || reward.ttsText || reward.description || 'Text to Speech';
+          // Unknown media type: fallback to text
+          mediaDiv.innerHTML = `<div class="reward-text">${textContent || reward.description || ''}</div>`;
+          console.log('[Overlay] Unbekannter Media-Typ, zeige Text:', textContent || reward.description || '');
+          timeoutId = setTimeout(clearAndDelete, duration * 1000);
         }
-        mediaDiv.innerHTML = `<div class="reward-text">${text}</div>`;
-        if ('speechSynthesis' in window) {
-          const utter = new window.SpeechSynthesisUtterance(text);
-          window.speechSynthesis.speak(utter);
-        }
-        console.log('[Overlay] TTS Reward:', text);
-        timeoutId = setTimeout(clearAndDelete, duration * 1000);
       } else {
-        mediaDiv.innerHTML = `<div class="reward-text">${reward.description}</div>`;
+        // No media: show text/description
+        mediaDiv.innerHTML = `<div class="reward-text">${textContent || reward.description || ''}</div>`;
         console.log('[Overlay] Fallback Reward:', reward.description);
         timeoutId = setTimeout(clearAndDelete, duration * 1000);
       }

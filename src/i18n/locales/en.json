@@ -416,6 +416,15 @@
     "rewardMediaurlLabel": "Media URL",
     "rewardMediaurlPlaceholder": "URL to audio/video (if any)",
 
+    "rewardShowMediaLabel": "Show media",
+    "rewardShowMediaHint": "If enabled, the media (e.g. YouTube video) will be shown/played (if supported)",
+
+    "rewardImageLabel": "Image URL",
+    "rewardImagePlaceholder": "Enter an image URL",
+
+    "rewardIsTtsLabel": "Text-to-Speech",
+    "rewardIsTtsHint": "If enabled, the text will be played via TTS",
+
     "rewardShowYoutubeVideoLabel": "Show YouTube Video",
     "rewardShowYoutubeVideoHint": "If enabled, the YouTube video will be shown/played in the stream/overlay (if supported)",
 
@@ -511,6 +520,16 @@
       "activeBuffs": "Active Buffs",
       "relicsUnlocked": "Relics Unlocked",
       "rebirthMultiplier": "Rebirth Multiplier"
+    },
+    "units": {
+      "thousand": "thousand",
+      "thousandShort": "K",
+      "million": "million",
+      "millionShort": "M",
+      "billion": "billion",
+      "billionShort": "B",
+      "trillion": "trillion",
+      "trillionShort": "T"
     },
     "tabs": {
       "shop": "🛒 Shop",

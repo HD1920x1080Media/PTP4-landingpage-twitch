@@ -8,9 +8,15 @@ interface Reward {
   id: string;
   name: string;
   cost: number;
-  type: string;
-  description: string;
+  mediaurl?: string;
+  showmedia?: boolean;
+  description?: string;
+  imageurl?: string;
+  text?: string;
+  duration?: number;
+  onceperstream?: boolean;
   cooldown?: number; // Cooldown in Sekunden
+  istts?: boolean;
 }
 
 export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) {
@@ -113,16 +119,35 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
   const handleRedeem = async () => {
     if (!selectedRewardId) return;
     const reward = rewards.find(r => r.id === selectedRewardId);
-    if (!reward || (reward.type === 'tts' && !ttsText) || !user) return;
+    if (!reward || !user) return;
+    // Wenn reward.istts true ist, muss der Nutzer Text eingeben
+    if (reward.istts && !ttsText) return;
     if (cooldownActive) return;
     setRedeemLoading(true);
     setStatus(null);
+
     const twitchUserId = user.user_metadata?.provider_id || user.user_metadata?.sub || user.id;
+    const username = user.user_metadata?.user_login || user.user_metadata?.preferred_username || user.user_metadata?.full_name || user.email || twitchUserId;
+    function replaceNamePlaceholders(s?: string) {
+      if (!s) return s || '';
+      return s.replace(/%name%/g, username);
+    }
+
+    const descriptionToInsert = (() => {
+      if (reward.istts) {
+        // Bei TTS: prefix aus reward.text voranstellen, dann Platzhalter ersetzen
+        const prefix = reward.text || reward.description || '';
+        const combined = prefix && ttsText ? `${prefix} ${ttsText}` : (prefix || ttsText);
+        return replaceNamePlaceholders(combined);
+      }
+      return replaceNamePlaceholders(reward.description);
+    })();
+
     const { error: insertError } = await supabase.from('redeemed_rewards').insert([
       {
         twitch_user_id: twitchUserId,
         reward_id: reward.id,
-        description: reward.type === 'tts' ? ttsText : reward.description,
+        description: descriptionToInsert,
         cost: reward.cost,
       },
     ]);
@@ -183,7 +208,7 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
                   {selectedReward ? t('{{cost}} Punkte', { cost: selectedReward.cost }) : ''}
                 </div>
               </div>
-              {selectedReward && selectedReward.type === 'tts' && (
+              {selectedReward && selectedReward.istts && (
                   <textarea
                       className="tts-input"
                       placeholder={t('Deine Nachricht...')}
@@ -199,7 +224,7 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
                   disabled={
                       redeemLoading ||
                       !selectedReward ||
-                      (selectedReward.type === 'tts' && !ttsText) ||
+                      (selectedReward.istts && !ttsText) ||
                       (points !== null && selectedReward && points < selectedReward.cost ) ||
                       cooldownActive
                   }

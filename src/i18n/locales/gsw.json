@@ -403,10 +403,19 @@
     "rewardSourcePlaceholder": "z.B. 'local', 'youtube' oder 'tts'",
 
     "rewardMediaurlLabel": "Media-URL",
-    "rewardMediaurlPlaceholder": "URL zu Audio/Video (falls vorhande)",
+    "rewardMediaurlPlaceholder": "URL zu Audio/Video (falls vorhanden)",
+
+    "rewardShowMediaLabel": "Medium aazeige",
+    "rewardShowMediaHint": "Wenn aktiviert, wird s'Medium (z.B. YouTube-Video) aazeigt / abgspielt (wenn unterstützt)",
+
+    "rewardImageLabel": "Bild-URL",
+    "rewardImagePlaceholder": "URL für e Bild eifüege",
+
+    "rewardIsTtsLabel": "Text-to-Speech",
+    "rewardIsTtsHint": "Wenn aktiviert, wird dr Text per TTS abgspielt",
 
     "rewardShowYoutubeVideoLabel": "YouTube-Video aazeige",
-    "rewardShowYoutubeVideoHint": "Wenn aktiviert, wird s'YouTube-Video im Stream/Overlay aazeigt bzw. abgespielt (falls unterstützt)",
+    "rewardShowYoutubeVideoHint": "Wenn aktiviert, wird s'YouTube-Video im Stream/Overlay aazeigt/abgspielt (wenn unterstützt)",
 
     "rewardCustomImageLabel": "Custom Image URL",
     "rewardCustomImagePlaceholder": "URL für es benutzerdefinierts Bild",
@@ -501,6 +510,16 @@
       "relicsUnlocked": "Relikte freiggschaltet",
       "rebirthMultiplier": "Rebirth Multiplikator"
     },
+        "units": {
+          "thousand": "Tausend",
+          "thousandShort": "Tsd.",
+          "million": "Million",
+          "millionShort": "Mio.",
+          "billion": "Milliarde",
+          "billionShort": "Mrd.",
+          "trillion": "Billion",
+          "trillionShort": "Bio."
+        },
     "tabs": {
       "shop": "🛒 Shop",
       "leaderboard": "🏆 Leaderboard",

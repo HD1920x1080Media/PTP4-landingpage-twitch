@@ -416,6 +416,15 @@
     "rewardMediaurlLabel": "Media-URL",
     "rewardMediaurlPlaceholder": "URL zu Audio/Video (falls vorhanden)",
 
+    "rewardShowMediaLabel": "Medium anzeigen",
+    "rewardShowMediaHint": "Wenn aktiviert, wird das Medium (z. B. YouTube-Video) angezeigt bzw. abgespielt (falls unterstützt)",
+
+    "rewardImageLabel": "Image-URL",
+    "rewardImagePlaceholder": "URL für ein Bild eingeben",
+
+    "rewardIsTtsLabel": "Text-to-Speech",
+    "rewardIsTtsHint": "Wenn aktiviert, wird der Text per TTS abgespielt",
+
     "rewardShowYoutubeVideoLabel": "YouTube-Video anzeigen",
     "rewardShowYoutubeVideoHint": "Wenn aktiviert, wird das YouTube-Video im Stream/Overlay angezeigt/abgespielt (falls unterstützt)",
 
@@ -513,6 +522,16 @@
       "activeBuffs": "Aktive Buffs",
       "relicsUnlocked": "Relikte freigeschaltet",
       "rebirthMultiplier": "Rebirth Multiplikator"
+    },
+    "units": {
+      "thousand": "Tausend",
+      "thousandShort": "Tsd.",
+      "million": "Million",
+      "millionShort": "Mio.",
+      "billion": "Milliarde",
+      "billionShort": "Mrd.",
+      "trillion": "Billion",
+      "trillionShort": "Bio."
     },
     "tabs": {
       "shop": "🛒 Shop",

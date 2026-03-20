@@ -10,7 +10,7 @@ interface BartclickerGameProps {
 }
 
 export default function BartclickerGame({ compact = false }: BartclickerGameProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { gameState, isLoading, cps, clickBlocked, handleClick, buyItem, buyMaxItems, activateBuff, performRebirth, buyAutobuyer, buyUpgradeAutobuyer, unlockRelic, buyOfflineUpgrade, offlineEarnings, dismissOfflineEarnings, handCps, handCpsAvg } =
     useBartclickerGame();
   const { entries: leaderboardEntries, isLoading: leaderboardLoading } = useBartclickerLeaderboard();
@@ -34,19 +34,48 @@ export default function BartclickerGame({ compact = false }: BartclickerGameProp
       </div>
     );
   }
-//ToDo: Einheiten
+  // Language-aware compact number formatting using Intl. Falls back to simple formatting
+  // for environments where compact notation is not supported.
+  const getCompactFormatter = (maximumFractionDigits = 2) => {
+    const locale = i18n?.language || undefined;
+    try {
+      // Use compact notation so abbreviations are localized (e.g. 'Mio.' in de, 'M' in en)
+      return new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits });
+    } catch {
+      // Fallback: plain number formatter
+      return new Intl.NumberFormat(locale, { maximumFractionDigits });
+    }
+  };
+
+  const compactFormatter = getCompactFormatter(2);
+  const compactFormatterTwo = getCompactFormatter(2);
+
   const formatNumber = (num: number) => {
-    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'b';
-    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'm';
-    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'k';
-    return Math.floor(num).toString();
+    // For very small numbers, keep integer display
+    if (num < 1000) return Math.floor(num).toString();
+    // Let Intl handle localization/abbreviation (Mio, Mrd, etc.)
+    try {
+      return compactFormatter.format(num);
+    } catch {
+      // Safe fallback
+      if (num >= 1e9) return (num / 1e9).toFixed(2) + 'b';
+      if (num >= 1e6) return (num / 1e6).toFixed(2) + 'm';
+      if (num >= 1e3) return (num / 1e3).toFixed(2) + 'k';
+      return Math.floor(num).toString();
+    }
   };
 
   const formatCPS = (num: number) => {
-    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'b';
-    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'm';
-    if (num >= 1e3) return (num / 1e3).toFixed(2) + 'k';
-    return num.toFixed(2);
+    // For small CPS, show with 2 decimals
+    if (num < 1000) return num.toFixed(2);
+    try {
+      return compactFormatterTwo.format(num);
+    } catch {
+      if (num >= 1e9) return (num / 1e9).toFixed(2) + 'b';
+      if (num >= 1e6) return (num / 1e6).toFixed(2) + 'm';
+      if (num >= 1e3) return (num / 1e3).toFixed(2) + 'k';
+      return num.toFixed(2);
+    }
   };
 
   const formatOfflineTime = (seconds: number): string => {

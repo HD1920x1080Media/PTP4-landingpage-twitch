@@ -181,4 +181,42 @@ export default defineConfig({
   // Für GitHub Pages mit Custom Domain (z.B. hd1920x1080.de): base: '/'
   // Für GitHub Pages OHNE Custom Domain: base: '/repo-name/'
   base: '/',
+
+  // Build / Rollup-Tuning: Aufteilen großer Bundles in mehrere Chunks.
+  // Dadurch werden einzelne output-Chunks (z. B. vendor) kleiner und die
+  // "chunk is larger than"-Warnungen treten seltener auf.
+  build: {
+    // Optional: Erhöhe die Warn-Grenze falls gewünscht (Standard 500 KB)
+    // chunkSizeWarningLimit: 600,
+
+    rollupOptions: {
+      output: {
+        // Manuelle Chunk-Aufteilung: gruppiere bekannte node_modules in eigene Dateien
+        manualChunks(id) {
+          if (!id) return undefined
+          if (id.includes('node_modules')) {
+            // React + DOM
+            if (id.includes('react') || id.includes('react-dom')) return 'vendor-react'
+            // Framer Motion
+            if (id.includes('framer-motion')) return 'vendor-framer-motion'
+            // Supabase
+            if (id.includes('@supabase')) return 'vendor-supabase'
+            // i18n libraries
+            if (id.includes('i18next') || id.includes('react-i18next') || id.includes('i18next-browser-languagedetector')) return 'vendor-i18n'
+            // Router
+            if (id.includes('react-router-dom')) return 'vendor-router'
+            // date-fns
+            if (id.includes('date-fns')) return 'vendor-date-fns'
+            // icons, utils
+            if (id.includes('react-icons')) return 'vendor-react-icons'
+            // ical.js
+            if (id.includes('ical.js')) return 'vendor-ical'
+
+            // Fallback: alle übrigen node_modules in einen allgemeinen vendor-Chunk
+            return 'vendor'
+          }
+        },
+      },
+    },
+  },
 })
