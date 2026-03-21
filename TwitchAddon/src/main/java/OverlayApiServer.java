@@ -6,8 +6,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class OverlayApiServer {
     private final SupabaseClient supabaseClient;
@@ -18,8 +16,6 @@ public class OverlayApiServer {
         server.createContext("/api/redeemed_rewards", new RedeemedRewardsHandler());
         server.createContext("/api/rewards", new RewardsHandler());
         server.createContext("/api/redeem_check", new RedeemCheckHandler());
-        // server.createContext("/api/rewards.json", new RewardsJsonHandler()); // entfernt
-        // server.createContext("/api/redeem_reward", new RedeemRewardHandler()); // entfernt, Redeems laufen nur noch über Supabase
         server.createContext("/overlay.html", new StaticFileHandler("overlay.html", "text/html"));
         server.createContext("/media", new StaticDirHandler("media"));
         server.setExecutor(null);
@@ -51,7 +47,6 @@ public class OverlayApiServer {
                     }
                 }
                 System.out.println("[OverlayApiServer] DELETE-Request für redeemed_reward id=" + id);
-                // NEU: Vor dem Löschen prüfen, ob Cooldown abgelaufen ist
                 JSONObject redeemedReward = supabaseClient.getRedeemedRewardById(id);
                 if (redeemedReward == null) {
                     exchange.sendResponseHeaders(404, 0);
@@ -342,5 +337,4 @@ public class OverlayApiServer {
         }
     }
 
-    // syncRewardsFromJson entfernt, da rewards.json nicht mehr verwendet wird
 }
