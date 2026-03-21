@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
+import { useConfirmModal } from '../../context/useConfirmModal'
 import ClipEmbed from './ClipEmbed'
 import type { ClipWithVotes } from '../../types/clipVoting'
 
@@ -23,19 +23,16 @@ export default function ClipCard({
   onVote,
 }: ClipCardProps) {
   const { t } = useTranslation()
-  const [showConfirm, setShowConfirm] = useState(false)
+  const { showConfirm } = useConfirmModal()
 
-  const handleVoteClick = () => {
-    setShowConfirm(true)
-  }
-
-  const handleConfirm = () => {
-    setShowConfirm(false)
-    onVote()
-  }
-
-  const handleCancel = () => {
-    setShowConfirm(false)
+  const handleVoteClick = async () => {
+    const confirmed = await showConfirm({
+      title: t('clipVoting.vote'),
+      message: t('clipVoting.confirmVote'),
+      confirmLabel: t('clipVoting.confirm'),
+      cancelLabel: t('clipVoting.cancel'),
+    })
+    if (confirmed) onVote()
   }
 
   return (
@@ -59,32 +56,13 @@ export default function ClipCard({
       </div>
 
       {showVoteBtn && (
-        <>
-          <button
-            className={`clip-card__vote-btn${isVoted ? ' clip-card__vote-btn--active' : ''}`}
-            disabled={!canVote && !isVoted}
-            onClick={handleVoteClick}
-          >
-            {isVoted ? `✓ ${t('clipVoting.voted')}` : t('clipVoting.vote')}
-          </button>
-          {showConfirm && (
-            <div className="clip-card__confirm-modal">
-              <div className="clip-card__confirm-modal-content">
-                <div className="clip-card__confirm-modal-text">
-                  {t('clipVoting.confirmVote')}
-                </div>
-                <div className="clip-card__confirm-modal-actions">
-                  <button className="clip-card__confirm-btn" onClick={handleConfirm}>
-                    {t('clipVoting.confirm')}
-                  </button>
-                  <button className="clip-card__cancel-btn" onClick={handleCancel}>
-                    {t('clipVoting.cancel')}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
+        <button
+          className={`clip-card__vote-btn${isVoted ? ' clip-card__vote-btn--active' : ''}`}
+          disabled={!canVote && !isVoted}
+          onClick={handleVoteClick}
+        >
+          {isVoted ? `✓ ${t('clipVoting.voted')}` : t('clipVoting.vote')}
+        </button>
       )}
     </div>
   )
