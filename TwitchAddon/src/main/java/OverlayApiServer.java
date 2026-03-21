@@ -47,7 +47,6 @@ public class OverlayApiServer {
                     }
                 }
                 System.out.println("[OverlayApiServer] DELETE-Request für redeemed_reward id=" + id);
-                // NEU: Vor dem Löschen prüfen, ob Cooldown abgelaufen ist
                 JSONObject redeemedReward = supabaseClient.getRedeemedRewardById(id);
                 if (redeemedReward == null) {
                     exchange.sendResponseHeaders(404, 0);
@@ -338,5 +337,4 @@ public class OverlayApiServer {
         }
     }
 
-    // syncRewardsFromJson entfernt, da rewards.json nicht mehr verwendet wird
 }

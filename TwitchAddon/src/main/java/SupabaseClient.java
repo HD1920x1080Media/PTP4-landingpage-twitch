@@ -27,9 +27,16 @@ public class SupabaseClient {
 
     public void addOrUpdatePoints(String username, String userid, int points, String reason) {
         logger.info("addOrUpdatePoints: {} | {} | {}", username, points, reason);
+        int finalPoints = points;
+        // Bei Refund-Gründen: Punkte addieren, nicht setzen
+        if (reason != null && reason.toLowerCase().contains("refund")) {
+            int current = getPoints(username, userid);
+            finalPoints = current + points;
+            logger.info("Refund detected, add points: {} (current: {} + refund: {})", finalPoints, current, points);
+        }
         JSONObject json = new JSONObject();
         json.put("twitch_user_id", userid);
-        json.put("points", points);
+        json.put("points", finalPoints);
         json.put("reason", reason);
         json.put("timestamp", System.currentTimeMillis());
 
@@ -460,9 +467,15 @@ public class SupabaseClient {
     /**
      * Fügt eine globale Einlösung in redeemed_global ein. Erwartet ein JSON-Objekt mit passenden Feldern.
      * Beispiel-Felder: reward_id, redeemed_by, stream_id, meta
+     * Fügt NUR ein, wenn expires_at NICHT null ist!
      */
     public boolean insertGlobalRedemption(JSONObject usage) {
         try {
+            // Wenn expires_at fehlt oder null ist, KEIN Insert!
+            if (!usage.has("expires_at") || usage.isNull("expires_at")) {
+                logger.info("Kein Insert in redeemed_global, da expires_at null ist.");
+                return false;
+            }
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(supabaseUrl + "/rest/v1/redeemed_global"))
                     .header("apikey", apiKey)
