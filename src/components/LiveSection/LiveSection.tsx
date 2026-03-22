@@ -137,7 +137,14 @@ export default function LiveSection() {
         {/* ── Player + Chat nur wenn live ── */}
         {showStream && (
           <div className="embed-row">
-            <div className="embed-player" ref={playerContainerRef} />
+            <div className="embed-player" ref={playerContainerRef}>
+              {/* Fallback Overlay falls Player nicht lädt */}
+              <noscript>
+                <div style={{color: '#fff', textAlign: 'center', padding: '1rem'}}>
+                  {t('live.playerNoJS', 'Bitte aktiviere JavaScript, um den Stream zu sehen.')}
+                </div>
+              </noscript>
+            </div>
             <div className="embed-chat">
               <iframe
                 src={`https://www.twitch.tv/embed/${channel}/chat?parent=${parent}&darkpopout`}
