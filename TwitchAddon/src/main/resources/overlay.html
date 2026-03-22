@@ -208,7 +208,7 @@
         console.log('[Overlay] TTS Reward erkannt. redeemed.ttstext:', redeemed.ttstext);
 
         // Text-Logik beibehalten
-        if (reward.id === 'raid_leader' || reward.id === '11') {
+        if (reward.name && reward.name.toLowerCase().includes('raid')) {
           const username = redeemed.user || redeemed.twitch_user_name || '';
           const target = redeemed.ttstext || redeemed.tts_text || redeemed.ttsText || redeemed.description || '';
           text = `RAID-Anführer ${username} zu ${target}`;
