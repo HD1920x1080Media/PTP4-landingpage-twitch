@@ -144,12 +144,6 @@ export default function LiveSection() {
                             ref={playerContainerRef}
                             style={{ minHeight: 400 }}
                         >
-                            {/* Fallback Overlay falls Player nicht lädt */}
-                            <noscript>
-                                <div style={{color: '#fff', textAlign: 'center', padding: '1rem'}}>
-                                    {t('live.playerNoJS', 'Bitte aktiviere JavaScript, um den Stream zu sehen.')}
-                                </div>
-                            </noscript>
                         </div>
                         <div className="embed-chat">
                             <iframe
