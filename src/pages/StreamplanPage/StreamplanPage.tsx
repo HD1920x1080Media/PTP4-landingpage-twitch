@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import siteConfig from '../../config/siteConfig'
 import SubPage from '../../components/SubPage/SubPage'
 import ICAL from 'ical.js'
 import { format, isSameDay, startOfDay, addDays } from 'date-fns'
 import { de, enUS } from 'date-fns/locale' // Import locales
+import { FiInfo, FiCheck, FiCopy } from 'react-icons/fi'
 import './StreamplanPage.css'
 
 interface CalendarEvent {
@@ -20,7 +22,12 @@ interface CalendarEvent {
 
 export default function StreamplanPage() {
   const { t, i18n } = useTranslation()
-  const { categories } = siteConfig.streamplan
+  const { categories, icsUrl } = siteConfig.streamplan
+
+  // ICS-Hinweis-UI
+  const [showIcalHint, setShowIcalHint] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const icsInputRef = useRef<HTMLInputElement>(null)
 
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
@@ -145,9 +152,74 @@ export default function StreamplanPage() {
     }
   })
 
+
+  // ICS-Hinweis oben rechts
+  // CSS: .streamplan-ical-hint { position: absolute; top: 24px; right: 24px; z-index: 10; }
+  //      .streamplan-ical-modal { ... } etc.
+
   return (
     <SubPage>
-      <h1>{t('streamplanPage.title')}</h1>
+      <div style={{ position: 'relative' }}>
+        <h1>{t('streamplanPage.title')}</h1>
+        {/* ICS-Link Hinweis oben rechts */}
+        <div className="streamplan-ical-hint">
+          <button
+            aria-label={t('streamplanPage.icalHint.title')}
+            className="ical-hint-btn"
+            onClick={() => setShowIcalHint(true)}
+            title={t('streamplanPage.icalHint.title')}
+          >
+            <FiInfo size={22} style={{ filter: 'drop-shadow(0 0 2px #0002)' }} />
+          </button>
+        </div>
+        {/* Modal/Popup */}
+        {showIcalHint && (
+          <div
+            className="streamplan-ical-modal"
+            onClick={() => setShowIcalHint(false)}
+            tabIndex={-1}
+            aria-modal="true"
+            role="dialog"
+          >
+            <div
+              className="ical-modal-content"
+              onClick={e => e.stopPropagation()}
+            >
+              <button onClick={() => setShowIcalHint(false)} style={{ position: 'absolute', top: 8, right: 8, background: 'none', border: 'none', fontSize: 22, cursor: 'pointer' }} aria-label="Close">×</button>
+              <h2 style={{ marginTop: 0 }}>{t('streamplanPage.icalHint.title')}</h2>
+              <p>{t('streamplanPage.icalHint.desc')}</p>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
+                <input
+                  ref={icsInputRef}
+                  type="text"
+                  value={icsUrl}
+                  readOnly
+                  style={{ flex: 1, padding: 6, borderRadius: 4, fontSize: 14 }}
+                  onFocus={e => e.target.select()}
+                />
+                <button
+                  className="ical-copy-btn"
+                  onClick={() => {
+                    if (icsInputRef.current) {
+                      icsInputRef.current.select()
+                      document.execCommand('copy')
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 1200)
+                    }
+                  }}
+                  aria-label={t('streamplanPage.icalHint.copy')}
+                >
+                  {copied ? <FiCheck color="#2ecc40" /> : <FiCopy />}
+                </button>
+              </div>
+              <div style={{ fontSize: 13, color: 'inherit', marginBottom: 8 }}>
+                <div style={{ marginBottom: 4 }}><b>Google:</b> {t('streamplanPage.icalHint.google')}</div>
+                <div><b>Apple:</b> {t('streamplanPage.icalHint.apple')}</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <p>{t('streamplanPage.intro')}</p>
 
       {/* Filter UI */}

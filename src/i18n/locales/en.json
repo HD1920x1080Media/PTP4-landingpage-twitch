@@ -201,7 +201,15 @@
     "all": "All",
     "noEvents": "No events in next 14 days found.",
     "showMore": "Show more ({{count}} more)",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "icalHint": {
+      "title": "Subscribe to calendar",
+      "desc": "You can subscribe to the stream schedule as a calendar (e.g. in Google Calendar or Apple Calendar).",
+      "copy": "Copy ICS link",
+      "copied": "Link copied!",
+      "google": "Google Calendar: Click the plus (+) in the menu → From URL → Paste link.",
+      "apple": "Apple Calendar: File → New Calendar Subscription → Paste link."
+    }
   },
   "streamplan": {
     "categories": {

@@ -201,7 +201,15 @@
     "all": "Alle",
     "noEvents": "Keine Termine in den nächsten 14 Tagen gefunden.",
     "showMore": "Mehr anzeigen ({{count}} weitere)",
-    "showLess": "Weniger anzeigen"
+    "showLess": "Weniger anzeigen",
+    "icalHint": {
+      "title": "Kalender abonnieren",
+      "desc": "Du kannst den Streamplan als Kalender abonnieren (z.B. in Google Kalender oder Apple Kalender).",
+      "copy": "ICS-Link kopieren",
+      "copied": "Link kopiert!",
+      "google": "Google Kalender: Klicke im Menü auf das Plus (+) → Per URL → Link einfügen.",
+      "apple": "Apple Kalender: Datei → Neues Kalenderabonnement → Link einfügen."
+    }
   },
   "streamplan": {
     "categories": {

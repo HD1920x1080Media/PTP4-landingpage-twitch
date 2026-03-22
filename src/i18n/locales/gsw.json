@@ -190,7 +190,15 @@
     "all": "Alli",
     "noEvents": "Kei Termine in den nächschte 14 Täg gfunde.",
     "showMore": "{{count}} witteri Termin azeige",
-    "showLess": "Weniger azeige"
+    "showLess": "Weniger azeige",
+    "icalHint": {
+      "title": "Kaländer abonniere",
+      "desc": "Du chasch dä Streamplan als Kaländer abonniere (z.B. i Google Kaländer oder Apple Kaländer).",
+      "copy": "ICS-Link kopiere",
+      "copied": "Link kopiert!",
+      "google": "Google Kaländer: Im Menü uf s Plus (+) → Per URL → Link iifüege.",
+      "apple": "Apple Kaländer: Datei → Neus Kaländerabonnement → Link iifüege."
+    }
   },
   "streamplan": {
     "categories": {

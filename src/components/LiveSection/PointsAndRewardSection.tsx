@@ -177,7 +177,7 @@ export default function PointsAndRewardSection({ isLive }: { isLive: boolean }) 
     const reward = rewards.find(r => r.id === selectedRewardId);
     if (!reward || !user) return;
     // TTS-Text nur erforderlich, wenn istts true und KEIN vordefinierter Text
-    if (reward.istts && ((!reward.text && !ttsText) || (reward.name && reward.name.toLowerCase().includes('raid')))) return;
+    if (reward.istts && !reward.text && !ttsText) return;
     if (cooldownActive) return;
     setRedeemLoading(true);
     setStatus(null);
