@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Script to encode secrets using XOR+Base64 before bun build.
+ * Script zum Kodieren von Secrets mit XOR+Base64 vor dem bun-Build.
  * 
- * Usage: node scripts/encode-secrets.js <secret-value>
+ * Verwendung: node scripts/encode-secrets.js <secret-value>
  * 
- * Outputs the encoded value as JSON string (as expected by Bun's --define).
+ * Gibt den kodierten Wert als JSON-String aus (wie von Buns --define erwartet).
  */
 
 const ENCRYPTION_KEY = Buffer.from([
@@ -25,7 +25,7 @@ function xorBase64Encode(plaintext) {
   return xored.toString('base64')
 }
 
-// Read secret from command line argument or stdin
+// Lese Secret aus Kommandozeilenargument oder stdin
 const secret = process.argv[2] || ''
 
 if (!secret) {
@@ -34,5 +34,5 @@ if (!secret) {
 }
 
 const encoded = xorBase64Encode(secret)
-// Output as JSON string (as Bun --define expects)
+// Gebe als JSON-String aus (wie Bun --define erwartet)
 console.log(JSON.stringify(encoded))

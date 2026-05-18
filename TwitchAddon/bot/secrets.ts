@@ -1,20 +1,20 @@
 /**
- * XOR + Base64 encoding/decoding utilities for secrets.
+ * XOR + Base64 Verschlüsselung/Entschlüsselung für Secrets.
  * 
- * This module provides simple obfuscation against casual inspection (strings, hex editors).
- * It is NOT cryptographically secure and does NOT protect against serious debuggers.
+ * Dieses Modul bietet einfache Verschleierung gegen beiläufige Inspektion (strings, Hex-Editoren).
+ * Es ist NICHT kryptographisch sicher und schützt NICHT vor ernsthaften Debuggern.
  * 
- * The encryption key is deliberately exposed in source code as this is
- * obfuscation-level security only, meant to prevent casual reading of secrets.
+ * Der Verschlüsselungsschlüssel ist absichtlich im Quellcode sichtbar, da dies
+ * nur Verschleierungssicherheit ist, um das beiläufige Lesen von Secrets zu verhindern.
  * 
- * Anti-debug measures:
- * - Detects if Bun/Node is started with --inspect flag
- * - Timing-based detection for debugger stepping through decode operations
+ * Anti-Debug-Maßnahmen:
+ * - Erkennt, ob Bun/Node mit --inspect-Flag gestartet wurde
+ * - Zeitbasierte Erkennung für Debugger, die durch Dekodierungsoperationen treten
  */
 
 /**
- * 32-byte fixed encryption key used for XOR encoding.
- * This is intentionally hard-coded as obfuscation only.
+ * 32-Byte fester Verschlüsselungsschlüssel für XOR-Kodierung.
+ * Dies ist absichtlich hartcodiert, nur als Verschleierung.
  */
 const ENCRYPTION_KEY = Buffer.from([
   0x7a, 0x3d, 0x9f, 0x42, 0xc1, 0x56, 0x8e, 0x19,
@@ -24,17 +24,17 @@ const ENCRYPTION_KEY = Buffer.from([
 ])
 
 /**
- * Checks if a debugger is attached by looking for --inspect flags.
- * This is a cheap anti-debug measure that catches common debugger attachment methods.
- * Note: Avoids generic environment variables like DEBUG to prevent false positives.
+ * Prüft, ob ein Debugger angehängt ist, indem nach --inspect-Flags gesucht wird.
+ * Dies ist eine einfache Anti-Debug-Maßnahme, die häufige Debugger-Anhängungsmethoden erkennt.
+ * Hinweis: Vermeidet generische Umgebungsvariablen wie DEBUG, um falsche Positive zu verhindern.
  */
 function detectDebugger(): boolean {
-  // Check for Node.js/Bun --inspect flag in process arguments
+  // Prüfe auf Node.js/Bun --inspect-Flag in Prozessargumenten
   if (process.argv.some(arg => arg.startsWith('--inspect'))) {
     return true
   }
   
-  // Check for NODE_DEBUG_OPTION environment variable (debugger hint)
+  // Prüfe auf NODE_DEBUG_OPTION-Umgebungsvariable (Debugger-Hinweis)
   if (process.env.NODE_DEBUG_OPTION?.includes('inspect')) {
     return true
   }
@@ -43,9 +43,9 @@ function detectDebugger(): boolean {
 }
 
 /**
- * Performs a timing-based check to detect if code is being stepped through by a debugger.
- * When stepping through code, a debugger adds significant overhead (~100-1000x slower).
- * This performs a quick timing operation and verifies the result isn't suspiciously slow.
+ * Führt eine zeitbasierte Prüfung durch, um zu erkennen, ob Code von einem Debugger durchlaufen wird.
+ * Beim Durchlaufen von Code fügt ein Debugger erheblichen Overhead hinzu (~100-1000x langsamer).
+ * Dies führt eine schnelle Zeitmessung durch und prüft, ob das Ergebnis nicht verdächtig langsam ist.
  */
 function checkExecutionTiming(): boolean {
   const iterations = 10000
@@ -53,22 +53,22 @@ function checkExecutionTiming(): boolean {
   
   let sum = 0
   for (let i = 0; i < iterations; i++) {
-    // Perform XOR operations that a debugger would need to step through
+    // Führe XOR-Operationen durch, die ein Debugger durchlaufen müsste
     sum ^= ENCRYPTION_KEY[i % ENCRYPTION_KEY.length]
-    sum = (sum + i) >>> 0  // Keep as 32-bit to prevent optimization
+    sum = (sum + i) >>> 0  // Behalte als 32-Bit, um Optimierung zu verhindern
   }
   
   const elapsed = performance.now() - start
   
-  // If this simple operation took more than 500ms, likely being debugged
-  // (Normal execution: ~10-50ms, Debugger stepping: >1000ms typically)
-  // Using 500ms threshold is conservative enough to avoid false positives
-  // on slower hardware while still catching debuggers
+  // Wenn diese einfache Operation länger als 500ms dauerte, wird wahrscheinlich debuggt
+  // (Normale Ausführung: ~10-50ms, Debugger-Durchlauf: typischerweise >1000ms)
+  // Die Verwendung eines 500ms-Schwellwerts ist konservativ genug, um falsche Positive
+  // auf langsamerer Hardware zu vermeiden, während Debugger noch erkannt werden
   if (elapsed > 500) {
     return true
   }
   
-  // Store the result to prevent runtime optimization
+  // Speichere das Ergebnis, um Laufzeitoptimierung zu verhindern
   if (typeof globalThis !== 'undefined') {
     (globalThis as any)._secretsTimingGuard = sum
   }
@@ -77,11 +77,11 @@ function checkExecutionTiming(): boolean {
 }
 
 /**
- * Encodes a string using XOR encryption followed by Base64 encoding.
- * Used during CI/CD to encode secrets before bun build.
+ * Kodiert einen String mit XOR-Verschlüsselung gefolgt von Base64-Kodierung.
+ * Wird während CI/CD verwendet, um Secrets vor dem bun-Build zu kodieren.
  * 
- * @param plaintext - The secret value to encode
- * @returns Base64-encoded XOR-encrypted string
+ * @param plaintext - Der zu kodierende Secret-Wert
+ * @returns Base64-kodierter XOR-verschlüsselter String
  */
 export function xorBase64Encode(plaintext: string): string {
   const buffer = Buffer.from(plaintext, 'utf8')
@@ -95,12 +95,12 @@ export function xorBase64Encode(plaintext: string): string {
 }
 
 /**
- * Decodes a Base64-encoded XOR-encrypted string back to plaintext.
- * Used at runtime to decrypt secrets embedded in the executable.
- * Includes anti-debug checks.
+ * Dekodiert einen Base64-kodierten XOR-verschlüsselten String zurück zu Klartext.
+ * Wird zur Laufzeit verwendet, um in der ausführbaren Datei eingebettete Secrets zu entschlüsseln.
+ * Enthält Anti-Debug-Prüfungen.
  * 
- * @param encoded - Base64-encoded XOR-encrypted string
- * @returns Decrypted plaintext value
+ * @param encoded - Base64-kodierter XOR-verschlüsselter String
+ * @returns Entschlüsselter Klartextwert
  */
 export function xorBase64Decode(encoded: string): string {
   const buffer = Buffer.from(encoded, 'base64')
@@ -114,15 +114,15 @@ export function xorBase64Decode(encoded: string): string {
 }
 
 /**
- * Decodes all process.env secrets that are XOR+Base64 encoded.
- * This is called at startup to replace encoded values with plaintext in memory.
- * Includes anti-debug checks that will exit the process if a debugger is detected.
+ * Dekodiert alle process.env-Secrets, die XOR+Base64 kodiert sind.
+ * Dies wird beim Start aufgerufen, um kodierte Werte durch Klartext im Speicher zu ersetzen.
+ * Enthält Anti-Debug-Prüfungen, die den Prozess beenden, wenn ein Debugger erkannt wird.
  * 
- * Anti-debug features:
- * 1. Detects --inspect flag on process startup
- * 2. Timing-based detection for stepping debuggers
+ * Anti-Debug-Funktionen:
+ * 1. Erkennt --inspect-Flag beim Prozessstart
+ * 2. Zeitbasierte Erkennung für Debugger, die durchlaufen
  * 
- * Environment variables to decode (those defined in CI/CD with __ENCODED_ prefix):
+ * Zu dekodierende Umgebungsvariablen (in CI/CD mit __ENCODED_-Präfix definiert):
  * - SUPABASE_URL
  * - SUPABASE_API_KEY
  * - SUPABASE_SERVICE_ROLE_KEY
@@ -136,13 +136,13 @@ export function xorBase64Decode(encoded: string): string {
  * - NGROK_DOMAIN
  */
 export function decodeAllSecrets(): void {
-  // Check for debugger attachment (--inspect flag)
+  // Prüfe auf Debugger-Anhängung (--inspect-Flag)
   if (detectDebugger()) {
     console.error('[Main] Application initialization failed.')
     process.exit(1)
   }
   
-  // Timing-based debugger check
+  // Zeitbasierte Debugger-Prüfung
   if (checkExecutionTiming()) {
     console.error('[Main] Application initialization failed.')
     process.exit(1)
@@ -167,7 +167,7 @@ export function decodeAllSecrets(): void {
     if (encoded) {
       try {
         process.env[key] = xorBase64Decode(encoded)
-        // Clear the encoded version to avoid having both in memory
+        // Lösche die kodierte Version, um nicht beide im Speicher zu haben
         delete process.env[`__ENCODED_${key}`]
       } catch (error) {
         console.error(`[Secrets] Failed to decode ${key}: ${error instanceof Error ? error.message : String(error)}`)
