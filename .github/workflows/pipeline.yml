@@ -162,9 +162,9 @@ jobs:
           bun install --no-save
           Pop-Location
 
-          # Bun's --compile ersetzt process.env.X NICHT automatisch durch String-Konstanten.
-          # Für jeden im Code per Literal angesprochenen Env-Key bauen wir einen
-          # --define-Flag, sodass die Werte beim Build wirklich in die EXE eingebacken werden.
+          # Alle Secrets werden mit XOR+Base64 vor dem Build verschlüsselt, um sie in der EXE
+          # vor `strings` und Hex-Editoren zu schützen. Die Werte werden mit --define
+          # als __ENCODED_*-Variablen eingekackt; der Code dekodiert sie beim Start.
           $envNames = @(
             'SUPABASE_URL', 'SUPABASE_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY',
             'TWITCH_CLIENT_ID', 'TWITCH_CLIENT_SECRET', 'TWITCH_REFRESH_TOKEN',
@@ -176,10 +176,11 @@ jobs:
           foreach ($name in $envNames) {
             $val = [Environment]::GetEnvironmentVariable($name)
             if ($null -eq $val) { $val = '' }
-            # ConvertTo-Json liefert die JSON-quotierte Form, die --define erwartet.
-            $json = $val | ConvertTo-Json -Compress
+            # Verwende das Node.js-Script zum Verschlüsseln des Secret-Wertes.
+            $encoded = & bun run scripts/encode-secrets.js $val
+            # $encoded ist bereits JSON-quotiert (das Script gibt JSON aus)
             $defines += '--define'
-            $defines += "process.env.$name=$json"
+            $defines += "process.env.__ENCODED_$name=$encoded"
           }
 
           & bun build --compile --target=bun-windows-x64 @defines TwitchAddon/index.ts --outfile TwitchAddon/dist/TwitchAddon.exe
@@ -192,7 +193,7 @@ jobs:
           $repoZipJson = $repoZipUrl | ConvertTo-Json -Compress
           & bun build --compile --target=bun-windows-x64 --define "process.env.SETUP_REPO_ZIP_URL=$repoZipJson" setup.ts --outfile setup.exe
         env:
-          # Werte werden vom run-Block oben via --define in die EXE eingebacken.
+          # Werte werden vom run-Block oben via --define in die EXE eingebacken (verschlüsselt).
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_API_KEY: ${{ secrets.SUPABASE_API_KEY }}
           TWITCH_CLIENT_ID: ${{ secrets.VITE_TWITCH_CLIENT_ID }}
