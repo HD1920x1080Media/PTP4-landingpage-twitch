@@ -24,8 +24,9 @@ const ENCRYPTION_KEY = Buffer.from([
 ])
 
 /**
- * Checks if a debugger is attached by looking for --inspect flags or environment indicators.
+ * Checks if a debugger is attached by looking for --inspect flags.
  * This is a cheap anti-debug measure that catches common debugger attachment methods.
+ * Note: Avoids generic environment variables like DEBUG to prevent false positives.
  */
 function detectDebugger(): boolean {
   // Check for Node.js/Bun --inspect flag in process arguments
@@ -38,40 +39,37 @@ function detectDebugger(): boolean {
     return true
   }
   
-  // Check for common debugger env vars
-  if (process.env.DEBUG_COLORS !== undefined || process.env.DEBUG !== undefined) {
-    return true
-  }
-  
   return false
 }
 
 /**
  * Performs a timing-based check to detect if code is being stepped through by a debugger.
- * When stepping through code, a debugger adds significant overhead (~100x slower).
+ * When stepping through code, a debugger adds significant overhead (~100-1000x slower).
  * This performs a quick timing operation and verifies the result isn't suspiciously slow.
  */
 function checkExecutionTiming(): boolean {
-  const iterations = 1000
+  const iterations = 10000
   const start = performance.now()
   
   let sum = 0
   for (let i = 0; i < iterations; i++) {
     // Perform XOR operations that a debugger would need to step through
     sum ^= ENCRYPTION_KEY[i % ENCRYPTION_KEY.length]
-    sum += i * 2
+    sum = (sum + i) >>> 0  // Keep as 32-bit to prevent optimization
   }
   
   const elapsed = performance.now() - start
   
-  // If this simple operation took more than 100ms, likely being debugged
-  // (Normal execution: <5ms, Debugger stepping: >100ms typically)
-  if (elapsed > 100) {
+  // If this simple operation took more than 500ms, likely being debugged
+  // (Normal execution: ~10-50ms, Debugger stepping: >1000ms typically)
+  // Using 500ms threshold is conservative enough to avoid false positives
+  // on slower hardware while still catching debuggers
+  if (elapsed > 500) {
     return true
   }
   
-  // Use the sum to prevent optimization by the runtime
-  if (sum === -1) console.log('[Secrets] Timing check placeholder:', sum)
+  // Store the result to prevent runtime optimization
+  globalThis.__secrets_timing_guard = sum
   
   return false
 }
