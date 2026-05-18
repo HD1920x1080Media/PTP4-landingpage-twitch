@@ -41,7 +41,7 @@ async function main(): Promise<void> {
   const clientSecret   = strict('TWITCH_CLIENT_SECRET', process.env.TWITCH_CLIENT_SECRET)
   const refreshToken   = strict('TWITCH_REFRESH_TOKEN', process.env.TWITCH_REFRESH_TOKEN)
   const channelName    = strict('CHANNEL_NAME',         process.env.CHANNEL_NAME)
-  const extensionSecret = process.env.EXTENSION_SECRET ?? ''
+  const extensionSecret = strict('EXTENSION_SECRET', process.env.EXTENSION_SECRET)
 
   let oauthToken = strict('TWITCH_OAUTH_TOKEN', process.env.TWITCH_OAUTH_TOKEN)
 
