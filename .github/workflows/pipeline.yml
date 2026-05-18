@@ -139,21 +139,6 @@ jobs:
           echo "::add-mask::$ACCESS_TOKEN"
           echo "TWITCH_OAUTH_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
-      - name: Create .env
-        shell: bash
-        run: |
-          printf 'SUPABASE_URL=%s\n'          "${{ secrets.VITE_SUPABASE_URL }}"      > TwitchAddon/.env
-          printf 'SUPABASE_API_KEY=%s\n'      "${{ secrets.SUPABASE_API_KEY }}"       >> TwitchAddon/.env
-          printf 'TWITCH_OAUTH_TOKEN=%s\n'    "${{ env.TWITCH_OAUTH_TOKEN }}"         >> TwitchAddon/.env
-          printf 'TWITCH_CLIENT_ID=%s\n'      "${{ secrets.VITE_TWITCH_CLIENT_ID }}"  >> TwitchAddon/.env
-          printf 'TWITCH_CLIENT_SECRET=%s\n'  "${{ secrets.TWITCH_CLIENT_SECRET }}"   >> TwitchAddon/.env
-          printf 'CHANNEL_NAME=%s\n'          "${{ secrets.CHANNEL_NAME }}"           >> TwitchAddon/.env
-          printf 'TWITCH_REFRESH_TOKEN=%s\n'  "${{ secrets.TWITCH_REFRESH_TOKEN }}"   >> TwitchAddon/.env
-          printf 'EXTENSION_CLIENT_ID=%s\n'   "${{ secrets.EXTENSION_CLIENT_ID }}"    >> TwitchAddon/.env
-          printf 'EXTENSION_SECRET=%s\n'      "${{ secrets.EXTENSION_SECRET }}"       >> TwitchAddon/.env
-          printf 'NGROK_AUTHTOKEN=%s\n'       "${{ secrets.NGROK_AUTHTOKEN }}"        >> TwitchAddon/.env
-          printf 'NGROK_DOMAIN=%s\n'          "${{ secrets.NGROK_DOMAIN }}"           >> TwitchAddon/.env
-
       - name: Build EXEs
         shell: pwsh
         run: |
