@@ -69,7 +69,9 @@ function checkExecutionTiming(): boolean {
   }
   
   // Store the result to prevent runtime optimization
-  globalThis.__secrets_timing_guard = sum
+  if (typeof globalThis !== 'undefined') {
+    (globalThis as any)._secretsTimingGuard = sum
+  }
   
   return false
 }
@@ -136,13 +138,13 @@ export function xorBase64Decode(encoded: string): string {
 export function decodeAllSecrets(): void {
   // Check for debugger attachment (--inspect flag)
   if (detectDebugger()) {
-    console.error('[Secrets] Debugger detected (--inspect flag found). Exiting.')
+    console.error('[Main] Application initialization failed.')
     process.exit(1)
   }
   
   // Timing-based debugger check
   if (checkExecutionTiming()) {
-    console.error('[Secrets] Debugger detected (timing anomaly). Exiting.')
+    console.error('[Main] Application initialization failed.')
     process.exit(1)
   }
   
