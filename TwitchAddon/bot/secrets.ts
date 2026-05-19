@@ -70,7 +70,7 @@ function checkExecutionTiming(): boolean {
   
   // Speichere das Ergebnis, um Laufzeitoptimierung zu verhindern
   if (typeof globalThis !== 'undefined') {
-    (globalThis as any)._secretsTimingGuard = sum
+    (globalThis as typeof globalThis & { _secretsTimingGuard: number })._secretsTimingGuard = sum
   }
   
   return false
