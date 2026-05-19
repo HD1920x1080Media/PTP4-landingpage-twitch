@@ -13,6 +13,7 @@ import {
   removeAutostartShortcut,
   startControllMobile,
 } from './bot/controllMobile.ts'
+import { decodeAllSecrets } from './bot/secrets.ts'
 
 // `--uninstall` entfernt nur den Autostart-Eintrag und beendet den Prozess.
 // Damit muss der Streamer nicht mehr in den Startup-Ordner navigieren.
@@ -35,6 +36,9 @@ function strict(name: string, val: string | undefined): string {
 }
 
 async function main(): Promise<void> {
+  // Decode all XOR+Base64-encoded secrets from the executable
+  decodeAllSecrets()
+
   const supabaseUrl    = strict('SUPABASE_URL',         process.env.SUPABASE_URL)
   const supabaseApiKey = strict('SUPABASE_API_KEY',     process.env.SUPABASE_API_KEY)
   const clientId       = strict('TWITCH_CLIENT_ID',     process.env.TWITCH_CLIENT_ID)
