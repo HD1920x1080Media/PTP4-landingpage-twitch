@@ -21,13 +21,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const handler = (e: MediaQueryListEvent) => setSystemTheme(e.matches ? 'dark' : 'light')
-    if (mq.addEventListener) {
-      mq.addEventListener('change', handler)
-      return () => mq.removeEventListener('change', handler)
-    }
-    // Fallback fuer aeltere Engines (IE11): MediaQueryList kennt nur addListener
-    mq.addListener(handler)
-    return () => mq.removeListener(handler)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
   }, [])
 
   const resolved = mode === 'system' ? systemTheme : mode

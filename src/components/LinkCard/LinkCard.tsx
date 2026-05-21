@@ -25,28 +25,12 @@ export default function LinkCard({ item, onDownload }: LinkCardProps) {
 
     // Discount-Code kopieren (Link wird trotzdem geöffnet)
     if (item.discountCode) {
-      const code = item.discountCode
-      const onCopied = () => showToast(t('toast.codeCopied', { code }))
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(code).then(onCopied).catch(() => {
+      navigator.clipboard
+        .writeText(item.discountCode)
+        .then(() => showToast(t('toast.codeCopied', { code: item.discountCode })))
+        .catch(() => {
           /* Fehler beim Kopieren bewusst ignorieren */
         })
-      } else {
-        // Fallback fuer aeltere Engines (IE11): kein navigator.clipboard
-        const ta = document.createElement('textarea')
-        ta.value = code
-        ta.style.position = 'fixed'
-        ta.style.opacity = '0'
-        document.body.appendChild(ta)
-        ta.select()
-        try {
-          document.execCommand('copy')
-          onCopied()
-        } catch {
-          /* Fehler beim Kopieren bewusst ignorieren */
-        }
-        document.body.removeChild(ta)
-      }
     }
   }
 
