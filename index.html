@@ -33,12 +33,12 @@
     <script>
       // Service Worker für SPA-Routing Fallback registrieren
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
+        window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js')
-            .then(function(registration) {
+            .then((registration) => {
               console.log('[SPA] Service Worker registriert:', registration.scope)
             })
-            .catch(function(error) {
+            .catch((error) => {
               console.warn('[SPA] Service Worker Registrierung fehlgeschlagen:', error)
             })
         })
