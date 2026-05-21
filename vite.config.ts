@@ -2,6 +2,7 @@
 import { defineConfig } from 'vitest/config'
 import type { Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -151,7 +152,16 @@ function calendarIcsPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), calendarIcsPlugin()],
+  plugins: [
+    react(),
+    calendarIcsPlugin(),
+    legacy({
+      targets: ['ie >= 11'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime', 'whatwg-fetch'],
+      renderLegacyChunks: true,
+      polyfills: true,
+    }),
+  ],
 
   test: {
     globals: true,

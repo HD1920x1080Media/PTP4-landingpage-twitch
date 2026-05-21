@@ -8,6 +8,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ConfirmModalProvider } from './context/ConfirmModalContext'
 import App from './App.tsx'
 import siteConfig from './config/siteConfig'
+import objectFitImages from 'object-fit-images'
 
 // Akzentfarbe aus siteConfig als CSS-Variablen setzen
 const hex = siteConfig.accentColor.replace('#', '')
@@ -30,3 +31,9 @@ createRoot(document.getElementById('root')!).render(
     </ThemeProvider>
   </StrictMode>,
 )
+
+// object-fit-Polyfill fuer IE11 (kein natives object-fit). No-op in modernen Browsern.
+// React rendert verzoegert -> nach load + Timeout nachziehen.
+objectFitImages()
+window.addEventListener('load', () => objectFitImages())
+setTimeout(() => objectFitImages(), 1500)
