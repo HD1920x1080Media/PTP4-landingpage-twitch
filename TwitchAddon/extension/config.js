@@ -97,7 +97,8 @@ function toggleReward(id, enabled) {
       loadRewards();
     })
     .catch(function(e) {
-      alert('Fehler: ' + e.message);
+      var listEl = document.getElementById('rewardList');
+      listEl.insertAdjacentHTML('afterbegin', '<div class="state-msg">❌ Fehler: ' + esc(e.message) + '</div>');
       loadRewards();
     });
 }
@@ -123,6 +124,10 @@ window.Twitch.ext.onAuthorized(function(auth) {
 
   if (rewardsReloadInterval) clearInterval(rewardsReloadInterval);
   rewardsReloadInterval = setInterval(loadRewards, 30000);
+});
+
+window.addEventListener('beforeunload', function() {
+  if (rewardsReloadInterval) clearInterval(rewardsReloadInterval);
 });
 
 document.getElementById('syncBtn').addEventListener('click', function() {
