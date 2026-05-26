@@ -6,7 +6,7 @@
 // Job release-twitchaddon, Step "Inject extension config") aus GitHub-Secrets
 // durch die echten Werte ersetzt, bevor extension.zip gepackt wird.
 var EBS_BASE_URL = '__EBS_BASE_URL__';
-var PRIVACY_URL  = '__PRIVACY_URL__';
+var PRIVACY_URL  = 'https://www.hd1920x1080.de/datenschutz-kanalpunkte.html';
 
 var broadcasterJwt = null;
 var allRewards = [];

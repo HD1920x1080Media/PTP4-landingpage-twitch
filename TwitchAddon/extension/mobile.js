@@ -8,7 +8,7 @@
 const EBS_BASE_URL  = '__EBS_BASE_URL__';
 const SUPABASE_URL  = '__SUPABASE_URL__';
 const SUPABASE_ANON = '__SUPABASE_ANON__';
-const PRIVACY_URL   = '__PRIVACY_URL__';
+const PRIVACY_URL   = 'https://www.hd1920x1080.de/datenschutz-kanalpunkte.html';
 
 let viewerUserId = null;
 let viewerJwt = null;

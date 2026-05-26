@@ -192,7 +192,7 @@ jobs:
 
       - name: Inject extension config
         # Ersetzt die Sentinel-Strings (__EBS_BASE_URL__, __SUPABASE_URL__,
-        # __SUPABASE_ANON__, __PRIVACY_URL__) in den Extension-JS-Dateien
+        # __SUPABASE_ANON__) in den Extension-JS-Dateien
         # durch die echten Werte aus den GitHub-Secrets, BEVOR extension.zip
         # im nächsten Step gepackt wird. Die EBS-URL wird aus NGROK_DOMAIN
         # abgeleitet — dieselbe URL ist in der Twitch-Extension-Allowlist hinterlegt.
@@ -201,13 +201,11 @@ jobs:
           NGROK_DOMAIN: ${{ secrets.NGROK_DOMAIN }}
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_ANON: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          PRIVACY_URL: ${{ secrets.PRIVACY_URL }}
         run: |
           $missing = @()
           if (-not $env:NGROK_DOMAIN)  { $missing += 'NGROK_DOMAIN' }
           if (-not $env:SUPABASE_URL)  { $missing += 'VITE_SUPABASE_URL' }
           if (-not $env:SUPABASE_ANON) { $missing += 'VITE_SUPABASE_ANON_KEY' }
-          if (-not $env:PRIVACY_URL)   { $missing += 'PRIVACY_URL' }
           if ($missing.Count -gt 0) {
             Write-Error ("Fehlende GitHub-Secrets: " + ($missing -join ', '))
             exit 1
@@ -217,9 +215,8 @@ jobs:
             $c = Get-Content -Raw -Path $_.FullName
             $c = $c.Replace('__EBS_BASE_URL__',  $ebs).
                    Replace('__SUPABASE_URL__',  $env:SUPABASE_URL).
-                   Replace('__SUPABASE_ANON__', $env:SUPABASE_ANON).
-                   Replace('__PRIVACY_URL__',   $env:PRIVACY_URL)
-            if ($c -match '__(EBS_BASE_URL|SUPABASE_URL|SUPABASE_ANON|PRIVACY_URL)__') {
+                   Replace('__SUPABASE_ANON__', $env:SUPABASE_ANON)
+            if ($c -match '__(EBS_BASE_URL|SUPABASE_URL|SUPABASE_ANON)__') {
               Write-Error ("Sentinel nicht ersetzt in: " + $_.FullName)
               exit 1
             }
