@@ -3,158 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanalpunkte – Broadcaster Konfiguration</title>
+  <title>Kanalpunkte – Aktivierung</title>
   <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="config.css">
 </head>
 <body>
-
   <h1>🪙 Kanalpunkte Extension</h1>
-  <p class="subtitle">Broadcaster-Konfiguration · Rewards verwalten</p>
 
-  <div class="status-bar wait" id="authStatus">⏳ Warte auf Twitch-Autorisierung…</div>
+  <div class="status-bar wait" id="authStatus">⏳ Authentifizierung…</div>
 
-  <div class="auth-required" id="mainPanel">
+  <div id="mainPanel" class="hidden">
     <div class="toolbar">
-      <h2>🎁 Rewards</h2>
-      <button class="btn btn-primary" id="addBtn">+ Neu</button>
+      <h2>Rewards (aktivieren/deaktivieren)</h2>
+      <button id="syncBtn" class="btn btn-primary">📝 Bearbeite auf meiner Website</button>
     </div>
-    <div id="rewardList"><div class="state-msg">Lade…</div></div>
-  </div>
 
-  <!-- Modal: Add / Edit -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-title" id="modalTitle">Reward bearbeiten</div>
-
-      <div class="form-row">
-        <label for="fName">Name *</label>
-        <input class="form-input" id="fName" type="text" maxlength="80" placeholder="z.B. Rickroll" required>
-      </div>
-
-      <div class="form-row-inline">
-        <div class="form-row">
-          <label for="fCost">Kosten (Punkte) *</label>
-          <input class="form-input" id="fCost" type="number" min="1" max="9999999" placeholder="500" required>
-        </div>
-        <div class="form-row">
-          <label for="fDuration">Dauer (Sekunden)</label>
-          <input class="form-input" id="fDuration" type="number" min="1" max="600" placeholder="15">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label for="fType">Typ *</label>
-        <select class="form-select" id="fType">
-          <option value="video">🎬 Video (YouTube)</option>
-          <option value="video_hidden">🔊 YouTube-Audio (kein Video)</option>
-          <option value="tts">🗣️ Text to Speech (TTS)</option>
-          <option value="image_text">🖼️ Bild + Text</option>
-          <option value="text_only">💬 Nur Text</option>
-        </select>
-      </div>
-
-      <!-- Video fields -->
-      <div class="form-section" id="secVideo">
-        <div class="form-section-title">YouTube</div>
-        <div class="form-row">
-          <label for="fMediaUrl">YouTube-URL *</label>
-          <input class="form-input" id="fMediaUrl" type="url" placeholder="https://www.youtube.com/watch?v=…">
-        </div>
-        <div class="form-row">
-          <label for="fText">Optionaler Text-Overlay</label>
-          <input class="form-input" id="fText" type="text" maxlength="200" placeholder="Wird über dem Video angezeigt">
-        </div>
-      </div>
-
-      <!-- Video-hidden extra: custom image -->
-      <div class="form-section" id="secVideoHidden">
-        <div class="form-section-title">Bild (statt Video)</div>
-        <div class="form-row">
-          <label for="fImageUrl">Bild-URL (optional)</label>
-          <input class="form-input" id="fImageUrl" type="url" placeholder="https://…/bild.png">
-        </div>
-        <div class="form-row">
-          <label for="fTextHidden">Text-Overlay (optional)</label>
-          <input class="form-input" id="fTextHidden" type="text" maxlength="200" placeholder="Angezeigter Text">
-        </div>
-      </div>
-
-      <!-- TTS fields -->
-      <div class="form-section" id="secTts">
-        <div class="form-section-title">Text to Speech</div>
-        <div class="form-row">
-          <label for="fTtsFixed">Fester Text (leer = Zuschauer gibt Text ein)</label>
-          <input class="form-input" id="fTtsFixed" type="text" maxlength="400" placeholder="Leer lassen für freien Zuschauer-Text">
-        </div>
-      </div>
-
-      <!-- Image+text fields -->
-      <div class="form-section" id="secImage">
-        <div class="form-section-title">Bild + Text</div>
-        <div class="form-row">
-          <label for="fImgUrl">Bild-URL *</label>
-          <input class="form-input" id="fImgUrl" type="url" placeholder="https://…/bild.png">
-        </div>
-        <div class="form-row">
-          <label for="fImgText">Anzeigetext (optional)</label>
-          <input class="form-input" id="fImgText" type="text" maxlength="200" placeholder="Snäck!">
-        </div>
-      </div>
-
-      <!-- Text-only field -->
-      <div class="form-section" id="secTextOnly">
-        <div class="form-section-title">Text</div>
-        <div class="form-row">
-          <label for="fOnlyText">Anzeigetext *</label>
-          <input class="form-input" id="fOnlyText" type="text" maxlength="400" placeholder="Dein Text…">
-        </div>
-      </div>
-
-      <!-- Description (all types) -->
-      <div class="form-row">
-        <label for="fDesc">Beschreibung (intern)</label>
-        <input class="form-input" id="fDesc" type="text" maxlength="300" placeholder="Kurze Beschreibung des Rewards">
-      </div>
-
-      <!-- Options -->
-      <div class="form-section">
-        <div class="form-section-title">Optionen</div>
-        <div class="form-row-inline">
-          <div class="form-row">
-            <label for="fCooldown">Cooldown (Sek., 0=kein)</label>
-            <input class="form-input" id="fCooldown" type="number" min="0" max="86400" placeholder="0">
-          </div>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" id="fEnabled" checked>
-          <label for="fEnabled">Reward aktiviert</label>
-        </div>
-        <div class="form-check">
-          <input type="checkbox" id="fOncePerStream">
-          <label for="fOncePerStream">Einmal pro Stream einlösbar</label>
-        </div>
-      </div>
-
-      <div id="formError" style="font-size:0.78rem;color:var(--red);min-height:18px;margin-bottom:4px;"></div>
-
-      <div class="modal-footer">
-        <button class="btn btn-ghost" id="cancelBtn">Abbrechen</button>
-        <button class="btn btn-danger btn-sm" id="deleteBtn" style="margin-right:auto;">Löschen</button>
-        <button class="btn btn-primary" id="saveBtn">Speichern</button>
-      </div>
+    <div id="rewardList" class="reward-list">
+      <div class="state-msg">Lade…</div>
     </div>
+
+    <p class="info">
+      Neue Rewards hinzufügen, bearbeiten oder löschen:
+      <a href="https://hd1920x1080.de/admin/rewards" target="_blank" rel="noopener noreferrer">
+        → Gehe zum Admin-Panel
+      </a>
+    </p>
   </div>
-
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
-
-  <p class="privacy-notice">
-    🔒 Diese Extension verarbeitet deine Twitch-ID und Kanalpunkte. ·
-    This extension processes your Twitch ID and channel points.<br>
-    <a id="privacyLink" target="_blank" rel="noopener noreferrer">Datenschutz / Privacy Policy</a>
-  </p>
 
   <script src="config.js"></script>
 </body>
