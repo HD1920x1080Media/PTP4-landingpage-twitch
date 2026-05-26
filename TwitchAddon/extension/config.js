@@ -117,5 +117,5 @@ window.Twitch.ext.onAuthorized(function(auth) {
 });
 
 document.getElementById('syncBtn').addEventListener('click', function() {
-  window.open('https://hd1920x1080.de/admin/rewards', '_blank', 'noopener');
+  window.open('https://hd1920x1080.de/admin/rewards', '_blank', 'noopener,noreferrer');
 });
