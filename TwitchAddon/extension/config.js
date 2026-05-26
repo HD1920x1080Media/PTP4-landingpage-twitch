@@ -5,11 +5,12 @@ var EBS_BASE_URL = '__EBS_BASE_URL__';
 
 var broadcasterJwt = null;
 var allRewards = [];
+var rewardsReloadInterval = null;
 
 function ebsFetch(path, opts) {
   opts = opts || {};
   opts.headers = Object.assign({ 'ngrok-skip-browser-warning': '1' }, opts.headers || {});
-  return window.fetch(EBS_BASE_URL + path, opts);
+  return window.fetch(EBS_BASE_URL.concat(path), opts);
 }
 
 function esc(s) {
@@ -68,7 +69,7 @@ function renderList() {
   var el = document.getElementById('rewardList');
 
   if (!allRewards.length) {
-    el.innerHTML = '<div class="state-msg">Noch keine Rewards. Gehe zum Admin-Panel um welche hinzuzufügen.</div>';
+    el.innerHTML = '<div class="state-msg">Noch keine Rewards. Gehe zum Admin-Panel, um welche hinzuzufügen.</div>';
     return;
   }
 
@@ -76,12 +77,18 @@ function renderList() {
     var checked = r.is_enabled === false ? '' : ' checked';
     return '<div class="reward-item">' +
       '<label>' +
-        '<input type="checkbox"' + checked + ' onchange="toggleReward(' + esc(JSON.stringify(r.id)) + ', this.checked)">' +
+        '<input type="checkbox" data-reward-id="' + esc(String(r.id)) + '"' + checked + '>' +
         '<span class="reward-name">' + esc(r.name || 'Reward') + '</span>' +
         '<span class="reward-cost">' + fmt(r.cost) + ' P</span>' +
       '</label>' +
     '</div>';
   }).join('');
+
+  el.querySelectorAll('input[data-reward-id]').forEach(function(input) {
+    input.addEventListener('change', function() {
+      toggleReward(input.getAttribute('data-reward-id'), input.checked);
+    });
+  });
 }
 
 function toggleReward(id, enabled) {
@@ -113,7 +120,9 @@ window.Twitch.ext.onAuthorized(function(auth) {
   document.getElementById('mainPanel').classList.remove('hidden');
 
   loadRewards();
-  setInterval(loadRewards, 30000);
+
+  if (rewardsReloadInterval) clearInterval(rewardsReloadInterval);
+  rewardsReloadInterval = setInterval(loadRewards, 30000);
 });
 
 document.getElementById('syncBtn').addEventListener('click', function() {
