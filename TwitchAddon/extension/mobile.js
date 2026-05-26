@@ -8,7 +8,6 @@
 const EBS_BASE_URL  = '__EBS_BASE_URL__';
 const SUPABASE_URL  = '__SUPABASE_URL__';
 const SUPABASE_ANON = '__SUPABASE_ANON__';
-const PRIVACY_URL   = '__PRIVACY_URL__';
 
 let viewerUserId = null;
 let viewerJwt = null;
@@ -59,29 +58,6 @@ function checkStreamStatus() {
         .then(function(res) { return res.ok ? res.json() : { online: false }; })
         .then(function(data) { setStreamOnline(!!(data && data.online)); })
         .catch(function() { setStreamOnline(false); });
-}
-
-function applyPrivacyLink() {
-    const link = document.getElementById('privacyLink');
-    if (!link) return;
-    if (!PRIVACY_URL) {
-        link.removeAttribute('href');
-        link.style.pointerEvents = 'none';
-        link.style.opacity = '0.7';
-        return;
-    }
-    try {
-        const parsed = new URL(PRIVACY_URL);
-        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') throw new Error('invalid protocol');
-        link.href = parsed.toString();
-    } catch (e) {
-        link.removeAttribute('href');
-        link.style.pointerEvents = 'none';
-        link.style.opacity = '0.7';
-        return;
-    }
-    link.style.pointerEvents = '';
-    link.style.opacity = '';
 }
 
 // ── Supabase-REST-Hilfsfunktionen ────────────────────────────────────────
@@ -349,7 +325,6 @@ window.Twitch.ext.onAuthorized(function(auth) {
         window.Twitch.ext.actions.requestIdShare();
     }
 
-    applyPrivacyLink();
     checkStreamStatus();
     loadLeaderboard();
     if (!selectedId) loadRewards();
