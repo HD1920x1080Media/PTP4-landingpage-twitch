@@ -88,7 +88,7 @@ services:
 
   # ── Storage ───────────────────────────────────────────────────────────────
   storage:
-    image: supabase/storage-api:v1.59.0
+    image: supabase/storage-api:v1.60.0
     restart: unless-stopped
     depends_on:
       db:
