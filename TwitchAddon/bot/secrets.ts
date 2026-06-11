@@ -148,27 +148,28 @@ export function decodeAllSecrets(): void {
     process.exit(1)
   }
   
-  const secretKeys = [
-    'SUPABASE_URL',
-    'SUPABASE_API_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'TWITCH_CLIENT_ID',
-    'TWITCH_CLIENT_SECRET',
-    'TWITCH_REFRESH_TOKEN',
-    'TWITCH_OAUTH_TOKEN',
-    'CHANNEL_NAME',
-    'EXTENSION_SECRET',
-    'NGROK_AUTHTOKEN',
-    'NGROK_DOMAIN',
-  ]
+  // WICHTIG: Bun's `--compile` inlined nur direkte `process.env.NAME`-Zugriffe.
+  // Bracket-Zugriffe wie process.env[`__ENCODED_${key}`] werden NICHT durch die via
+  // `--define` gesetzten Konstanten ersetzt und liefern in der EXE undefined.
+  // Deshalb listen wir jeden Key einzeln mit direktem Property-Zugriff auf.
+  const encodedSecrets: Record<string, string | undefined> = {
+    SUPABASE_URL:              process.env.__ENCODED_SUPABASE_URL,
+    SUPABASE_API_KEY:          process.env.__ENCODED_SUPABASE_API_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.__ENCODED_SUPABASE_SERVICE_ROLE_KEY,
+    TWITCH_CLIENT_ID:          process.env.__ENCODED_TWITCH_CLIENT_ID,
+    TWITCH_CLIENT_SECRET:      process.env.__ENCODED_TWITCH_CLIENT_SECRET,
+    TWITCH_REFRESH_TOKEN:      process.env.__ENCODED_TWITCH_REFRESH_TOKEN,
+    TWITCH_OAUTH_TOKEN:        process.env.__ENCODED_TWITCH_OAUTH_TOKEN,
+    CHANNEL_NAME:              process.env.__ENCODED_CHANNEL_NAME,
+    EXTENSION_SECRET:          process.env.__ENCODED_EXTENSION_SECRET,
+    NGROK_AUTHTOKEN:           process.env.__ENCODED_NGROK_AUTHTOKEN,
+    NGROK_DOMAIN:              process.env.__ENCODED_NGROK_DOMAIN,
+  }
 
-  for (const key of secretKeys) {
-    const encoded = process.env[`__ENCODED_${key}`]
+  for (const [key, encoded] of Object.entries(encodedSecrets)) {
     if (encoded) {
       try {
         process.env[key] = xorBase64Decode(encoded)
-        // Lösche die kodierte Version, um nicht beide im Speicher zu haben
-        delete process.env[`__ENCODED_${key}`]
       } catch (error) {
         console.error(`[Secrets] Failed to decode ${key}: ${error instanceof Error ? error.message : String(error)}`)
       }
