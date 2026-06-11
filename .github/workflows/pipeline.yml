@@ -312,6 +312,7 @@ jobs:
             VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
             VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
             VITE_TWITCH_CLIENT_ID=${{ secrets.VITE_TWITCH_CLIENT_ID }}
+            VITE_CHANNEL_NAME=${{ secrets.CHANNEL_NAME }}
   # ─── 5. Deployment Landingpage (Nur Main/Master) ─────────────────────
   deploy-pages:
     needs: validate

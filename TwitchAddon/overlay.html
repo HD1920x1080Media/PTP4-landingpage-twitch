@@ -126,6 +126,23 @@
 
   <script>
 
+    // Escaped Nutzer-/DB-Werte vor dem Einsetzen in innerHTML. Zuschauer können
+    // ihren Twitch-Anzeigenamen und (bei TTS) freien Text steuern — ohne Escaping
+    // wäre das ein gespeicherter XSS-Vektor im Overlay des Streamers.
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Escaped einen Wert für die Verwendung in einem doppelt-gequoteten Attribut (z.B. src="...").
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
     async function fetchRewards() {
       console.log('[Overlay] Lade Rewards aus DB ...');
       const response = await fetch('/api/rewards');
@@ -215,18 +232,20 @@
         }
         return `${username}: ${base}`;
       }
+      // usernameText ist nutzergesteuert → escapen. mainContent ist bereits von den
+      // Aufrufern gebautes HTML (mit escapeten Einzelteilen) und bleibt unverändert.
       function getRewardContainerHtml(usernameText, mainContent) {
         // Wenn kein mainContent, returne einfach nur username
         if (!mainContent || mainContent.trim() === '') {
           if (usernameText) {
-            return `<div class="reward-username">${usernameText}</div>`;
+            return `<div class="reward-username">${escapeHtml(usernameText)}</div>`;
           }
           return '';
         }
         // Wrapper mit Username oben
         let html = '<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5em;">';
         if (usernameText) {
-          html += `<div class="reward-username">${usernameText}</div>`;
+          html += `<div class="reward-username">${escapeHtml(usernameText)}</div>`;
         }
         html += mainContent;
         html += '</div>';
@@ -234,7 +253,7 @@
       }
       function getRewardTextHtml(textContent) {
         if (textContent && String(textContent).trim().length > 0) {
-          return `<div class=\"reward-text\">${textContent}</div>`;
+          return `<div class=\"reward-text\">${escapeHtml(textContent)}</div>`;
         }
         return '';
       }
@@ -311,7 +330,7 @@
           const ytId = ytIdMatch ? ytIdMatch[1] : '';
           if (reward.showmedia === false) {
             let imgHtml = '';
-            if (imageUrl) imgHtml = `<img src=\"${imageUrl}\" alt=\"Reward-Bild\" style=\"max-width:50vw;max-height:50vh;\" />`;
+            if (imageUrl) imgHtml = `<img src=\"${escapeAttr(imageUrl)}\" alt=\"Reward-Bild\" style=\"max-width:50vw;max-height:50vh;\" />`;
             const contentHtml = imgHtml + getRewardTextHtml(textContent);
             mediaDiv.innerHTML = getRewardContainerHtml(username, contentHtml);
             // Stille YouTube im Hintergrund
@@ -358,7 +377,7 @@
             }
           }
          } else if (isAudio) {
-           const contentHtml = `<audio id=\"rewardAudio\" src=\"${mediaUrl}\" controls autoplay></audio>` + getRewardTextHtml(textContent);
+           const contentHtml = `<audio id=\"rewardAudio\" src=\"${escapeAttr(mediaUrl)}\" controls autoplay></audio>` + getRewardTextHtml(textContent);
            mediaDiv.innerHTML = getRewardContainerHtml(username, contentHtml);
            console.log('[Overlay] Audio-Element erzeugt:', mediaUrl);
            const audio = document.getElementById('rewardAudio');
@@ -374,7 +393,7 @@
            }
          } else if (isImage) {
            const imgSrc = imageUrl || mediaUrl;
-           const contentHtml = `<img src=\"${imgSrc}\" alt=\"Reward-Bild\" style=\"max-width:50vw;max-height:50vh;\" />` + getRewardTextHtml(textContent);
+           const contentHtml = `<img src=\"${escapeAttr(imgSrc)}\" alt=\"Reward-Bild\" style=\"max-width:50vw;max-height:50vh;\" />` + getRewardTextHtml(textContent);
            mediaDiv.innerHTML = getRewardContainerHtml(username, contentHtml);
            console.log('[Overlay] Image+Text Reward:', imgSrc, textContent);
            setTimeout(afterPlayback, duration * 1000);

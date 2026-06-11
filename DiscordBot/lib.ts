@@ -1,6 +1,8 @@
 // Pure Helper für den Discord-Bot — getrennt von index.ts, damit sie ohne
 // discord.js / express importiert und getestet werden können.
 
+import { timingSafeEqual } from 'node:crypto'
+
 export type RoundEndpoint =
     | 'start-runde-1'
     | 'ende-runde-1'
@@ -25,12 +27,22 @@ export function buildRoundMessage(endpoint: RoundEndpoint): string {
     return MESSAGES[endpoint]
 }
 
-/** Prüft den mitgeschickten API-Key gegen den erwarteten Key. */
+/**
+ * Prüft den mitgeschickten API-Key gegen den erwarteten Key.
+ * Der Vergleich läuft konstant-zeitig (timingSafeEqual), damit der Key nicht
+ * Byte für Byte über Antwortzeiten erraten werden kann.
+ */
 export function isAuthorized(providedKey: unknown, expectedKey: string | undefined): boolean {
     // Fehlender erwarteter Key bedeutet "nicht konfiguriert" — niemals durchlassen.
     if (!expectedKey) return false
     if (typeof providedKey !== 'string') return false
-    return providedKey === expectedKey
+
+    const provided = Buffer.from(providedKey, 'utf8')
+    const expected = Buffer.from(expectedKey, 'utf8')
+    // timingSafeEqual wirft bei unterschiedlicher Länge — Längenunterschied selbst
+    // ist nicht geheim, also vorab abfangen und ablehnen.
+    if (provided.length !== expected.length) return false
+    return timingSafeEqual(provided, expected)
 }
 
 /** Parst einen Port-String; fällt bei ungültigem Wert oder Bereichsüberschreitung auf den Fallback zurück. */

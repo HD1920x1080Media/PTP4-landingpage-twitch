@@ -356,12 +356,10 @@ Die GitHub Actions unter `.github/workflows/` laufen automatisch, sobald die Sec
 
 | Workflow | Was er tut | Trigger |
 |---|---|---|
-| `deploy.yml` | Baut und deployt die Landingpage | Push auf master/main |
+| `pipeline.yml` | Validiert (Lint/Test/Audit), baut & deployt die Landingpage auf GitHub Pages, baut TwitchAddon als EXE/ZIP + Docker-Image nach ghcr.io | Push auf master/main/dev |
 | `twitch-sync.yml` | Synchronisiert Twitch-Daten, erneuert den Refresh Token | Alle 2 Stunden |
 | `fetch-clips.yml` | Holt Top-Clips von Twitch, startet Voting-Runde 1 | 22. des Monats, 00:23 UTC |
 | `manage-rounds.yml` | Verwaltet Voting-Runden-Status automatisch | Täglich 06:00 UTC |
-| `build.yml` | Baut TwitchAddon als EXE und ZIP | Push auf master/main |
-| `docker.yml` | Baut Docker-Images und pusht nach ghcr.io | Push auf master/main |
 
 > `fetch-clips.yml` und `manage-rounds.yml` können auch manuell ausgelöst werden  
 > (Actions → Workflow → **Run workflow**).
