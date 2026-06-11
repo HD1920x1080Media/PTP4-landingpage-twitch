@@ -1,0 +1,7 @@
+node_modules
+.env
+
+# Kompilat / TS-Build-Cache — Laufzeit nutzt ts-node auf den .ts-Quellen.
+*.tsbuildinfo
+index.js
+lib.js

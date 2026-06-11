@@ -149,7 +149,9 @@ Deno.serve(async (req) => {
     const body = await req.json()
     const gameName = body.gameName
 
-    if (!gameName || typeof gameName !== 'string') {
+    // Länge begrenzen: gameName fließt in mehrere ausgehende Store-Requests,
+    // ein überlanger/leerer Wert ist nie ein echter Spielname.
+    if (!gameName || typeof gameName !== 'string' || gameName.trim().length === 0 || gameName.length > 200) {
       return new Response(JSON.stringify({ error: 'Valid gameName is required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

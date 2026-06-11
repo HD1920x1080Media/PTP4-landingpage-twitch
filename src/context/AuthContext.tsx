@@ -5,6 +5,15 @@ import { AuthContext } from './authContextDef'
 
 const REDIRECT_PATH_KEY = 'auth-redirect-path'
 
+/**
+ * Lässt nur kanal-interne, relative Pfade als Redirect-Ziel zu. Verhindert
+ * Open-Redirects (z.B. `//evil.com`, `https://…`, `javascript:…`), falls der
+ * gespeicherte Wert manipuliert wurde.
+ */
+function isSafeInternalPath(path: string): boolean {
+  return path.startsWith('/') && !path.startsWith('//')
+}
+
 /** Stellt Supabase-Auth-Status (User, Session) sowie Twitch-Login/Logout bereit
  *  und legt beim Login das Profil an. */
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -51,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (user && session) {
       const savedPath = sessionStorage.getItem(REDIRECT_PATH_KEY)
-      if (savedPath && savedPath !== '/' && savedPath !== '') {
+      if (savedPath && savedPath !== '/' && savedPath !== '' && isSafeInternalPath(savedPath)) {
         sessionStorage.removeItem(REDIRECT_PATH_KEY)
         // Redirect nur, wenn wir nicht schon auf dem Ziel sind
         if (window.location.pathname !== savedPath) {

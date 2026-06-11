@@ -10,10 +10,18 @@ RUN npm ci
 # Copy source and build
 COPY . .
 
-# Accept build-time env vars (VITE_ prefix → baked into bundle)
+# Accept build-time env vars (VITE_ prefix → baked into bundle).
+# ARG allein landet NICHT in process.env des Build-Prozesses; Vite liest die
+# VITE_-Variablen aber aus process.env. Deshalb per ENV durchreichen, sonst
+# enthält das Bundle undefinierte Supabase-/Twitch-Werte.
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
 ARG VITE_TWITCH_CLIENT_ID
+ARG VITE_CHANNEL_NAME
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+ENV VITE_TWITCH_CLIENT_ID=$VITE_TWITCH_CLIENT_ID
+ENV VITE_CHANNEL_NAME=$VITE_CHANNEL_NAME
 
 RUN npm run build
 
