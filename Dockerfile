@@ -1,3 +1,9 @@
+# check=skip=SecretsUsedInArgOrEnv
+# Die VITE_-Werte sind bewusst KEINE Geheimnisse: Vite backt sie in das
+# Client-Bundle, das ohnehin an jeden Browser ausgeliefert wird (der Supabase
+# anon-Key ist ein öffentlicher Client-Key, Schutz übernimmt RLS). Der
+# BuildKit-Check SecretsUsedInArgOrEnv ist hier daher ein False-Positive.
+
 # ── Stage 1: Build ───────────────────────────────────────────────────────────
 FROM node:26-alpine AS builder
 
