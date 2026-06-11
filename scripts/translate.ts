@@ -226,7 +226,13 @@ function patchI18nTs(lang: string): void {
     // 3. Zu supportedLngs hinzufügen, falls noch nicht vorhanden
     if (!lines.some((l: string) => l.includes(`'${lang}'`) && l.includes('supportedLngs:'))) {
         const slIdx = lines.findIndex((l: string) => l.includes('supportedLngs:'))
-        if (slIdx >= 0) lines[slIdx] = lines[slIdx].replace(/]/, `, '${lang}']`)
+        if (slIdx >= 0) {
+            const line = lines[slIdx]
+            const lastBracketIdx = line.lastIndexOf(']')
+            if (lastBracketIdx >= 0) {
+                lines[slIdx] = `${line.slice(0, lastBracketIdx)}, '${lang}'${line.slice(lastBracketIdx)}`
+            }
+        }
     }
 
     writeFileSync(filePath, lines.join('\n'), 'utf-8')
