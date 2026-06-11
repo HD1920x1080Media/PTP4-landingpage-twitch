@@ -286,7 +286,7 @@ jobs:
       # nutzt build-push-action den Default-"docker"-Treiber, was beim Push nach
       # GHCR zu "unknown blob" führen kann.
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
         if: github.ref_name == 'main' || github.ref_name == 'master' || github.ref_name == 'dev'
