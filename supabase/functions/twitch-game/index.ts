@@ -151,7 +151,8 @@ serve(async (req: Request) => {
             },
         )
     } catch (err: unknown) {
-        // Workaround: Wenn ein Fehler mit 401 auftritt, antworte trotzdem mit 200 und Fehlertext
+        console.error('twitch-game function failed', err)
+        // Workaround: Wenn ein Fehler mit 401 auftritt, antworte trotzdem mit 200 und generischem Fehlertext
         if (
             typeof err === 'object' &&
             err !== null &&
@@ -160,7 +161,7 @@ serve(async (req: Request) => {
             (err as { message: string }).message.includes('401')
         ) {
             return new Response(
-                JSON.stringify({ error: 'Unauthorized (public function workaround): ' + (err as { message: string }).message }),
+                JSON.stringify({ error: 'Unauthorized (public function workaround)' }),
                 {
                     status: 200,
                     headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
@@ -168,7 +169,7 @@ serve(async (req: Request) => {
             )
         }
         return new Response(
-            JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
+            JSON.stringify({ error: 'Internal server error' }),
             {
                 status: 500,
                 headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
