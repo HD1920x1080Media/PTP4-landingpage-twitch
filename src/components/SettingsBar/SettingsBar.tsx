@@ -17,14 +17,18 @@ const languageFlags: Record<string, string> = {
   de: '🇩🇪',
   en: '🇬🇧',
   gsw: '🇨🇭',
+  fr: '🇫🇷',
+  es: '🇪🇸',
 }
 
-const langOrder = ['de', 'en', 'gsw'] as const
+const langOrder = ['de', 'en', 'gsw', 'fr', 'es'] as const
 type Lang = (typeof langOrder)[number]
 
 function getCurrentLang(language: string): Lang {
   if (language?.startsWith('gsw')) return 'gsw'
   if (language?.startsWith('de')) return 'de'
+  if (language?.startsWith('fr')) return 'fr'
+  if (language?.startsWith('es')) return 'es'
   return 'en'
 }
 
@@ -71,6 +75,8 @@ export default function SettingsBar() {
           <option value="de">🇩🇪 Deutsch</option>
           <option value="en">🇬🇧 English</option>
           <option value="gsw">🇨🇭 Schweizerdeutsch</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="es">🇪🇸 Español</option>
         </select>
 
         <button

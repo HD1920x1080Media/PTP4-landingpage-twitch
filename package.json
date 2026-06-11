@@ -12,8 +12,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:mutation": "stryker run",
-    "translate": "tsx scripts/translate.ts",
-    "setup:build": "bun build --compile --target=bun-windows-x64 setup.ts --outfile setup.exe"
+    "translate": "tsx scripts/translate.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.1",
@@ -36,7 +35,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24.12.4",
+    "@types/node": "^24.13.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.59.2",
