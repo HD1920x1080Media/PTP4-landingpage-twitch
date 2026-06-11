@@ -7,7 +7,8 @@ import './NextStream.css'
 /** Zeigt den naechsten Stream-Termin aus dem ICS-Kalender; faellt bei Fehler/leer auf einen Streamplan-Link zurueck. */
 export default function NextStream() {
     const {t, i18n} = useTranslation()
-    const {nextEvent, loading, error} = useNextStream(siteConfig.twitch.icsUrl)
+    // Statischer Snapshot als Fallback, live über die calendar-Edge-Function
+    const {nextEvent, loading, error} = useNextStream(siteConfig.twitch.icsUrl, siteConfig.streamplan.icsUrl)
 
     if (loading) {
         return <div className="next-stream-loading">{t('live.scheduleLoading')}</div>
