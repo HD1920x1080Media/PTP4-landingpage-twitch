@@ -1,9 +1,9 @@
 // Supabase Edge Function: discord-notify
 //
-// Postet die Voting-Benachrichtigungen direkt in einen Discord-Channel —
-// als serverloser Ersatz für den auf Render gehosteten DiscordBot. Discord
-// braucht für reine Channel-Nachrichten keinen Gateway-Bot, ein REST-Call
-// mit dem Bot-Token genügt.
+// Postet die Voting-Benachrichtigungen direkt in einen Discord-Channel.
+// Discord braucht für reine Channel-Nachrichten keinen Gateway-Bot, ein
+// REST-Call mit dem Bot-Token genügt — daher kommt dieser Dienst ohne einen
+// dauerhaft laufenden, extern gehosteten Bot aus.
 //
 // Aufruf (durch Supabase Database Webhooks):
 //   POST /functions/v1/discord-notify?event=start-runde-1
@@ -18,7 +18,7 @@
 
 const VOTING_URL = Deno.env.get('VOTING_URL') ?? 'https://hd1920x1080.de/clipdesmonats'
 
-// Spiegel der Nachrichten aus DiscordBot/lib.ts — gleiche Events, gleiche Texte.
+// Eine Nachricht je Voting-Event; der Event-Name ist zugleich der Query-Parameter.
 const MESSAGES: Record<string, string> = {
   'start-runde-1': `🚀 **Clip des Monats Runde 1 hat begonnen!** Jetzt abstimmen! ${VOTING_URL}`,
   'ende-runde-1': `🏁 **Clip des Monats Runde 1 ist beendet.** Die Ergebnisse werden ausgewertet! ${VOTING_URL}`,

@@ -85,12 +85,6 @@ jobs:
           npx tsc -b
           npm run test
 
-      - name: DiscordBot Validierung
-        working-directory: DiscordBot
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
-          npx tsc --noEmit
-
       - name: TwitchAddon Validierung
         working-directory: TwitchAddon
         run: |

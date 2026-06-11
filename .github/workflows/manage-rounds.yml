@@ -36,5 +36,6 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
           ACTION: ${{ github.event.inputs.action || 'auto' }}
         run: npx tsx .github/scripts/manage-rounds.ts

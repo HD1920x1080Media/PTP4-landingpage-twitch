@@ -16,7 +16,7 @@ Alles Streamer-spezifische ist in **einer** Config-Datei (`src/config/siteConfig
 | Bartclicker-Spiel | ✅ | Supabase |
 | Moderatoren-Dashboard | ✅ | Supabase + Twitch OAuth |
 | Kanalpunkte-Bot + Extension | ✅ (TwitchAddon) | lokale EXE auf Streamer-PC |
-| Discord-Benachrichtigungen | ✅ | Supabase Edge Function (empfohlen) **oder** DiscordBot auf Render (optional) |
+| Discord-Benachrichtigungen | ✅ | Supabase Edge Function `discord-notify` |
 
 ---
 
@@ -317,7 +317,7 @@ fällt ohne sie auf statische Daten bzw. Drittanbieter zurück:
 | `check-stores` | Store-Links (Steam, Epic, …) zum aktuellen Spiel | keine Store-Badges |
 | `calendar` | **Live**-Streamplan (ICS-Proxy zu kalender.digital) | Streamplan = Stand des letzten Deployments |
 | `twitch-user` | Username→ID-Lookup im Mod-Dashboard via Twitch-API | Fallback auf decapi.me (Drittanbieter) |
-| `discord-notify` | Discord-Voting-Benachrichtigungen (siehe Anhang C) | Render-DiscordBot nötig |
+| `discord-notify` | Discord-Voting-Benachrichtigungen (siehe Anhang C) | keine Discord-Posts bei Rundenwechsel |
 
 ```bash
 # Supabase CLI installieren: https://supabase.com/docs/guides/cli
@@ -468,68 +468,56 @@ Nur nötig wenn du die Panel Extension im Twitch-Kanal anzeigen willst.
 
 ## Anhang C – Discord-Benachrichtigungen (optional)
 
-Postet automatische Nachrichten wenn Voting-Runden starten oder enden,  
-ausgelöst durch Supabase Webhooks. Zwei Wege:
+Postet automatische Nachrichten, wenn Voting-Runden starten oder enden. Das
+übernimmt vollständig die serverlose Edge Function `discord-notify` — es ist
+kein dauerhaft laufender, extern gehosteter Bot nötig. Discord braucht für reine
+Channel-Nachrichten keinen Gateway-Bot; ein REST-Call mit dem Bot-Token genügt.
 
-- **Empfohlen: Edge Function `discord-notify`** — serverlos, kein Hosting nötig.
-- **Alternative: DiscordBot auf Render** — der bisherige Weg, bleibt unterstützt.
-
-### Bot erstellen (für beide Wege)
+### Discord-Bot erstellen
 
 1. Gehe zu [discord.com/developers/applications](https://discord.com/developers/applications)
 2. **New Application** → Bot-Tab → **Add Bot**
 3. Lade den Bot in deinen Server ein (Berechtigungen: `Send Messages`, `View Channels`)
 4. Notiere den **Bot Token** und die **Channel ID** des Ziel-Kanals
 
-> Die Gateway-Intents (Server Members / Message Content) braucht nur der
-> Render-Bot — die Edge Function sendet rein über die REST-API.
+> Gateway-Intents (Server Members / Message Content) werden **nicht** benötigt —
+> die Edge Function sendet rein über die Discord-REST-API.
 
-### Weg 1 – Edge Function `discord-notify` (empfohlen)
+### Edge Function deployen
 
 ```bash
 # Secrets setzen (WEBHOOK_SECRET frei wählen, z.B. via Passwort-Generator)
 supabase secrets set DISCORD_TOKEN=... DISCORD_CHANNEL_ID=... WEBHOOK_SECRET=...
 supabase secrets set VOTING_URL=https://deinkanal.de/clipdesmonats   # optional
 
-# Webhooks senden kein Supabase-JWT → verify_jwt aus; Schutz übernimmt WEBHOOK_SECRET
+# Webhooks/pg_net senden kein Supabase-JWT → verify_jwt aus; Schutz = WEBHOOK_SECRET
 supabase functions deploy discord-notify --no-verify-jwt
 ```
 
-Dann Supabase-Webhooks anlegen (Database → Webhooks → **New Webhook**):
+### Auslöser konfigurieren
+
+Die Benachrichtigungen werden aus zwei Quellen angestoßen — beide senden dasselbe
+`WEBHOOK_SECRET` als Header `x-webhook-secret`:
+
+1. **Datenbank (`pg_net`)** — die Funktion `clipvoting.schedule_discord_notify`
+   ruft die Edge Function bei Rundenwechseln auf. Dafür muss das Secret im Vault
+   liegen:
+
+   ```sql
+   select vault.create_secret('<dein WEBHOOK_SECRET>', 'discord_webhook_secret');
+   ```
+
+2. **GitHub Actions** — die Workflows `fetch-clips` und `manage-rounds` benachrichtigen
+   beim Start/Ende von Runden ebenfalls. Dafür das gleiche Secret als GitHub-Secret
+   `WEBHOOK_SECRET` hinterlegen (Settings → Secrets and variables → Actions).
+
+Alternativ (oder zusätzlich) lassen sich klassische **Supabase-Webhooks** anlegen
+(Database → Webhooks → **New Webhook**):
 
 - **URL:** `https://DEIN-PROJEKT.supabase.co/functions/v1/discord-notify?event=start-runde-1`  
   (pro Event ein Webhook: `start-runde-1`, `ende-runde-1`, `start-runde-2`, `ende-runde-2`, `start-jahr`, `ende-jahr`)
 - **HTTP Header:** `x-webhook-secret: <dein WEBHOOK_SECRET>`
 - **Events:** z.B. `UPDATE` auf Tabelle `voting_rounds`
-
-### Weg 2 – DiscordBot auf Render (Alternative)
-
-1. Erstelle ein Konto auf [render.com](https://render.com)
-2. New **Web Service** → verbinde dein GitHub-Repo → Root Directory: `DiscordBot`
-3. Build Command: `npm install && npm run build`  
-   Start Command: `npm start`
-4. Env-Variablen eintragen:
-
-| Variable | Bedeutung |
-|---|---|
-| `DISCORD_TOKEN` | Discord Bot Token |
-| `CHANNEL_ID` | Discord Kanal-ID |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role key (als API-Key-Auth) |
-| `PORT` | `3000` (Render setzt das automatisch) |
-
-5. Notiere die Render-URL und konfiguriere Supabase-Webhooks:
-   - Supabase → Database → Webhooks → **New Webhook**
-   - Events: z.B. `UPDATE` auf Tabelle `voting_rounds`
-   - Webhook URL: `https://DEINE-RENDER-URL/start-runde-1` (je nach Event)
-
-### Lokal
-
-```bash
-cd DiscordBot
-cp .env.example .env   # (Datei selbst anlegen mit den obigen Variablen)
-npm install
-npm start
-```
 
 ---
 
@@ -545,6 +533,7 @@ npm start
 | `TWITCH_REFRESH_TOKEN` | ✅ | Twitch OAuth Refresh Token (Scopes: chat, moderation, subscriptions, redemptions) |
 | `CHANNEL_NAME` | ✅ | Twitch-Kanalname (Kleinbuchstaben, ohne @) |
 | `GH_TOKEN` | ✅ | GitHub Personal Access Token (Scope: `secrets:write`) – für automatischen Token-Refresh |
+| `WEBHOOK_SECRET` | Discord | Geheimnis für die `discord-notify`-Edge-Function (siehe Anhang C); nur nötig, wenn Discord-Benachrichtigungen aktiv sind |
 | `NGROK_AUTHTOKEN` | TwitchAddon | ngrok Authtoken — die EXE öffnet damit automatisch den Tunnel |
 | `NGROK_DOMAIN` | TwitchAddon | reservierte Static-Domain (z.B. `dein-name.ngrok-free.app`) |
 | `EXTENSION_CLIENT_ID` | Extension | Client ID der Twitch Extension |
