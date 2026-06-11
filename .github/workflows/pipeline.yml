@@ -164,6 +164,11 @@ jobs:
 
           & bun build --compile --target=bun-windows-x64 @defines TwitchAddon/index.ts --outfile TwitchAddon/dist/TwitchAddon.exe
 
+          # Standalone-Setup-Assistent als EXE: konfiguriert das aktuelle Projekt-
+          # verzeichnis (siteConfig.ts + .env) und kommt ohne Node-Toolchain aus.
+          # scripts/setup.ts nutzt nur node:-Builtins, daher kein bun install nötig.
+          & bun build --compile --target=bun-windows-x64 scripts/setup.ts --outfile TwitchAddon/dist/setup.exe
+
           $repoZipUrl = "https://github.com/$env:GITHUB_REPOSITORY/archive/$env:GITHUB_SHA.zip"
           $repoZipJson = $repoZipUrl | ConvertTo-Json -Compress
         env:
@@ -258,6 +263,7 @@ jobs:
           files: |
             TwitchAddon/dist/TwitchAddon-*.zip
             TwitchAddon/dist/extension.zip
+            TwitchAddon/dist/setup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

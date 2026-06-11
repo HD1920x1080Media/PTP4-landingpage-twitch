@@ -17,13 +17,15 @@
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import { createInterface } from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const ROOT = join(__dirname, '..')
+// Das Projektverzeichnis ist immer das aktuelle Arbeitsverzeichnis: `npm run setup`
+// startet aus dem Repo-Root, und die als Standalone gebaute `setup.exe` wird vom
+// Nutzer im geklonten Projekt ausgeführt. Bewusst NICHT aus import.meta.url
+// abgeleitet, da dieser Pfad in der kompilierten EXE ins Bun-Dateisystem zeigt.
+const ROOT = process.cwd()
 const CONFIG_PATH = join(ROOT, 'src', 'config', 'siteConfig.ts')
 const ENV_PATH = join(ROOT, '.env')
 
