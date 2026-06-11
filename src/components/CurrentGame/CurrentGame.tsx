@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import './CurrentGame.css'
 
+// --- Typdefinitionen ---
 interface GameInfo {
   gameId: string
   gameName: string
@@ -13,127 +14,77 @@ interface CurrentGameProps {
   isLive: boolean
 }
 
-interface StoreLink {
+export interface StoreLink {
   id: string
   labelKey: string
   url: string
   className: string
 }
 
-function buildStoreLinks(gameName: string): StoreLink[] {
-  const q = encodeURIComponent(gameName)
-  return [
-    {
-      id: 'twitch',
-      labelKey: 'currentGame.stores.twitch',
-      url: `https://www.twitch.tv/directory/game/${q}`,
-      className: 'store-badge store-badge--twitch',
-    },
-    {
-      id: 'steam',
-      labelKey: 'currentGame.stores.steam',
-      url: `https://store.steampowered.com/search/?term=${q}`,
-      className: 'store-badge store-badge--steam',
-    },
-    {
-      id: 'epic',
-      labelKey: 'currentGame.stores.epic',
-      url: `https://store.epicgames.com/browse?q=${q}`,
-      className: 'store-badge store-badge--epic',
-    },
-    {
-      id: 'nintendo',
-      labelKey: 'currentGame.stores.nintendo',
-      url: `https://www.nintendo.com/de-de/Suche-/Suche-299117.html?q=${q}`,
-      className: 'store-badge store-badge--nintendo',
-    },
-    {
-      id: 'psstore',
-      labelKey: 'currentGame.stores.psstore',
-      url: `https://store.playstation.com/de-de/search/${q}`,
-      className: 'store-badge store-badge--psstore',
-    },
-    {
-      id: 'xbox',
-      labelKey: 'currentGame.stores.xbox',
-      url: `https://www.xbox.com/de-DE/Search/Results?q=${q}`,
-      className: 'store-badge store-badge--xbox',
-    },
-  ]
-}
-
-// Heuristik: erkennt im HTML der Store-Suchseiten, ob es keine Treffer fuer das Spiel gibt
-const NO_RESULTS_RE = /Keine Ergebnisse gefunden|Leider war die Suche erfolglos\.|0 Ergebnisse|0 results|no results|keine ergebnisse|Hier scheint nichts vorhanden zu sein\./i
-
-function checkStoreResult(store: StoreLink): Promise<boolean> {
-  switch (store.id) {
-    case 'steam':
-    case 'epic':
-    case 'nintendo':
-    case 'psstore':
-    case 'xbox':
-      return fetch(store.url).then(res => {
-        if (!res.ok) return false
-        return res.text().then(html => !NO_RESULTS_RE.test(html))
-      })
-    case 'twitch':
-      return Promise.resolve(true)
-    default:
-      return Promise.resolve(true)
-  }
-}
-
+// --- Unterkomponente: Zeigt die Store-Buttons an ---
 function CurrentGameStores({ gameName, t }: { gameName: string; t: (key: string) => string }) {
+  // Wir ersetzen 'any' durch das korrekte StoreLink-Interface
   const [visibleStores, setVisibleStores] = useState<StoreLink[]>([])
   const [checkingStores, setCheckingStores] = useState(true)
 
   useEffect(() => {
     let cancelled = false
 
-    void (async () => {
-      const storeLinks = buildStoreLinks(gameName)
-      const results = await Promise.all(
-        storeLinks.map(async (store) => {
-          try {
-            const hasResult = await checkStoreResult(store)
-            return hasResult ? store : null
-          } catch {
-            return store
-          }
+    async function fetchStores() {
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+        const res = await fetch(`${supabaseUrl}/functions/v1/check-stores`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': supabaseAnonKey,
+            'Authorization': `Bearer ${supabaseAnonKey}`
+          },
+          body: JSON.stringify({ gameName })
         })
-      )
 
-      if (cancelled) return
-      setVisibleStores(results.filter(Boolean) as StoreLink[])
-      setCheckingStores(false)
-    })()
+        if (!res.ok) throw new Error('API Fehler bei der Store-Abfrage')
 
-    return () => {
-      cancelled = true
+        const data = await res.json()
+        if (!cancelled) {
+          setVisibleStores(data.visibleStores || [])
+        }
+      } catch (err) {
+        console.error('[CurrentGameStores] Fehler beim Laden der Stores:', err)
+      } finally {
+        if (!cancelled) setCheckingStores(false)
+      }
     }
+
+    void fetchStores()
+
+    return () => { cancelled = true }
   }, [gameName])
 
   if (checkingStores) return null
 
+  // Hier ist der korrekte Return-Block für die Store-Buttons
   return (
-    <div className="current-game__stores" aria-label={t('currentGame.storesLabel')}>
-      {visibleStores.map((s) => (
-        <a
-          key={s.id}
-          href={s.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={s.className}
-          aria-label={`${t(s.labelKey)} (${t('currentGame.opensInNewTab')})`}
-        >
-          {t(s.labelKey)}
-        </a>
-      ))}
-    </div>
+      <div className="current-game__stores" aria-label={t('currentGame.storesLabel')}>
+        {visibleStores.map((s) => (
+            <a
+                key={s.id}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={s.className}
+                aria-label={`${t(s.labelKey)} (${t('currentGame.opensInNewTab')})`}
+            >
+              {t(s.labelKey)}
+            </a>
+        ))}
+      </div>
   )
 }
 
-/** Zeigt das aktuell gestreamte Spiel samt Box-Art; pollt die Spielinfo waehrend des Streams regelmaessig. */
+// --- Hauptkomponente: Zeigt das Spiel und ruft die Store-Buttons auf ---
 export default function CurrentGame({ isLive }: CurrentGameProps) {
   const { t } = useTranslation()
   const [game, setGame] = useState<GameInfo | null>(null)
@@ -148,11 +99,10 @@ export default function CurrentGame({ isLive }: CurrentGameProps) {
       setLoading(true)
       try {
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY // Muss in .env vorhanden sein
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
         const headers = new Headers()
         headers.set('Content-Type', 'application/json')
-        // Supabase benötigt den Anon-Key für Edge Functions
         headers.set('apikey', supabaseAnonKey)
         headers.set('Authorization', `Bearer ${supabaseAnonKey}`)
 
@@ -186,7 +136,6 @@ export default function CurrentGame({ isLive }: CurrentGameProps) {
 
     void fetchGame()
 
-    // Spielinfo alle 5 Minuten aktualisieren (falls Streamer das Spiel wechselt)
     const interval = setInterval(() => void fetchGame(), 5 * 60 * 1000)
 
     return () => {
@@ -197,23 +146,25 @@ export default function CurrentGame({ isLive }: CurrentGameProps) {
 
   if (!isLive || loading || !game || !game.gameName) return null
 
+  // Hier ist der korrekte Return-Block für die Hauptanzeige
   return (
-    <div className="current-game" aria-label={t('currentGame.label')}>
-      {game.boxArtUrl && (
-        <img
-          className="current-game__art"
-          src={game.boxArtUrl}
-          alt={game.gameName}
-          width={69}
-          height={95}
-          loading="lazy"
-        />
-      )}
-      <div className="current-game__info">
-        <div className="current-game__label">{t('currentGame.nowPlaying')}</div>
-        <div className="current-game__name">{game.gameName}</div>
-        <CurrentGameStores key={game.gameId} gameName={game.gameName} t={t} />
+      <div className="current-game" aria-label={t('currentGame.label')}>
+        {game.boxArtUrl && (
+            <img
+                className="current-game__art"
+                src={game.boxArtUrl}
+                alt={game.gameName}
+                width={69}
+                height={95}
+                loading="lazy"
+            />
+        )}
+        <div className="current-game__info">
+          <div className="current-game__label">{t('currentGame.nowPlaying')}</div>
+          <div className="current-game__name">{game.gameName}</div>
+          {/* Hier rufen wir nun die reparierte Unterkomponente auf */}
+          <CurrentGameStores key={game.gameId} gameName={game.gameName} t={t} />
+        </div>
       </div>
-    </div>
   )
 }

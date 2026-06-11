@@ -27,16 +27,15 @@ Mit Supabase kommen Login, Voting, OnlyBart und das Bartclicker-Spiel dazu.
 
 ```
 [ ] 1. Repo forken & klonen
-[ ] 2. Setup-Assistent ausführen (node setup.mjs)
-[ ] 3. Links, Partner und Weiterleitungen in siteConfig.ts anpassen
-[ ] 4. Bilder ersetzen (Profil, Logos)
-[ ] 5. Twitch App erstellen → client_id + client_secret besorgen
-[ ] 6. Supabase-Projekt erstellen → SQL-Migration ausführen
-[ ] 7. GitHub Secrets eintragen
-[ ] 8. GitHub Pages aktivieren
+[ ] 2. Links, Partner und Weiterleitungen in siteConfig.ts anpassen
+[ ] 3. Bilder ersetzen (Profil, Logos)
+[ ] 4. Twitch App erstellen → client_id + client_secret besorgen
+[ ] 5. Supabase-Projekt erstellen → SQL-Migration ausführen
+[ ] 6. GitHub Secrets eintragen
+[ ] 7. GitHub Pages aktivieren
 [ ] --
-[ ] 9. (Optional) TwitchAddon konfigurieren
-[ ] 10. (Optional) Discord Bot einrichten
+[ ] 8. (Optional) TwitchAddon konfigurieren
+[ ] 9. (Optional) Discord Bot einrichten
 ```
 
 ---
@@ -50,39 +49,14 @@ Mit Supabase kommen Login, Voting, OnlyBart und das Bartclicker-Spiel dazu.
    cd REPO-NAME
    npm install
    ```
-
 ---
 
-## Schritt 2 – Setup-Assistent (empfohlen)
-
-Der Assistent befüllt die häufigsten Felder automatisch.
-
-**Option A – Standalone EXE (kein Node/Bun nötig)**  
-Nach dem ersten Push baut die CI automatisch `setup.exe` → lade sie aus  
-**GitHub → Releases → setup.exe** herunter, lege sie ins Repo-Root und doppelklicke.
-
-Lokal selbst bauen (Bun erforderlich):
-```bash
-npm run setup:build   # → erzeugt setup.exe
-.\setup.exe
-```
-
-**Option B – direkt mit tsx**
-```bash
-npx tsx setup.ts
-```
-
-Er fragt nach Kanalname, Anzeigename, Tagline, Akzentfarbe, Impressum-Daten und  
-StreamElements-URL und schreibt die Änderungen direkt in `siteConfig.ts` und die Sprachdateien.
-
----
-
-## Schritt 3 – `src/config/siteConfig.ts` vollständig anpassen
+## Schritt 2 – `src/config/siteConfig.ts` vollständig anpassen
 
 `siteConfig.ts` ist die **einzige Stelle** für alle Website-Daten.  
 Öffne die Datei und passe alle markierten Bereiche an:
 
-### 3a – Profil
+### 2a – Profil
 
 ```ts
 profile: {
@@ -92,7 +66,7 @@ profile: {
 },
 ```
 
-### 3b – Twitch
+### 2b – Twitch
 
 ```ts
 twitch: {
@@ -105,7 +79,7 @@ twitch: {
 
 > Den Kanalname setzt du über die Umgebungsvariable `VITE_CHANNEL_NAME` (`.env` lokal, GitHub Secret in CI).
 
-### 3c – Impressum (Pflichtangaben laut TMG)
+### 2c – Impressum (Pflichtangaben laut TMG)
 
 ```ts
 impressum: {
@@ -117,7 +91,7 @@ impressum: {
 },
 ```
 
-### 3d – Streamplan
+### 2d – Streamplan
 
 ```ts
 streamplan: {
@@ -132,7 +106,7 @@ streamplan: {
 > Die ICS-URLs bekommst du von [kalender.digital](https://kalender.digital) nach dem Einloggen  
 > unter **Kalender exportieren → ICS-Link**.
 
-### 3e – Donations (StreamElements)
+### 2e – Donations (StreamElements)
 
 ```ts
 streamelements: {
@@ -142,7 +116,7 @@ streamelements: {
 
 > Die URL findest du in deinem [StreamElements-Dashboard](https://streamelements.com) unter **Tip Page**.
 
-### 3f – Hauptlinks
+### 2f – Hauptlinks
 
 ```ts
 links: [
@@ -172,7 +146,7 @@ Jeder Link kann folgende Felder haben:
 
 Dasselbe Schema gilt für `games[]`, `clips[]` und `partners[]`.
 
-### 3g – Partner mit Rabattcodes
+### 2g – Partner mit Rabattcodes
 
 ```ts
 partners: [
@@ -187,7 +161,7 @@ partners: [
 ],
 ```
 
-### 3h – Kurz-URLs (Weiterleitungen)
+### 2h – Kurz-URLs (Weiterleitungen)
 
 ```ts
 redirects: {
@@ -198,7 +172,7 @@ redirects: {
 },
 ```
 
-### 3i – Design & Branding
+### 2i – Design & Branding
 
 ```ts
 accentColor: '#7C4DFF',        // ← deine Markenfarbe (Hex)
@@ -211,9 +185,17 @@ onlyBart: {
 
 ---
 
-## Schritt 4 – Sprachdateien anpassen
+## Schritt 3 – Sprachdateien anpassen
 
-Streamer-spezifische Texte in `src/i18n/locales/de.json` (gleiches für `en.json`, `gsw.json`):
+Streamer-spezifische Texte in einer Sprachdatei (z.B.) `src/i18n/locales/de.json` anpassen.
+Für die Unterstützung weiterer Sprachen in Anschluss: 
+```bash 
+npm run translate -- --sl de fr es
+```
+
+Optionen:
+--sl <lang> Quellsprache definieren (Default: de)
+--force     Bereits vorhandene JSON-Dateien überschreiben
 
 | Schlüssel | Bedeutung | Beispielwert |
 |---|---|---|
@@ -230,7 +212,7 @@ Streamer-spezifische Texte in `src/i18n/locales/de.json` (gleiches für `en.json
 
 ---
 
-## Schritt 5 – Bilder ersetzen
+## Schritt 4 – Bilder ersetzen
 
 Ersetze die folgenden Dateien in `public/img/logos/` durch deine eigenen (Format beibehalten):
 
@@ -248,21 +230,21 @@ SVG-Dateien (`discord.svg`, `youtube.svg`, etc.) können so bleiben oder durch e
 
 ---
 
-## Schritt 6 – Twitch App & Credentials
+## Schritt 5 – Twitch App & Credentials
 
-### 6a – Twitch Developer App erstellen
+### 5a – Twitch Developer App erstellen
 
 1. Gehe zu [dev.twitch.tv/console/apps](https://dev.twitch.tv/console/apps)
 2. Klicke auf **„Register Your Application"**
 3. Fülle aus:
    - **Name:** beliebig (z.B. „MeinKanal Landing Page")
    - **OAuth Redirect URLs:** `https://DEIN-SUPABASE-PROJEKT.supabase.co/auth/v1/callback`  
-     (die URL bekommst du nach Schritt 7 aus Supabase)
+     (die URL bekommst du nach Schritt 6 aus Supabase)
    - **Category:** Website Integration
 4. Klicke **Create**
 5. Notiere **Client ID** und generiere einen **Client Secret**
 
-### 6b – OAuth Refresh Token generieren
+### 5b – OAuth Refresh Token generieren
 
 Der Bot und die GitHub Actions brauchen einen Refresh Token mit bestimmten Scopes.  
 Am einfachsten mit der [Twitch CLI](https://dev.twitch.tv/docs/cli/):
@@ -279,9 +261,9 @@ Alternativ: [twitchtokengenerator.com](https://twitchtokengenerator.com) – dor
 
 ---
 
-## Schritt 7 – Supabase einrichten
+## Schritt 6 – Supabase einrichten
 
-### 7a – Projekt erstellen
+### 6a – Projekt erstellen
 
 1. Gehe zu [supabase.com](https://supabase.com) und erstelle ein kostenloses Projekt
 2. Notiere nach der Erstellung:
@@ -289,7 +271,7 @@ Alternativ: [twitchtokengenerator.com](https://twitchtokengenerator.com) – dor
    - **anon / public Key** (Settings → API → Project API keys → `anon`)
    - **service_role Key** (Settings → API → Project API keys → `service_role`) ⚠️ geheim halten
 
-### 7b – Datenbankschema einrichten
+### 6b – Datenbankschema einrichten
 
 Führe die Migrations-Dateien in Supabase aus:
 
@@ -300,7 +282,7 @@ Führe die Migrations-Dateien in Supabase aus:
 > Diese Dateien erstellen alle nötigen Tabellen (`votes`, `bartclicker_scores`, `points`, `rewards`,  
 > `onlybart_posts`, `page_views`, etc.) und setzen Row Level Security (RLS) Policies.
 
-### 7c – Twitch OAuth aktivieren
+### 6c – Twitch OAuth aktivieren
 
 1. Gehe in Supabase zu **Authentication → Providers → Twitch**
 2. Aktiviere Twitch und trage ein:
@@ -309,7 +291,7 @@ Führe die Migrations-Dateien in Supabase aus:
 3. Kopiere die **Redirect URL** (z.B. `https://xxx.supabase.co/auth/v1/callback`)
 4. Trage diese URL in deiner Twitch App unter **OAuth Redirect URLs** ein
 
-### 7d – Edge Function deployen
+### 6d – Edge Function deployen
 
 Die Edge Function `twitch-game` liefert das aktuell gespielte Spiel während des Streams.
 
@@ -325,9 +307,9 @@ supabase functions deploy twitch-game
 
 ---
 
-## Schritt 8 – GitHub Secrets & Pages
+## Schritt 7 – GitHub Secrets & Pages
 
-### 8a – Secrets eintragen
+### 7a – Secrets eintragen
 
 Gehe zu: **Repo → Settings → Secrets and variables → Actions → New repository secret**
 
@@ -347,13 +329,13 @@ Gehe zu: **Repo → Settings → Secrets and variables → Actions → New repos
 | `EXTENSION_CLIENT_ID` | Twitch Extension Client ID | nur mit Extension |
 | `EXTENSION_SECRET` | Twitch Extension Secret (Base64) | nur mit Extension |
 
-### 8b – GitHub Pages aktivieren
+### 7b – GitHub Pages aktivieren
 
 1. Gehe zu: **Repo → Settings → Pages**
 2. Wähle bei **Source**: **„GitHub Actions"**
 3. Beim nächsten Push auf `master`/`main` wird die Seite automatisch gebaut und deployt.
 
-### 8c – Base-URL in `vite.config.ts` prüfen
+### 7c – Base-URL in `vite.config.ts` prüfen
 
 **Mit Custom Domain** (z.B. `meinkanal.de`): Keine Änderung nötig, `base: '/'` ist korrekt.
 
@@ -368,7 +350,7 @@ Custom Domain in GitHub Pages setzen: **Settings → Pages → Custom domain**.
 
 ---
 
-## Schritt 9 – Workflows aktivieren
+## Schritt 8 – Workflows aktivieren
 
 Die GitHub Actions unter `.github/workflows/` laufen automatisch, sobald die Secrets gesetzt sind:
 
