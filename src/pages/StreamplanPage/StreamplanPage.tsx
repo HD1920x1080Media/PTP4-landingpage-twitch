@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import siteConfig from '../../config/siteConfig'
+import { fetchCalendarText } from '../../lib/edgeFunctions'
 import SubPage from '../../components/SubPage/SubPage'
 import ICAL from 'ical.js'
 import { format, isSameDay, startOfDay, addDays } from 'date-fns'
@@ -48,16 +49,10 @@ export default function StreamplanPage() {
       // Alle Kategorie-ICS-Dateien parallel laden
       const promises = categories.map(async (cat) => {
         try {
-          // Lokalen Proxy-Pfad aus vite.config.ts verwenden (CORS vermeiden)
-          // Das Vite-Plugin leitet diese auf externe URLs um oder liefert kompilierte Assets.
-          const localUrl = `/api/calendar-${cat.id}.ics`
-          
-          const response = await fetch(localUrl)
-          if (!response.ok) {
-            console.error(`Fehler beim Laden der ICS-Datei für Kategorie ${cat.id}: Netzwerkantwort nicht ok`)
-            return
-          }
-          const icsData = await response.text()
+          // Bevorzugt live über die calendar-Edge-Function (immer aktuell);
+          // Fallback ist der lokale Proxy-Pfad aus vite.config.ts (Dev-Proxy
+          // bzw. zur Build-Zeit eingefrorener Snapshot).
+          const icsData = await fetchCalendarText(cat.url, `/api/calendar-${cat.id}.ics`)
 
           const jcalData = ICAL.parse(icsData)
           const comp = new ICAL.Component(jcalData)

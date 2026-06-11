@@ -351,26 +351,26 @@ export function useBartclickerGame() {
             click_upgrade_buyer_unlocked: false,
           };
 
-          // State wird unten unabhängig gesetzt; ein fehlgeschlagener Upsert ist nicht fatal,
+          // State wird unten unabhängig gesetzt; ein fehlgeschlagener Save ist nicht fatal,
           // da der initiale Spielstand beim nächsten Save erneut persistiert wird.
+          // Schreiben läuft über die validierende RPC (Anti-Cheat) — direkte
+          // Inserts auf bartclicker_scores sind per RLS gesperrt.
           try {
-            await supabase.from('bartclicker_scores').upsert({
-              user_id: userId,
-              energy: 0,
-              total_ever: 0,
-              rebirth_count: 0,
-              rebirth_multiplier: 1,
-              shop_items: INITIAL_SHOP_ITEMS,
-              active_buffs: [],
-              active_debuffs: [],
-              relics: [],
-              offline_earning_upgrades: 0,
-              auto_click_buyer_enabled: false,
-              click_upgrade_buyer_enabled: false,
-              click_upgrade_buyer_items: [],
-              auto_click_buyer_unlocked: false,
-              click_upgrade_buyer_unlocked: false,
-            }, { onConflict: 'user_id' });
+            await supabase.rpc('save_bartclicker_state', {
+              p_energy: 0,
+              p_total_ever: 0,
+              p_rebirth_count: 0,
+              p_shop_items: INITIAL_SHOP_ITEMS,
+              p_active_buffs: [],
+              p_active_debuffs: [],
+              p_relics: [],
+              p_offline_earning_upgrades: 0,
+              p_auto_click_buyer_enabled: false,
+              p_auto_click_buyer_unlocked: false,
+              p_click_upgrade_buyer_enabled: false,
+              p_click_upgrade_buyer_unlocked: false,
+              p_click_upgrade_buyer_items: [],
+            });
           } catch (upsertErr) {
             console.error('Failed to create initial game state:', upsertErr);
           }
@@ -478,29 +478,34 @@ export function useBartclickerGame() {
         return;
       }
 
-      const { error } = await supabase
-        .from('bartclicker_scores')
-        .upsert({
-          user_id: userId,
-          energy: gameState.energy,
-          total_ever: gameState.total_ever,
-          rebirth_count: gameState.rebirth_count,
-          rebirth_multiplier: gameState.rebirth_multiplier,
-          shop_items: gameState.shop_items,
-          active_buffs: gameState.active_buffs,
-          active_debuffs: gameState.active_debuffs,
-          relics: gameState.relics,
-          offline_earning_upgrades: gameState.offline_earning_upgrades,
-          auto_click_buyer_enabled: gameState.auto_click_buyer_enabled,
-          auto_click_buyer_unlocked: gameState.auto_click_buyer_unlocked,
-          click_upgrade_buyer_enabled: gameState.click_upgrade_buyer_enabled,
-          click_upgrade_buyer_unlocked: gameState.click_upgrade_buyer_unlocked,
-          click_upgrade_buyer_items: gameState.click_upgrade_buyer_items,
-          last_updated: new Date().toISOString(),
-        }, { onConflict: 'user_id' });
+      // Anti-Cheat: Speichern läuft über die serverseitig validierende RPC
+      // (Monotonie, Bezahlbarkeit, Wachstumsgrenze) — direkte Upserts auf
+      // bartclicker_scores sind per RLS gesperrt. last_updated setzt der Server.
+      const { data, error } = await supabase.rpc('save_bartclicker_state', {
+        p_energy: gameState.energy,
+        p_total_ever: gameState.total_ever,
+        p_rebirth_count: gameState.rebirth_count,
+        p_shop_items: gameState.shop_items,
+        p_active_buffs: gameState.active_buffs,
+        p_active_debuffs: gameState.active_debuffs,
+        p_relics: gameState.relics,
+        p_offline_earning_upgrades: gameState.offline_earning_upgrades,
+        p_auto_click_buyer_enabled: gameState.auto_click_buyer_enabled,
+        p_auto_click_buyer_unlocked: gameState.auto_click_buyer_unlocked,
+        p_click_upgrade_buyer_enabled: gameState.click_upgrade_buyer_enabled,
+        p_click_upgrade_buyer_unlocked: gameState.click_upgrade_buyer_unlocked,
+        p_click_upgrade_buyer_items: gameState.click_upgrade_buyer_items,
+      });
 
       if (error) {
         console.error('Error saving game state:', error);
+      } else {
+        const result = data as { success?: boolean; clamped?: boolean; error?: string } | null;
+        if (result?.error) {
+          console.error('Game state rejected by server:', result.error);
+        } else if (result?.clamped) {
+          console.warn('Game state growth was clamped by server validation.');
+        }
       }
     } catch (err) {
       console.error('Failed to save game state:', err);
