@@ -34,6 +34,11 @@ RUN npm run build
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
 FROM nginx:1.31.1-alpine3.23-slim AS runner
 
+# Alpine-Sicherheitsupdates einspielen, da das Basis-Image hinter den Repos
+# zurückliegt — u.a. openssl/libcrypto3/libssl3 (CVE-2026-34180 ff., behoben in
+# openssl 3.5.7-r0). Bleibt innerhalb des alpine3.23-Release-Zweigs.
+RUN apk upgrade --no-cache
+
 # SPA-aware nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
