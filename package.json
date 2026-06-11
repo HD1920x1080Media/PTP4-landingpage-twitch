@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:mutation": "stryker run",
+    "setup": "tsx scripts/setup.ts",
     "translate": "tsx scripts/translate.ts"
   },
   "dependencies": {

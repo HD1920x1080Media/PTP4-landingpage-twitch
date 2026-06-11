@@ -53,6 +53,17 @@ Mit Supabase kommen Login, Voting, OnlyBart und das Bartclicker-Spiel dazu.
 
 ## Schritt 2 – `src/config/siteConfig.ts` vollständig anpassen
 
+> 💡 **Schneller Weg – geführter Assistent:** Statt die Datei von Hand zu
+> bearbeiten, kannst du
+> ```bash
+> npm run setup
+> ```
+> ausführen. Der Assistent führt Schritt für Schritt durch die komplette
+> Konfiguration (Profil, Impressum, Streamplan, Links, Partner, Weiterleitungen,
+> Branding) und schreibt am Ende `src/config/siteConfig.ts` **und** `.env` neu.
+> Die Abschnitte unten beschreiben dieselben Felder zum Nachschlagen oder für
+> manuelle Feinanpassungen.
+
 `siteConfig.ts` ist die **einzige Stelle** für alle Website-Daten.  
 Öffne die Datei und passe alle markierten Bereiche an:
 
