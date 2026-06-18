@@ -32,7 +32,7 @@ ENV VITE_CHANNEL_NAME=$VITE_CHANNEL_NAME
 RUN npm run build
 
 # ── Stage 2: Serve ────────────────────────────────────────────────────────────
-FROM nginx:1.31.1-alpine3.23-slim AS runner
+FROM nginx:1.31.2-alpine3.23-slim AS runner
 
 # Alpine-Sicherheitsupdates einspielen, da das Basis-Image hinter den Repos
 # zurückliegt — u.a. openssl/libcrypto3/libssl3 (CVE-2026-34180 ff., behoben in
