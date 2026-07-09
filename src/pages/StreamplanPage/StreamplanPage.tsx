@@ -58,7 +58,6 @@ export default function StreamplanPage() {
           const comp = new ICAL.Component(jcalData)
           const vevents = comp.getAllSubcomponents('vevent')
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           vevents.forEach((vevent: any) => {
             const event = new ICAL.Event(vevent)
             
