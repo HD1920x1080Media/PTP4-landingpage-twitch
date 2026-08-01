@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 
 const STORAGE_KEY = 'cookie-consent'

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { render, type RenderOptions } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router'
 import i18n from 'i18next'
 import { initReactI18next, I18nextProvider } from 'react-i18next'
 import { ToastProvider } from '../context/ToastContext'

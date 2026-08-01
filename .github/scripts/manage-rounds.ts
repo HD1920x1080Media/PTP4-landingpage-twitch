@@ -5,6 +5,7 @@
 
 const SUPABASE_URL          = process.env.SUPABASE_URL
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const WEBHOOK_SECRET        = process.env.WEBHOOK_SECRET
 const ACTION                = process.env.ACTION ?? 'auto'
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -83,22 +84,31 @@ async function sbDelete(table: string, query: string): Promise<void> {
   if (!res.ok) throw new Error(`DELETE ${table}: ${res.status} ${await res.text()}`)
 }
 
-// ── Discord-Benachrichtigung ────────────────────────────── TODO: URL bei Bedarf anpassen
+// ── Discord-Benachrichtigung ──────────────────────────────
+// Läuft über die Supabase Edge Function discord-notify (?event=…), abgesichert
+// per x-webhook-secret. Der frühere Render-DiscordBot wurde dadurch abgelöst.
+// endpoint kommt historisch mit führendem Slash (z. B. "/start-runde-1") an.
 
 async function notifyDiscord(endpoint: string): Promise<void> {
   await new Promise(resolve => setTimeout(resolve, 120_000))
+  if (!WEBHOOK_SECRET) {
+    console.warn(`Discord-Benachrichtigung übersprungen (WEBHOOK_SECRET fehlt): ${endpoint}`)
+    return
+  }
+  const event = endpoint.replace(/^\//, '')
   try {
-    const res = await fetch(`https://ptp4-landingpage-twitch-hd.onrender.com${endpoint}`, {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/discord-notify?event=${event}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': SUPABASE_SERVICE_ROLE_KEY,
+        'x-webhook-secret': WEBHOOK_SECRET,
       },
+      body: '{}',
     })
-    if (!res.ok) console.warn(`Discord-Benachrichtigung ${endpoint}: ${res.status}`)
-    else console.log(`Discord benachrichtigt: ${endpoint}`)
+    if (!res.ok) console.warn(`Discord-Benachrichtigung ${event}: ${res.status}`)
+    else console.log(`Discord benachrichtigt: ${event}`)
   } catch (err) {
-    console.warn(`Discord-Benachrichtigung fehlgeschlagen (${endpoint}):`, err instanceof Error ? err.message : err)
+    console.warn(`Discord-Benachrichtigung fehlgeschlagen (${event}):`, err instanceof Error ? err.message : err)
   }
 }
 

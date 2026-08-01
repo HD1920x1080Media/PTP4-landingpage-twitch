@@ -16,7 +16,7 @@ Alles Streamer-spezifische ist in **einer** Config-Datei (`src/config/siteConfig
 | Bartclicker-Spiel | ✅ | Supabase |
 | Moderatoren-Dashboard | ✅ | Supabase + Twitch OAuth |
 | Kanalpunkte-Bot + Extension | ✅ (TwitchAddon) | lokale EXE auf Streamer-PC |
-| Discord-Benachrichtigungen | ✅ (DiscordBot) | Render **oder** lokal (optional) |
+| Discord-Benachrichtigungen | ✅ | Supabase Edge Function `discord-notify` |
 
 ---
 
@@ -52,6 +52,17 @@ Mit Supabase kommen Login, Voting, OnlyBart und das Bartclicker-Spiel dazu.
 ---
 
 ## Schritt 2 – `src/config/siteConfig.ts` vollständig anpassen
+
+> 💡 **Schneller Weg – geführter Assistent:** Statt die Datei von Hand zu
+> bearbeiten, kannst du
+> ```bash
+> npm run setup
+> ```
+> ausführen. Der Assistent führt Schritt für Schritt durch die komplette
+> Konfiguration (Profil, Impressum, Streamplan, Links, Partner, Weiterleitungen,
+> Branding) und schreibt am Ende `src/config/siteConfig.ts` **und** `.env` neu.
+> Die Abschnitte unten beschreiben dieselben Felder zum Nachschlagen oder für
+> manuelle Feinanpassungen.
 
 `siteConfig.ts` ist die **einzige Stelle** für alle Website-Daten.  
 Öffne die Datei und passe alle markierten Bereiche an:
@@ -273,14 +284,18 @@ Alternativ: [twitchtokengenerator.com](https://twitchtokengenerator.com) – dor
 
 ### 6b – Datenbankschema einrichten
 
-Führe die Migrations-Dateien in Supabase aus:
+Führe **alle** Dateien aus `supabase/migrations/` in zeitlicher Reihenfolge
+(Dateiname = Zeitstempel) aus:
 
 1. Öffne das **SQL Editor**-Tab in deinem Supabase-Projekt
-2. Öffne `supabase/migrations/20260424134835_remote_schema.sql` und führe den Inhalt aus
-3. Öffne `supabase/migrations/20260425000000_security_fixes.sql` und führe den Inhalt aus
+2. Führe die Migrationen von der ältesten zur neuesten aus — beginnend mit
+   `20260424134835_remote_schema.sql`
+
+Alternativ mit der Supabase CLI in einem Schritt: `supabase db push`
 
 > Diese Dateien erstellen alle nötigen Tabellen (`votes`, `bartclicker_scores`, `points`, `rewards`,  
-> `onlybart_posts`, `page_views`, etc.) und setzen Row Level Security (RLS) Policies.
+> `onlybart_posts`, `page_views`, etc.), setzen Row Level Security (RLS) Policies und
+> die Anti-Cheat-RPCs (`cast_vote`, `save_bartclicker_state`).
 
 ### 6c – Twitch OAuth aktivieren
 
@@ -291,19 +306,36 @@ Führe die Migrations-Dateien in Supabase aus:
 3. Kopiere die **Redirect URL** (z.B. `https://xxx.supabase.co/auth/v1/callback`)
 4. Trage diese URL in deiner Twitch App unter **OAuth Redirect URLs** ein
 
-### 6d – Edge Function deployen
+### 6d – Edge Functions deployen
 
-Die Edge Function `twitch-game` liefert das aktuell gespielte Spiel während des Streams.
+Die Edge Functions liegen in `supabase/functions/` — alle optional, die Seite
+fällt ohne sie auf statische Daten bzw. Drittanbieter zurück:
+
+| Function | Zweck | Ohne sie |
+|---|---|---|
+| `twitch-game` | Aktuell gespieltes Spiel während des Streams | keine Spielinfo |
+| `check-stores` | Store-Links (Steam, Epic, …) zum aktuellen Spiel | keine Store-Badges |
+| `calendar` | **Live**-Streamplan (ICS-Proxy zu kalender.digital) | Streamplan = Stand des letzten Deployments |
+| `twitch-user` | Username→ID-Lookup im Mod-Dashboard via Twitch-API | Fallback auf decapi.me (Drittanbieter) |
+| `discord-notify` | Discord-Voting-Benachrichtigungen (siehe Anhang C) | keine Discord-Posts bei Rundenwechsel |
 
 ```bash
 # Supabase CLI installieren: https://supabase.com/docs/guides/cli
 supabase login
 supabase link --project-ref DEIN_PROJEKT_REF
+
+# Twitch-Credentials als Function-Secrets (für twitch-game UND twitch-user)
+supabase secrets set TWITCH_CLIENT_ID=... TWITCH_CLIENT_SECRET=... TWITCH_CHANNEL=deinkanal
+
 supabase functions deploy twitch-game
+supabase functions deploy check-stores
+supabase functions deploy calendar
+supabase functions deploy twitch-user
 ```
 
-> Die Funktion liegt in `supabase/functions/twitch-game/` (falls vorhanden).  
-> Alternativ kann dieser Schritt übersprungen werden – dann wird im Stream keine Spielinfo angezeigt.
+> `calendar` proxied nur HTTPS-URLs von `export.kalender.digital` (Allowlist).  
+> Nutzt du einen anderen Kalender-Anbieter:  
+> `supabase secrets set CALENDAR_ALLOWED_HOSTS=dein-anbieter.de`
 
 ---
 
@@ -356,12 +388,10 @@ Die GitHub Actions unter `.github/workflows/` laufen automatisch, sobald die Sec
 
 | Workflow | Was er tut | Trigger |
 |---|---|---|
-| `deploy.yml` | Baut und deployt die Landingpage | Push auf master/main |
+| `pipeline.yml` | Validiert (Lint/Test/Audit), baut & deployt die Landingpage auf GitHub Pages, baut TwitchAddon als EXE/ZIP + Docker-Image nach ghcr.io | Push auf master/main/dev |
 | `twitch-sync.yml` | Synchronisiert Twitch-Daten, erneuert den Refresh Token | Alle 2 Stunden |
 | `fetch-clips.yml` | Holt Top-Clips von Twitch, startet Voting-Runde 1 | 22. des Monats, 00:23 UTC |
 | `manage-rounds.yml` | Verwaltet Voting-Runden-Status automatisch | Täglich 06:00 UTC |
-| `build.yml` | Baut TwitchAddon als EXE und ZIP | Push auf master/main |
-| `docker.yml` | Baut Docker-Images und pusht nach ghcr.io | Push auf master/main |
 
 > `fetch-clips.yml` und `manage-rounds.yml` können auch manuell ausgelöst werden  
 > (Actions → Workflow → **Run workflow**).
@@ -436,47 +466,58 @@ Nur nötig wenn du die Panel Extension im Twitch-Kanal anzeigen willst.
 
 ---
 
-## Anhang C – Discord Bot (optional)
+## Anhang C – Discord-Benachrichtigungen (optional)
 
-Der Discord Bot postet automatische Nachrichten wenn Voting-Runden starten oder enden.  
-Er wird durch Supabase Webhooks ausgelöst.
+Postet automatische Nachrichten, wenn Voting-Runden starten oder enden. Das
+übernimmt vollständig die serverlose Edge Function `discord-notify` — es ist
+kein dauerhaft laufender, extern gehosteter Bot nötig. Discord braucht für reine
+Channel-Nachrichten keinen Gateway-Bot; ein REST-Call mit dem Bot-Token genügt.
 
-### Bot erstellen
+### Discord-Bot erstellen
 
 1. Gehe zu [discord.com/developers/applications](https://discord.com/developers/applications)
 2. **New Application** → Bot-Tab → **Add Bot**
-3. Aktiviere **Server Members Intent** und **Message Content Intent**
-4. Lade den Bot in deinen Server ein (Berechtigungen: `Send Messages`, `View Channels`)
-5. Notiere den **Bot Token** und die **Channel ID** des Ziel-Kanals
+3. Lade den Bot in deinen Server ein (Berechtigungen: `Send Messages`, `View Channels`)
+4. Notiere den **Bot Token** und die **Channel ID** des Ziel-Kanals
 
-### Auf Render deployen (empfohlen)
+> Gateway-Intents (Server Members / Message Content) werden **nicht** benötigt —
+> die Edge Function sendet rein über die Discord-REST-API.
 
-1. Erstelle ein Konto auf [render.com](https://render.com)
-2. New **Web Service** → verbinde dein GitHub-Repo → Root Directory: `DiscordBot`
-3. Build Command: `npm install && npm run build`  
-   Start Command: `npm start`
-4. Env-Variablen eintragen:
-
-| Variable | Bedeutung |
-|---|---|
-| `DISCORD_TOKEN` | Discord Bot Token |
-| `CHANNEL_ID` | Discord Kanal-ID |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role key (als API-Key-Auth) |
-| `PORT` | `3000` (Render setzt das automatisch) |
-
-5. Notiere die Render-URL und konfiguriere Supabase-Webhooks:
-   - Supabase → Database → Webhooks → **New Webhook**
-   - Events: z.B. `UPDATE` auf Tabelle `voting_rounds`
-   - Webhook URL: `https://DEINE-RENDER-URL/start-runde-1` (je nach Event)
-
-### Lokal
+### Edge Function deployen
 
 ```bash
-cd DiscordBot
-cp .env.example .env   # (Datei selbst anlegen mit den obigen Variablen)
-npm install
-npm start
+# Secrets setzen (WEBHOOK_SECRET frei wählen, z.B. via Passwort-Generator)
+supabase secrets set DISCORD_TOKEN=... DISCORD_CHANNEL_ID=... WEBHOOK_SECRET=...
+supabase secrets set VOTING_URL=https://deinkanal.de/clipdesmonats   # optional
+
+# Webhooks/pg_net senden kein Supabase-JWT → verify_jwt aus; Schutz = WEBHOOK_SECRET
+supabase functions deploy discord-notify --no-verify-jwt
 ```
+
+### Auslöser konfigurieren
+
+Die Benachrichtigungen werden aus zwei Quellen angestoßen — beide senden dasselbe
+`WEBHOOK_SECRET` als Header `x-webhook-secret`:
+
+1. **Datenbank (`pg_net`)** — die Funktion `clipvoting.schedule_discord_notify`
+   ruft die Edge Function bei Rundenwechseln auf. Dafür muss das Secret im Vault
+   liegen:
+
+   ```sql
+   select vault.create_secret('<dein WEBHOOK_SECRET>', 'discord_webhook_secret');
+   ```
+
+2. **GitHub Actions** — die Workflows `fetch-clips` und `manage-rounds` benachrichtigen
+   beim Start/Ende von Runden ebenfalls. Dafür das gleiche Secret als GitHub-Secret
+   `WEBHOOK_SECRET` hinterlegen (Settings → Secrets and variables → Actions).
+
+Alternativ (oder zusätzlich) lassen sich klassische **Supabase-Webhooks** anlegen
+(Database → Webhooks → **New Webhook**):
+
+- **URL:** `https://DEIN-PROJEKT.supabase.co/functions/v1/discord-notify?event=start-runde-1`  
+  (pro Event ein Webhook: `start-runde-1`, `ende-runde-1`, `start-runde-2`, `ende-runde-2`, `start-jahr`, `ende-jahr`)
+- **HTTP Header:** `x-webhook-secret: <dein WEBHOOK_SECRET>`
+- **Events:** z.B. `UPDATE` auf Tabelle `voting_rounds`
 
 ---
 
@@ -492,6 +533,7 @@ npm start
 | `TWITCH_REFRESH_TOKEN` | ✅ | Twitch OAuth Refresh Token (Scopes: chat, moderation, subscriptions, redemptions) |
 | `CHANNEL_NAME` | ✅ | Twitch-Kanalname (Kleinbuchstaben, ohne @) |
 | `GH_TOKEN` | ✅ | GitHub Personal Access Token (Scope: `secrets:write`) – für automatischen Token-Refresh |
+| `WEBHOOK_SECRET` | Discord | Geheimnis für die `discord-notify`-Edge-Function (siehe Anhang C); nur nötig, wenn Discord-Benachrichtigungen aktiv sind |
 | `NGROK_AUTHTOKEN` | TwitchAddon | ngrok Authtoken — die EXE öffnet damit automatisch den Tunnel |
 | `NGROK_DOMAIN` | TwitchAddon | reservierte Static-Domain (z.B. `dein-name.ngrok-free.app`) |
 | `EXTENSION_CLIENT_ID` | Extension | Client ID der Twitch Extension |

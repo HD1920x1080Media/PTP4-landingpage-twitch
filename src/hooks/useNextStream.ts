@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { fetchCalendarText } from '../lib/edgeFunctions'
 
 export interface NextStreamEvent {
   summary: string
@@ -67,8 +68,10 @@ function parseIcs(text: string): NextStreamEvent[] {
 }
 
 /** Lädt einen ICS-Kalender und liefert den nächsten anstehenden Stream-Termin.
- *  Termine, die als Feiertag markiert sind, werden übersprungen. */
-export function useNextStream(icsUrl: string) {
+ *  Termine, die als Feiertag markiert sind, werden übersprungen.
+ *  Mit `liveIcsUrl` wird der Kalender bevorzugt live über die calendar-Edge-
+ *  Function geladen; `icsUrl` (statischer Build-Snapshot) bleibt Fallback. */
+export function useNextStream(icsUrl: string, liveIcsUrl?: string) {
   const [nextEvent, setNextEvent] = useState<NextStreamEvent | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -78,12 +81,13 @@ export function useNextStream(icsUrl: string) {
 
     async function fetchCalendar() {
       try {
-        const res = await fetch(icsUrl)
-        if (!res.ok) {
-          if (!cancelled) setError(`HTTP ${res.status}`)
-          return
-        }
-        const text = await res.text()
+        const text = liveIcsUrl
+          ? await fetchCalendarText(liveIcsUrl, icsUrl)
+          : await (async () => {
+              const res = await fetch(icsUrl)
+              if (!res.ok) throw new Error(`HTTP ${res.status}`)
+              return res.text()
+            })()
         if (cancelled) return
 
         const events = parseIcs(text)
@@ -105,7 +109,7 @@ export function useNextStream(icsUrl: string) {
 
     fetchCalendar()
     return () => { cancelled = true }
-  }, [icsUrl])
+  }, [icsUrl, liveIcsUrl])
 
   return { nextEvent, loading, error }
 }

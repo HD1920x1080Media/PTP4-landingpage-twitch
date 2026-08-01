@@ -1,5 +1,5 @@
 import {useTranslation} from 'react-i18next'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import {useNextStream} from '../../hooks/useNextStream'
 import siteConfig from '../../config/siteConfig'
 import './NextStream.css'
@@ -7,7 +7,8 @@ import './NextStream.css'
 /** Zeigt den naechsten Stream-Termin aus dem ICS-Kalender; faellt bei Fehler/leer auf einen Streamplan-Link zurueck. */
 export default function NextStream() {
     const {t, i18n} = useTranslation()
-    const {nextEvent, loading, error} = useNextStream(siteConfig.twitch.icsUrl)
+    // Statischer Snapshot als Fallback, live über die calendar-Edge-Function
+    const {nextEvent, loading, error} = useNextStream(siteConfig.twitch.icsUrl, siteConfig.streamplan.icsUrl)
 
     if (loading) {
         return <div className="next-stream-loading">{t('live.scheduleLoading')}</div>

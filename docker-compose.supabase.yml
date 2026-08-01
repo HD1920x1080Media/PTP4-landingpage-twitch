@@ -10,7 +10,7 @@ version: "3.9"
 services:
   # ── PostgreSQL ────────────────────────────────────────────────────────────
   db:
-    image: supabase/postgres:17.6.1.134
+    image: supabase/postgres:17.6.1.150
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
@@ -28,7 +28,7 @@ services:
 
   # ── GoTrue (Auth) ─────────────────────────────────────────────────────────
   auth:
-    image: supabase/gotrue:v2.189.0
+    image: supabase/gotrue:v2.193.1
     restart: unless-stopped
     depends_on:
       db:
@@ -64,7 +64,7 @@ services:
 
   # ── Realtime ──────────────────────────────────────────────────────────────
   realtime:
-    image: supabase/realtime:v2.104.2
+    image: supabase/realtime:v2.118.0
     restart: unless-stopped
     depends_on:
       db:
@@ -88,7 +88,7 @@ services:
 
   # ── Storage ───────────────────────────────────────────────────────────────
   storage:
-    image: supabase/storage-api:v1.60.15
+    image: supabase/storage-api:v1.67.6
     restart: unless-stopped
     depends_on:
       db:
@@ -113,7 +113,7 @@ services:
 
   # ── Kong (API Gateway) ────────────────────────────────────────────────────
   kong:
-    image: kong:3.9.2
+    image: kong:3.9.3
     restart: unless-stopped
     entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
     ports:

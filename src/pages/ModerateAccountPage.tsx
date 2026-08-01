@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase'
 import { useIsModerator } from '../hooks/useIsModerator'
 import SubPage from '../components/SubPage/SubPage'
 import { getErrorMessage } from '../lib/utils'
+import { lookupTwitchUserId } from '../lib/edgeFunctions'
 import siteConfig from '../config/siteConfig'
 
 /**
@@ -213,13 +214,14 @@ export default function ModerateAccountPage() {
     try {
       let twitch_user_id = banName.trim()
       if (!/^\d+$/.test(twitch_user_id)) {
-        const res = await fetch(`${siteConfig.twitch.idLookupUrl}${encodeURIComponent(twitch_user_id)}`)
-        if (!res.ok) {
+        // Lookup über die twitch-user-Edge-Function (Fallback: decapi)
+        const resolved = await lookupTwitchUserId(twitch_user_id, siteConfig.twitch.idLookupUrl)
+        if (!resolved) {
           showToast(t('moderate.couldNotFetchTwitchId'))
           setBusy(false)
           return
         }
-        twitch_user_id = (await res.text()).trim()
+        twitch_user_id = resolved
       }
 
       const myTwitchId = user?.user_metadata?.provider_id || user?.user_metadata?.sub || ''
@@ -278,10 +280,9 @@ export default function ModerateAccountPage() {
     try {
       let targetUser = pointsName.trim()
       if (!/^\d+$/.test(targetUser)) {
-        const res = await fetch(`${siteConfig.twitch.idLookupUrl}${encodeURIComponent(targetUser)}`)
-        if (res.ok) {
-          targetUser = (await res.text()).trim()
-        }
+        // Lookup über die twitch-user-Edge-Function (Fallback: decapi)
+        const resolved = await lookupTwitchUserId(targetUser, siteConfig.twitch.idLookupUrl)
+        if (resolved) targetUser = resolved
       }
 
       if (pointsAction === 'reset') {

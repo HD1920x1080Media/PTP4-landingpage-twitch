@@ -128,10 +128,8 @@ export function startControllMobile(supabaseUrl: string, supabaseServiceKey: str
     .channel('redeemed-rewards-triggers')
     .on(
       // Cast nötig: supabase-js' Channel-Typings sind hier zu eng für den generischen 'public.*'-Hook.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       'postgres_changes' as any,
       { event: '*', schema: 'public', table: 'redeemed_rewards' },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (payload: any) => {
         if (payload.eventType !== 'INSERT') return
         const description = typeof payload.new?.description === 'string' ? payload.new.description.trim() : ''

@@ -28,7 +28,7 @@ jobs:
       version: ${{ steps.semver.outputs.version }}
     steps:
       - name: Checkout code (full history)
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -69,10 +69,10 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node & Bun
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -84,12 +84,6 @@ jobs:
           npm run lint
           npx tsc -b
           npm run test
-
-      - name: DiscordBot Validierung
-        working-directory: DiscordBot
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
-          npx tsc --noEmit
 
       - name: TwitchAddon Validierung
         working-directory: TwitchAddon
@@ -122,7 +116,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
@@ -169,6 +163,11 @@ jobs:
           }
 
           & bun build --compile --target=bun-windows-x64 @defines TwitchAddon/index.ts --outfile TwitchAddon/dist/TwitchAddon.exe
+
+          # Standalone-Setup-Assistent als EXE: konfiguriert das aktuelle Projekt-
+          # verzeichnis (siteConfig.ts + .env) und kommt ohne Node-Toolchain aus.
+          # scripts/setup.ts nutzt nur node:-Builtins, daher kein bun install nötig.
+          & bun build --compile --target=bun-windows-x64 scripts/setup.ts --outfile TwitchAddon/dist/setup.exe
 
           $repoZipUrl = "https://github.com/$env:GITHUB_REPOSITORY/archive/$env:GITHUB_SHA.zip"
           $repoZipJson = $repoZipUrl | ConvertTo-Json -Compress
@@ -264,6 +263,7 @@ jobs:
           files: |
             TwitchAddon/dist/TwitchAddon-*.zip
             TwitchAddon/dist/extension.zip
+            TwitchAddon/dist/setup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -280,7 +280,13 @@ jobs:
             image: ghcr.io/${{ github.repository }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+
+      # Eigener docker-container-Builder (volles BuildKit). Ohne diesen Schritt
+      # nutzt build-push-action den Default-"docker"-Treiber, was beim Push nach
+      # GHCR zu "unknown blob" führen kann.
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
         if: github.ref_name == 'main' || github.ref_name == 'master' || github.ref_name == 'dev'
@@ -308,10 +314,16 @@ jobs:
           push: ${{ github.ref_name == 'main' || github.ref_name == 'master' || github.ref_name == 'dev' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Keine Provenance-/SBOM-Attestierungs-Manifeste erzeugen — diese
+          # zusätzlichen Manifeste werden von GHCR teils mit "unknown blob"
+          # abgelehnt. Ein einzelnes Image-Manifest pro Tag ist robuster.
+          provenance: false
+          sbom: false
           build-args: |
             VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
             VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
             VITE_TWITCH_CLIENT_ID=${{ secrets.VITE_TWITCH_CLIENT_ID }}
+            VITE_CHANNEL_NAME=${{ secrets.CHANNEL_NAME }}
   # ─── 5. Deployment Landingpage (Nur Main/Master) ─────────────────────
   deploy-pages:
     needs: validate
@@ -322,9 +334,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -352,7 +364,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Sende E-Mail
-        uses: dawidd6/action-send-mail@v17
+        uses: dawidd6/action-send-mail@v18
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
           server_port: 465

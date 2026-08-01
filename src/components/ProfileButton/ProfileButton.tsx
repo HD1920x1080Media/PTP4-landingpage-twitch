@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
 import { useAuth } from '../../context/useAuth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useIsModerator } from '../../hooks/useIsModerator'
 import './ProfileButton.css'
 import siteConfig from "../../config/siteConfig.ts";
