@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router'
 import { FaHome } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../../context/useTheme.ts'

@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react'
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation} from 'react-router'
 import {useTranslation} from 'react-i18next'
 import Footer from '../Footer/Footer'
 import './SubPage.css'
