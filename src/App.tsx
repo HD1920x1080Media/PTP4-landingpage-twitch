@@ -1,4 +1,4 @@
-import {Routes, Route, Navigate, useLocation, BrowserRouter} from 'react-router-dom'
+import {Routes, Route, Navigate, useLocation, BrowserRouter} from 'react-router'
 import {useLayoutEffect, lazy, Suspense} from 'react'
 import SettingsBar from './components/SettingsBar/SettingsBar.tsx'
 import CookieBanner from './components/CookieBanner/CookieBanner'
