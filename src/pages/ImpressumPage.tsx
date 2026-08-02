@@ -145,17 +145,6 @@ export default function ImpressumPage() {
           />
         </label>
 
-        {authLoading && (
-          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--muted)' }}>
-            {t('impressumPage.form.loadingAccount')}
-          </p>
-        )}
-        {!authLoading && user && (
-          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--muted)' }}>
-            {t('impressumPage.form.prefilled')}
-          </p>
-        )}
-
         <label style={labelStyle}>
           {t('impressumPage.form.message')}
           <textarea
