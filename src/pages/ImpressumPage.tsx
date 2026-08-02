@@ -1,7 +1,9 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import type {FormEvent} from 'react'
+import type {User} from '@supabase/supabase-js'
 import siteConfig from '../config/siteConfig'
 import SubPage from '../components/SubPage/SubPage'
+import {useAuth} from '../context/useAuth'
 import {useTranslation} from "react-i18next";
 
 /** Endpunkt der Edge Function; nur die Projekt-URL, kein Supabase-Key im Frontend. */
@@ -35,10 +37,25 @@ const labelStyle = {
   color: 'var(--muted)',
 } as const
 
+/** Gedimmtes Feld, solange die Session noch geladen wird. */
+const loadingFieldStyle = {
+  ...fieldStyle,
+  opacity: 0.6,
+  cursor: 'progress',
+} as const
+
+/** Anzeigename aus den Twitch-Metadaten, mit Rueckfall auf den Login-Namen. */
+function accountDisplayName(user: User | null): string {
+  const meta = user?.user_metadata ?? {}
+  const candidate = meta.full_name ?? meta.user_login
+  return typeof candidate === 'string' ? candidate : ''
+}
+
 /** Impressum-Seite: gesetzlich vorgeschriebene Anbieterkennzeichnung aus siteConfig. */
 export default function ImpressumPage() {
   const { t } = useTranslation()
   const { impressum } = siteConfig
+  const { user, loading: authLoading } = useAuth()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -46,6 +63,21 @@ export default function ImpressumPage() {
   const [website, setWebsite] = useState('')
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  /** Sobald der Nutzer ein Feld selbst angefasst hat, wird es nicht mehr vorbelegt. */
+  const [nameEdited, setNameEdited] = useState(false)
+  const [emailEdited, setEmailEdited] = useState(false)
+
+  const accountName = accountDisplayName(user)
+
+  // Die Session steht erst nach dem ersten Render fest, die Vorbelegung muss
+  // also nachtraeglich greifen. Liefert Twitch keinen Wert, bleibt das Feld leer.
+  useEffect(() => {
+    if (!emailEdited && user?.email) setEmail(user.email)
+  }, [user?.email, emailEdited])
+
+  useEffect(() => {
+    if (!nameEdited && accountName) setName(accountName)
+  }, [accountName, nameEdited])
 
   async function submitContact(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -59,9 +91,12 @@ export default function ImpressumPage() {
       })
       if (!res.ok) throw new Error(`contact ${res.status}`)
       setStatus('success')
-      setName('')
-      setEmail('')
       setMessage('')
+      // Nach dem Absenden wieder auf die Konto-Daten zuruecksetzen
+      setName(accountName)
+      setNameEdited(false)
+      setEmail(user?.email ?? '')
+      setEmailEdited(false)
     } catch {
       setStatus('error')
     } finally {
@@ -92,11 +127,16 @@ export default function ImpressumPage() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setNameEdited(true)
+              setName(e.target.value)
+            }}
             required
             maxLength={200}
             autoComplete="name"
-            style={fieldStyle}
+            disabled={authLoading}
+            placeholder={authLoading ? t('impressumPage.form.loadingAccount') : undefined}
+            style={authLoading ? loadingFieldStyle : fieldStyle}
           />
         </label>
 
@@ -105,13 +145,29 @@ export default function ImpressumPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmailEdited(true)
+              setEmail(e.target.value)
+            }}
             required
             maxLength={320}
             autoComplete="email"
-            style={fieldStyle}
+            disabled={authLoading}
+            placeholder={authLoading ? t('impressumPage.form.loadingAccount') : undefined}
+            style={authLoading ? loadingFieldStyle : fieldStyle}
           />
         </label>
+
+        {authLoading && (
+          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--muted)' }}>
+            {t('impressumPage.form.loadingAccount')}
+          </p>
+        )}
+        {!authLoading && user && (
+          <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--muted)' }}>
+            {t('impressumPage.form.prefilled')}
+          </p>
+        )}
 
         <label style={labelStyle}>
           {t('impressumPage.form.message')}

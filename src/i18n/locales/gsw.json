@@ -126,7 +126,7 @@
     "moderate": "Moderation"
   },
   "footer": {
-    "impressum": "Impressum",
+    "impressum": "Impressum & Kontakt",
     "datenschutz": "Dateschutz"
   },
   "downloadModal": {
@@ -155,7 +155,7 @@
   "discountCode": "Code: {{code}}",
   "back": "← Zrugg",
   "impressumPage": {
-    "title": "Impressum",
+    "title": "Impressum & Kontakt",
     "contact": "Kontakt",
     "form": {
       "title": "Kontakt",

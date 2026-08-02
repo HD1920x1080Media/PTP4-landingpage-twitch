@@ -126,7 +126,7 @@
     "moderate": "Moderation"
   },
   "footer": {
-    "impressum": "Imprint",
+    "impressum": "Imprint & Contact",
     "datenschutz": "Privacy Policy"
   },
   "downloadModal": {
@@ -155,7 +155,7 @@
   "discountCode": "Code: {{code}}",
   "back": "← Back",
   "impressumPage": {
-    "title": "Imprint",
+    "title": "Imprint & Contact",
     "contact": "Contact",
     "form": {
       "title": "Contact",
