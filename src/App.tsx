@@ -136,6 +136,7 @@ function App() {
                 <Route path="/tanggle" element={<RedirectToHtml to="http://tng.gl/c/hd1920x1080"/>}/>
                 <Route path="/puzzle" element={<RedirectToHtml to="http://tng.gl/c/hd1920x1080"/>}/>
                 <Route path="/nclip" element={<RedirectToHtml to="https://nclip.io/page/hd1920x1080"/>}/>
+                <Route path={"/StreamElements.html"} element={<Navigate to="/streamelements" replace/>}/>
 
                 <Route path="*" element={<NotFoundPage/>}/>
             </Routes>

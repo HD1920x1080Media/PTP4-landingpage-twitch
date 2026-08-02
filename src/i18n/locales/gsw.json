@@ -156,7 +156,17 @@
   "back": "← Zrugg",
   "impressumPage": {
     "title": "Impressum",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "form": {
+      "title": "Kontakt",
+      "name": "Name",
+      "email": "E-Mail",
+      "message": "Nochricht",
+      "submit": "Abschicke",
+      "sending": "Wird gschickt …",
+      "success": "Merci! Dini Nochricht isch verschickt worde.",
+      "error": "Des hät leider nid klappt. Bitte spöter nomol probiere."
+    }
   },
   "datenschutzPage": {
     "title": "Dateschutzerklärig",

@@ -156,7 +156,17 @@
   "back": "← Back",
   "impressumPage": {
     "title": "Imprint",
-    "contact": "Contact"
+    "contact": "Contact",
+    "form": {
+      "title": "Contact",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Send",
+      "sending": "Sending …",
+      "success": "Thanks! Your message has been sent.",
+      "error": "That didn't work. Please try again later."
+    }
   },
   "datenschutzPage": {
     "title": "Privacy Policy",

@@ -156,7 +156,17 @@
   "back": "← Zurück",
   "impressumPage": {
     "title": "Impressum",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "form": {
+      "title": "Kontakt",
+      "name": "Name",
+      "email": "E-Mail",
+      "message": "Nachricht",
+      "submit": "Absenden",
+      "sending": "Wird gesendet …",
+      "success": "Danke! Deine Nachricht wurde verschickt.",
+      "error": "Das hat leider nicht geklappt. Bitte später erneut versuchen."
+    }
   },
   "datenschutzPage": {
     "title": "Datenschutzerklärung",
