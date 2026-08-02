@@ -156,7 +156,17 @@
   "back": "← Retour",
   "impressumPage": {
     "title": "imprimer",
-    "contact": "contact"
+    "contact": "contact",
+    "form": {
+      "title": "Contact",
+      "name": "Nom",
+      "email": "E-mail",
+      "message": "Message",
+      "submit": "Envoyer",
+      "sending": "Envoi …",
+      "success": "Merci ! Votre message a été envoyé.",
+      "error": "Cela n'a pas fonctionné. Veuillez réessayer plus tard."
+    }
   },
   "datenschutzPage": {
     "title": "politique de confidentialité",
