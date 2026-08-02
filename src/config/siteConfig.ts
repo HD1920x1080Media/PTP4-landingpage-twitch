@@ -313,11 +313,9 @@ const siteConfig: SiteConfig = {
     },
     {
       titleKey: 'partners.frugends.title',
-      descKey: 'partners.frugends.desc',
       url: 'https://frugends.com/?srsltid=AfmBOoqjyBjbK5TWs0tAS4ELgV93XqTXzl84OChVKd93OVkjeWfH8wFT',
       icon: '/img/logos/Frugends.webp',
       target: '_blank',
-      discountCode: 'FullHD',
     },
   ],
 
