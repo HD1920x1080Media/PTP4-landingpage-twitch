@@ -126,7 +126,7 @@
     "moderate": "Moderation"
   },
   "footer": {
-    "impressum": "Impressum",
+    "impressum": "Impressum & Kontakt",
     "datenschutz": "Datenschutz"
   },
   "downloadModal": {
@@ -155,7 +155,7 @@
   "discountCode": "Code: {{code}}",
   "back": "← Zurück",
   "impressumPage": {
-    "title": "Impressum",
+    "title": "Impressum & Kontakt",
     "contact": "Kontakt",
     "form": {
       "title": "Kontakt",

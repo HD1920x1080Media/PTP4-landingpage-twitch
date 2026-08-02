@@ -126,7 +126,7 @@
     "moderate": "Moderación"
   },
   "footer": {
-    "impressum": "imprimir",
+    "impressum": "imprimir y contacto",
     "datenschutz": "Protección de datos"
   },
   "downloadModal": {
@@ -155,7 +155,7 @@
   "discountCode": "Código: {{code}}",
   "back": "← Volver",
   "impressumPage": {
-    "title": "imprimir",
+    "title": "imprimir y contacto",
     "contact": "contacto",
     "form": {
       "title": "Contacto",
