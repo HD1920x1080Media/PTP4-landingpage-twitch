@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import type {FormEvent} from 'react'
 import type {User} from '@supabase/supabase-js'
 import siteConfig from '../config/siteConfig'
@@ -57,27 +57,22 @@ export default function ImpressumPage() {
   const { impressum } = siteConfig
   const { user, loading: authLoading } = useAuth()
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [website, setWebsite] = useState('')
   const [busy, setBusy] = useState(false)
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  /** Sobald der Nutzer ein Feld selbst angefasst hat, wird es nicht mehr vorbelegt. */
-  const [nameEdited, setNameEdited] = useState(false)
-  const [emailEdited, setEmailEdited] = useState(false)
+
+  // Name und E-Mail werden aus dem Konto abgeleitet, nicht per Effect kopiert:
+  // null bedeutet "noch nicht angefasst, Konto-Wert benutzen". Sobald der Nutzer
+  // tippt, gewinnt der Override — auch wenn die Session erst danach eintrifft.
+  const [nameOverride, setNameOverride] = useState<string | null>(null)
+  const [emailOverride, setEmailOverride] = useState<string | null>(null)
 
   const accountName = accountDisplayName(user)
+  const accountEmail = user?.email ?? ''
 
-  // Die Session steht erst nach dem ersten Render fest, die Vorbelegung muss
-  // also nachtraeglich greifen. Liefert Twitch keinen Wert, bleibt das Feld leer.
-  useEffect(() => {
-    if (!emailEdited && user?.email) setEmail(user.email)
-  }, [user?.email, emailEdited])
-
-  useEffect(() => {
-    if (!nameEdited && accountName) setName(accountName)
-  }, [accountName, nameEdited])
+  const name = nameOverride ?? accountName
+  const email = emailOverride ?? accountEmail
 
   async function submitContact(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -92,11 +87,9 @@ export default function ImpressumPage() {
       if (!res.ok) throw new Error(`contact ${res.status}`)
       setStatus('success')
       setMessage('')
-      // Nach dem Absenden wieder auf die Konto-Daten zuruecksetzen
-      setName(accountName)
-      setNameEdited(false)
-      setEmail(user?.email ?? '')
-      setEmailEdited(false)
+      // Overrides loeschen: Name und E-Mail fallen auf die Konto-Werte zurueck
+      setNameOverride(null)
+      setEmailOverride(null)
     } catch {
       setStatus('error')
     } finally {
@@ -127,10 +120,7 @@ export default function ImpressumPage() {
           <input
             type="text"
             value={name}
-            onChange={(e) => {
-              setNameEdited(true)
-              setName(e.target.value)
-            }}
+            onChange={(e) => setNameOverride(e.target.value)}
             required
             maxLength={200}
             autoComplete="name"
@@ -145,10 +135,7 @@ export default function ImpressumPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => {
-              setEmailEdited(true)
-              setEmail(e.target.value)
-            }}
+            onChange={(e) => setEmailOverride(e.target.value)}
             required
             maxLength={320}
             autoComplete="email"
