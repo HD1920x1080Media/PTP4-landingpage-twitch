@@ -64,7 +64,7 @@ services:
 
   # ── Realtime ──────────────────────────────────────────────────────────────
   realtime:
-    image: supabase/realtime:v2.134.5
+    image: supabase/realtime:v2.134.6
     restart: unless-stopped
     depends_on:
       db:
